@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IA Collaborative</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  {% block stylesheets %}
+  {{ encore_entry_link_tags('app') }}
+  {% endblock %}
+</head>
+<body>
+<div id="main-container">
+  <header>
+    <h1>Bienvenue dans le monde de l'IA collaborative</h1>
+  </header>
+  <div class="fl_1">
+    <div id="chat-interface">
+      <div id="chat-container"></div> <!-- Conteneur pour les messages -->
+      <div id="chat-input">
+        <input type="text" id="user-input" placeholder="Posez votre question..." />
+        <button id="send-button">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+            <path d="M21.426 2.574A2 2 0 0 0 18.686.326l-16 7a2 2 0 0 0 .115 3.705l7.38 2.461 2.462 7.38a2 2 0 0 0 3.705.115l7-16a2 2 0 0 0-1.922-2.413zm-6.635 18.647-2.044-6.127a1 1 0 0 0-.64-.64L6.58 12.41 17.048 6.95z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <section id="visualization">
+      <svg id="animation-svg"></svg>
+    </section>
+    <div id="analysis-visualization">
+      <svg id="visualization-path" width="800" height="400"></svg>
+    </div>
+  </div>
+</div>
+
+{% block javascripts %}
+  {{ encore_entry_script_tags('d3') }}
+{% endblock %}
+</body>
+</html>

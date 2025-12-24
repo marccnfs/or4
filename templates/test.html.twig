@@ -1,0 +1,88 @@
+{% block content %}
+    <script>
+        // Define canvas dimensions
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+
+        // Create an SVG container
+        const svg = d3.select("body")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        // Define clusters based on keywords
+        const clusters = [
+            { keyword: "IA", x: width * 0.3, y: height * 0.5, size: 30 },
+            { keyword: "Éducation", x: width * 0.5, y: height * 0.3, size: 20 },
+            { keyword: "Éthique", x: width * 0.7, y: height * 0.6, size: 25 }
+        ];
+
+        // Create a simulation for particles
+        const particleCount = 300;
+        const particles = d3.range(particleCount).map(() => ({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            cluster: clusters[Math.floor(Math.random() * clusters.length)]
+        }));
+
+        const simulation = d3.forceSimulation(particles)
+            .force("x", d3.forceX(d => d.cluster.x).strength(0.05))
+            .force("y", d3.forceY(d => d.cluster.y).strength(0.05))
+            .force("collision", d3.forceCollide(5))
+            .alphaDecay(0.01)
+            .on("tick", ticked);
+
+        // Draw particles
+        const particleNodes = svg.selectAll("circle")
+            .data(particles)
+            .enter()
+            .append("circle")
+            .attr("r", 3)
+            .attr("fill", "lightblue")
+            .attr("opacity", 0.8);
+
+        // Draw cluster labels
+        svg.selectAll("text")
+            .data(clusters)
+            .enter()
+            .append("text")
+            .attr("x", d => d.x)
+            .attr("y", d => d.y - 40)
+            .attr("text-anchor", "middle")
+            .text(d => d.keyword)
+            .style("font-size", d => `${d.size}px`)
+            .style("fill", "white");
+
+        // Tick function to update positions
+        function ticked() {
+            particleNodes
+                .attr("cx", d => d.x)
+                .attr("cy", d => d.y);
+        }
+
+        // Add interactivity: Hover to highlight clusters
+        svg.selectAll("text")
+            .on("mouseover", function (event, d) {
+                d3.select(this)
+                    .style("fill", "orange")
+                    .style("font-size", `${d.size + 5}px`);
+
+                particleNodes
+                    .attr("fill", particle =>
+                        particle.cluster.keyword === d.keyword ? "orange" : "lightblue"
+                    )
+                    .attr("opacity", particle =>
+                        particle.cluster.keyword === d.keyword ? 1 : 0.3
+                    );
+            })
+            .on("mouseout", function (event, d) {
+                d3.select(this)
+                    .style("fill", "white")
+                    .style("font-size", `${d.size}px`);
+
+                particleNodes
+                    .attr("fill", "lightblue")
+                    .attr("opacity", 0.8);
+            });
+    </script>
+{% endblock %}

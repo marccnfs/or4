@@ -1,0 +1,252 @@
+[
+    {
+        "siren": "356000000",
+        "nom_complet": "LA POSTE (DIRECTION GENERALE DE LA POSTE)",
+        "adresse": "DIRECTION GENERALE DE LA POSTE 9 RUE DU COLONEL PIERRE AVIA 75015 PARIS",
+        "code_postal": "75015",
+        "ville": "PARIS",
+        "activite_principale": "53.10Z",
+        "etat_administratif": "A",
+        "date_creation": "1991-01-01"
+    },
+    {
+        "siren": "662025196",
+        "nom_complet": "ELIOR RESTAURATION FRANCE",
+        "adresse": "9-11 9 ALLEE DE L'ARCHE 92400 COURBEVOIE",
+        "code_postal": "92400",
+        "ville": "COURBEVOIE",
+        "activite_principale": "56.29B",
+        "etat_administratif": "A",
+        "date_creation": "1966-01-01"
+    },
+    {
+        "siren": "412280737",
+        "nom_complet": "SNCF RESEAU (RFF)",
+        "adresse": "15 AU 17 15 RUE JEAN-PHILIPPE RAMEAU 93200 SAINT-DENIS",
+        "code_postal": "93200",
+        "ville": "SAINT-DENIS",
+        "activite_principale": "52.21Z",
+        "etat_administratif": "A",
+        "date_creation": "1997-05-15"
+    },
+    {
+        "siren": "632041042",
+        "nom_complet": "COMPASS GROUP FRANCE (SCOLAREST MEDIREST EUREST)",
+        "adresse": "117-133 117 AVENUE DE LA REPUBLIQUE 92320 CHATILLON",
+        "code_postal": "92320",
+        "ville": "CHATILLON",
+        "activite_principale": "56.29A",
+        "etat_administratif": "A",
+        "date_creation": "1964-01-01"
+    },
+    {
+        "siren": "343262622",
+        "nom_complet": "LIDL (LIDL)",
+        "adresse": "1 RUE DE HANOVRE 92290 CHATENAY-MALABRY",
+        "code_postal": "92290",
+        "ville": "CHATENAY-MALABRY",
+        "activite_principale": "47.11D",
+        "etat_administratif": "A",
+        "date_creation": "1987-12-17"
+    },
+    {
+        "siren": "722003936",
+        "nom_complet": "MCDONALD'S FRANCE",
+        "adresse": "Z I 1 RUE GUSTAVE EIFFEL 78280 GUYANCOURT",
+        "code_postal": "78280",
+        "ville": "GUYANCOURT",
+        "activite_principale": "68.20B",
+        "etat_administratif": "A",
+        "date_creation": "1985-01-25"
+    },
+    {
+        "siren": "130005481",
+        "nom_complet": "FRANCE TRAVAIL",
+        "adresse": "LE CINETIC 1 A 5 1 AVENUE DU DOCTEUR GLEY 75020 PARIS",
+        "code_postal": "75020",
+        "ville": "PARIS",
+        "activite_principale": "84.13Z",
+        "etat_administratif": "A",
+        "date_creation": "2008-12-19"
+    },
+    {
+        "siren": "334159472",
+        "nom_complet": "ANSAMBLE",
+        "adresse": "PIBS ALLEE GABRIEL LIPPMANN 56000 VANNES",
+        "code_postal": "56000",
+        "ville": "VANNES",
+        "activite_principale": "56.29A",
+        "etat_administratif": "A",
+        "date_creation": "1985-11-22"
+    },
+    {
+        "siren": "338253131",
+        "nom_complet": "SOCIETE FRANCAISE DE RESTAURATION ET SERVICES (SODEXO ECOLES & UNIVERSITES DEL APPRO LES PETITS GASTRONOMES SODEXO ENSEIGNEMENT SUPERIEUR) (SFRS)",
+        "adresse": "6 RUE DE LA REDOUTE 78280 GUYANCOURT",
+        "code_postal": "78280",
+        "ville": "GUYANCOURT",
+        "activite_principale": "56.29A",
+        "etat_administratif": "A",
+        "date_creation": "1986-07-01"
+    },
+    {
+        "siren": "552049447",
+        "nom_complet": "SOCIETE NATIONALE SNCF (SNCF)",
+        "adresse": "2 PLACE AUX ETOILES 93210 SAINT-DENIS",
+        "code_postal": "93210",
+        "ville": "SAINT-DENIS",
+        "activite_principale": "49.10Z",
+        "etat_administratif": "A",
+        "date_creation": "1955-01-01"
+    },
+    {
+        "siren": "392640090",
+        "nom_complet": "CAISSE D'EPARGNE ET DE PREVOYANCE BRETAGNE - PAYS DE LOIRE (CEBPL)",
+        "adresse": "2 PLACE GRASLIN 44000 NANTES",
+        "code_postal": "44000",
+        "ville": "NANTES",
+        "activite_principale": "64.19Z",
+        "etat_administratif": "A",
+        "date_creation": "1993-07-06"
+    },
+    {
+        "siren": "844879015",
+        "nom_complet": "VYV3 PAYS DE LA LOIRE (VYV3-PDL)",
+        "adresse": "29 QUAI FRANCOIS MITTERRAND 44200 NANTES",
+        "code_postal": "44200",
+        "ville": "NANTES",
+        "activite_principale": "65.12Z",
+        "etat_administratif": "A",
+        "date_creation": "2018-11-09"
+    },
+    {
+        "siren": "857500227",
+        "nom_complet": "BANQUE POPULAIRE GRAND OUEST",
+        "adresse": "15 BOULEVARD DE LA BOUTIERE 35760 SAINT-GREGOIRE",
+        "code_postal": "35760",
+        "ville": "SAINT-GREGOIRE",
+        "activite_principale": "64.19Z",
+        "etat_administratif": "A",
+        "date_creation": "1957-01-01"
+    },
+    {
+        "siren": "383844693",
+        "nom_complet": "CAISSE REGIONALE D'ASSURANCES MUTUELLES AGRICOLES BRETAGNE PAYS DE LA LOIRE (GROUPAMA LOIRE BRETAGNE)",
+        "adresse": "SIEGE REGIONAL 23 BOULEVARD SOLFERINO 35000 RENNES",
+        "code_postal": "35000",
+        "ville": "RENNES",
+        "activite_principale": "65.12Z",
+        "etat_administratif": "A",
+        "date_creation": "1991-06-20"
+    },
+    {
+        "siren": "341067692",
+        "nom_complet": "CONVIVIO-RCO",
+        "adresse": "ZA DE LA RETAUDAIS 12 RUE DU DOMAINE 35137 BEDEE",
+        "code_postal": "35137",
+        "ville": "BEDEE",
+        "activite_principale": "56.29A",
+        "etat_administratif": "A",
+        "date_creation": "1987-02-28"
+    },
+    {
+        "siren": "332323047",
+        "nom_complet": "RESTORIA (RESTORIA)",
+        "adresse": "PARC DE L'ANGEVINIERE 12 RUE GEORGES MANDEL 49000 ANGERS",
+        "code_postal": "49000",
+        "ville": "ANGERS",
+        "activite_principale": "56.29A",
+        "etat_administratif": "A",
+        "date_creation": "1984-09-01"
+    },
+    {
+        "siren": "440242469",
+        "nom_complet": "CAISSE REGIONALE DE CREDIT AGRICOLE MUTUEL  ATLANTIQUE VENDEE (CAAV)",
+        "adresse": "LA GARDE ROUTE DE PARIS 44300 NANTES",
+        "code_postal": "44300",
+        "ville": "NANTES",
+        "activite_principale": "64.19Z",
+        "etat_administratif": "A",
+        "date_creation": "2002-01-01"
+    },
+    {
+        "siren": "870800299",
+        "nom_complet": "CAISSE REGIONALE DE CREDIT MUTUEL DE LOIRE- ATLANTIQUE ET DU CENTRE OUEST",
+        "adresse": "10 RUE DE RIEUX 44000 NANTES",
+        "code_postal": "44000",
+        "ville": "NANTES",
+        "activite_principale": "64.19Z",
+        "etat_administratif": "A",
+        "date_creation": "1900-01-01"
+    },
+    {
+        "siren": "775688799",
+        "nom_complet": "FONDATION APPRENTIS D'AUTEUIL (APPRENTIS D'AUTEUIL)",
+        "adresse": "40 RUE JEAN DE LA FONTAINE 75016 PARIS",
+        "code_postal": "75016",
+        "ville": "PARIS",
+        "activite_principale": "85.32Z",
+        "etat_administratif": "A",
+        "date_creation": "1900-01-01"
+    },
+    {
+        "siren": "224400028",
+        "nom_complet": "DEPARTEMENT DE LA LOIRE-ATLANTIQUE",
+        "adresse": "HOTEL DU DEPARTEMENT 3 QUAI CEINERAY 44000 NANTES",
+        "code_postal": "44000",
+        "ville": "NANTES",
+        "activite_principale": "84.11Z",
+        "etat_administratif": "A",
+        "date_creation": "1958-01-25"
+    },
+    {
+        "siren": "884903360",
+        "nom_complet": "TECHNIQUE SOLAIRE INVEST 50 (TSI 50)",
+        "adresse": "26 RUE ANNET SEGERON 86580 BIARD",
+        "code_postal": "86580",
+        "ville": "BIARD",
+        "activite_principale": "35.11Z",
+        "etat_administratif": "A",
+        "date_creation": "2020-06-19"
+    },
+    {
+        "siren": "775605405",
+        "nom_complet": "ADAPEILA",
+        "adresse": "ET 13 11 RUE JOSEPH CAILLE 44000 NANTES",
+        "code_postal": "44000",
+        "ville": "NANTES",
+        "activite_principale": "87.20A",
+        "etat_administratif": "A",
+        "date_creation": "1900-01-01"
+    },
+    {
+        "siren": "069200210",
+        "nom_complet": "TGS FRANCE EXPERTISE COMPTABLE PAIE RH (TGS FRANCE) (TGS FRANCE ECPRH)",
+        "adresse": "PARC ACTIVITE ANGERS BEAUCOUZE 1 RUE DU TERTRE 49070 BEAUCOUZE",
+        "code_postal": "49070",
+        "ville": "BEAUCOUZE",
+        "activite_principale": "69.20Z",
+        "etat_administratif": "A",
+        "date_creation": "1969-01-01"
+    },
+    {
+        "siren": "174402305",
+        "nom_complet": "DIRECTION INTERREGIONALE DES DOUANES BRETAGNE - PAYS DE LA LOIRE (DID)",
+        "adresse": "7 PLACE GENERAL MELLINET 44100 NANTES",
+        "code_postal": "44100",
+        "ville": "NANTES",
+        "activite_principale": "84.11Z",
+        "etat_administratif": "A",
+        "date_creation": "1981-06-23"
+    },
+    {
+        "siren": "130012925",
+        "nom_complet": "DIRECTION REGIONALE FINANCES PUBLIQUES PAYS DE LA LOIRE ET DEPARTEMENT LOIRE ATLANTIQUE (DRFIP)",
+        "adresse": "4 QUAI DE VERSAILLES 44000 NANTES",
+        "code_postal": "44000",
+        "ville": "NANTES",
+        "activite_principale": "84.11Z",
+        "etat_administratif": "A",
+        "date_creation": "2010-11-01"
+    }
+]

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot</title>
+  {% block stylesheets %}
+    {{ encore_entry_link_tags('app') }}
+  {% endblock %}
+</head>
+<body>
+<h1>Chatbot Educatif</h1>
+<div id="chat-box"></div>
+<input type="text" id="chat-input" placeholder="Posez votre question..." />
+<button id="send-button">Envoyer</button>
+<script>
+  const chatBox = document.getElementById('chat-box');
+  const chatInput = document.getElementById('chat-input');
+  const sendButton = document.getElementById('send-button');
+
+  sendButton.addEventListener('click', async () => {
+    const userMessage = chatInput.value;
+    if (!userMessage) return;
+
+    // Display the user's message
+    const userDiv = document.createElement('div');
+    userDiv.textContent = `Vous : ${userMessage}`;
+    chatBox.appendChild(userDiv);
+
+    // Clear input
+    chatInput.value = '';
+
+    // Send the message to the backend
+    const response = await fetch('/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: userMessage }),
+    });
+
+    const data = await response.json();
+
+    // Display the bot's response
+    const botDiv = document.createElement('div');
+    botDiv.textContent = `Bot : ${data.response || 'Erreur...'}`;
+    chatBox.appendChild(botDiv);
+
+    // Scroll to the bottom of the chat box
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
+</script>
+{% block javascripts %}
+{% endblock %}
+</body>
+</html>

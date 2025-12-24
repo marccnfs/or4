@@ -1,0 +1,14 @@
+{
+  "terms": {
+    "IA": "Intelligence Artificielle, discipline visant à simuler l'intelligence humaine.",
+    "Machine Learning": "Sous-domaine de l'IA qui permet aux systèmes d'apprendre à partir de données sans être explicitement programmés.",
+    "Deep Learning": "Branche du machine learning utilisant des réseaux de neurones profonds.",
+    "Algorithme": "Ensemble de règles pour résoudre un problème ou exécuter une tâche.",
+    "Données": "Informations utilisées pour entraîner les modèles d'IA.",
+    "NLP": "Traitement du Langage Naturel, permet aux machines de comprendre le langage humain.",
+    "Réseau de Neurones": "Modèle inspiré du cerveau humain, utilisé pour reconnaître des modèles complexes.",
+    "Biais Algorithmique": "Distorsion des résultats due à des données biaisées.",
+    "Générative": "Type d'IA qui crée du contenu original comme des textes ou images.",
+    "Potins Numériques": "Ateliers interactifs pour explorer le numérique."
+  }
+}

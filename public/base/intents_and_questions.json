@@ -1,0 +1,90 @@
+[
+  {
+    "text": "Qu'est-ce que l'intelligence artificielle ?",
+    "intent": "IA_definition"
+  },
+  {
+    "text": "Comment fonctionne l'apprentissage automatique en IA ?",
+    "intent": "IA_fonctionnement"
+  },
+  {
+    "text": "Quelles sont les applications de l'intelligence artificielle ?",
+    "intent": "IA_applications"
+  },
+  {
+    "text": "Quels sont les avantages de l'IA ?",
+    "intent": "IA_avantages_risques"
+  },
+  {
+    "text": "Quels ateliers sont disponibles aux Potins Numériques ?",
+    "intent": "potins_ateliers"
+  },
+  {
+    "text": "Comment s'inscrire aux ateliers des Potins Numériques ?",
+    "intent": "inscription"
+  },
+  {
+    "text": "Quand les ateliers des Potins Numériques ont-ils lieu ?",
+    "intent": "agenda"
+  },
+  {
+    "text": "Quelles sont les différences entre l'IA et le machine learning ?",
+    "intent": "IA_comparaison"
+  },
+  {
+    "text": "Quels sont les risques associés à l'intelligence artificielle ?",
+    "intent": "IA_avantages_risques"
+  },
+  {
+    "text": "Quel est le rôle de l'IA dans les Potins Numériques ?",
+    "intent": "IA_applications"
+  },
+  {
+    "text": "L'IA est-elle utilisée dans les Potins Numériques ?",
+    "intent": "IA_applications"
+  },
+  {
+    "text": "Qu'est-ce que le machine learning ?",
+    "intent": "IA_definition"
+  },
+  {
+    "text": "Pourquoi l'IA est-elle importante ?",
+    "intent": "IA_importance"
+  },
+  {
+    "text": "Les Potins Numériques utilisent-ils des algorithmes d'IA ?",
+    "intent": "IA_applications"
+  },
+  {
+    "text": "Comment fonctionne l'IA ?",
+    "intent": "IA_fonctionnement"
+  },
+  {
+    "text": "Peut-on utiliser l'IA pour analyser des données ?",
+    "intent": "IA_applications"
+  },
+  {
+    "text": "Quels sont les bénéfices et les risques de l'intelligence artificielle ?",
+    "intent": "IA_avantages_risques"
+  },
+  {
+    "text": "Quel est l'impact de l'IA sur les Potins Numériques ?",
+    "intent": "IA_applications"
+  },
+  {
+    "text": "intelligence artificielle",
+    "intent": "IA_definition"
+  },
+  {
+    "text": "potins numérique",
+    "intent": "potins_definition"
+  },
+  {
+    "text": "Qu'est-ce que le deep learning ?",
+    "intent": "IA_definition"
+  },
+  {
+    "text": "Expliquez-moi comment fonctionne l'apprentissage automatique ?",
+    "intent": "IA_fonctionnement"
+  }
+]

@@ -1,0 +1,16 @@
+{
+  "intents": {
+    "IA_definition": 42,
+    "IA_fonctionnement": 30,
+    "IA_applications": 28,
+    "potins_ateliers": 15,
+    "potins_definition": 10
+  },
+  "keywords": {
+    "intelligence": 50,
+    "apprentissage": 40,
+    "potins": 20,
+    "numériques": 15,
+    "automatique": 10
+  }
+}

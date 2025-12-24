@@ -1,0 +1,39 @@
+{
+  "intents": {
+    "horaires": {
+      "direct": ["horaire", "ouverture", "fermeture", "date"]
+    },
+    "ateliers": {
+      "direct": ["atelier", "formation", "cours", "potins"]
+    },
+    "potins": {
+      "direct": ["atelier", "cnfs", "mediathèque", "samedi"]
+    },
+    "IA": {
+      "direct": ["Intelligence_artificielle", "deep_learning", "machine_learning", "apprentissage"]
+    },
+    "date": {
+      "direct": ["agenda", "calendrier", "date", "planning"]
+    },
+    "Intelligence_artificielle": {
+      "direct": ["IA", "machine_learning", "deep_learning", "algorithm"]
+    },
+    "age": {
+      "direct": ["âge", "enfant"]
+    },
+    "agenda_potin": {
+      "direct": ["prochain", "potins"]
+    }
+  },
+  "responses": {
+    "IA": "L'intelligence artificielle est une discipline qui vise à simuler l'intelligence humaine à l'aide d'algorithmes et de machines.",
+    "IA_risques": "Les risques incluent la perte de contrôle, le biais algorithmique et les violations de la vie privée.",
+    "potins": "Les potins numériques sont des ateliers interactifs pour explorer le numérique.",
+    "inscription": "Pour s'inscrire, rendez-vous sur notre site ou contactez-nous.",
+    "agenda_potin": "Les prochains potins sont annoncés sur notre site officiel.",
+    "horaires": "Tous les samedis matin de 10h à 12h.",
+    "ateliers": "Nous proposons des ateliers sur le numérique.",
+    "contact": "Vous pouvez nous contacter par email à contact@potinsnumeriques.fr.",
+    "age": "En général, les potins sont ouverts à tous les publics à partir de 8 ans."
+  }
+}

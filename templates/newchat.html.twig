@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IA Collaborative</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  {% block stylesheets %}
+  {{ encore_entry_link_tags('app') }}
+  {% endblock %}
+</head>
+<body>
+<div id="main-container">
+  <!-- Section Chat -->
+  <div id="chat-section">
+      <div id="chat-container"></div>
+      <div id="chat-input">
+        <input type="text" id="user-input" placeholder="Posez votre question..." />
+        <button id="send-button">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+            <path d="M21.426 2.574A2 2 0 0 0 18.686.326l-16 7a2 2 0 0 0 .115 3.705l7.38 2.461 2.462 7.38a2 2 0 0 0 3.705.115l7-16a2 2 0 0 0-1.922-2.413zm-6.635 18.647-2.044-6.127a1 1 0 0 0-.64-.64L6.58 12.41 17.048 6.95z"></path>
+          </svg>
+        </button>
+      </div>
+  </div>
+  <!-- Section Visualisation -->
+  <div id="visualization-section">
+    <!-- Onglets -->
+    <div id="tabs">
+      <button class="tab-button active" data-tab="statistics-tab">Statistiques</button>
+      <button class="tab-button" data-tab="clusters-tab">Clusters</button>
+      <button class="tab-button" data-tab="keywords-tab">Keywords</button>
+    </div>
+
+    <!-- Contenus des onglets -->
+    <div id="tabs-content">
+      <div id="statistics-tab" class="tab-content active">
+        <div id="statistics-visualization">
+          <svg></svg>
+        </div>
+      </div>
+      <div id="clusters-tab" class="tab-content">
+        <div id="keywords-visualization">
+          <svg id="keywords-cluster"></svg>
+        </div>
+      </div>
+      <div id="keywords-tab" class="tab-content">
+        <div id="visualization-controls">
+          <button id="load-clusters-button">Afficher les Clusters</button>
+        </div>
+        <div id="reponse_visualisation">
+          <svg id="response-analysis"></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% block javascripts %}
+  {{ encore_entry_script_tags('d3') }}
+  <script>
+    // Gestion des onglets
+    document.querySelectorAll('.tab-button').forEach(button => {
+      button.addEventListener('click', () => {
+        const tabId = button.getAttribute('data-tab');
+
+        // Activer l'onglet cliqué
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        // Afficher le contenu correspondant
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+  </script>
+{% endblock %}
+</body>
+</html>

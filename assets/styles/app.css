@@ -1,0 +1,271 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background-color: #101020;
+    color: white;
+    padding: 20px;
+}
+text {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    fill: white;
+}
+.o_blk_1{
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.o_blk_1 h1{
+    color: #FFFFFF;
+}
+#chat-box {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    height: 300px;
+    overflow-y: scroll;
+}
+
+#send-button svg {
+    pointer-events: none; /* Empêche D3.js de capter les clics ici */
+}
+#controls {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+}
+
+#chat-interface {
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+    width: 300px;
+    background: linear-gradient(to bottom, #f9f9f9, #ececec);
+    font-family: 'Arial', sans-serif;
+    border-left: 2px solid #ccc;
+}
+
+.chat-message {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.chat-message.user {
+    justify-content: flex-end;
+}
+
+.chat-message.ai {
+    justify-content: flex-start;
+}
+
+.chat-bubble {
+    max-width: 60%;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 0.9em;
+    line-height: 1.4;
+}
+
+.chat-bubble.user {
+    background-color: #4caf50;
+    color: white;
+    border-bottom-right-radius: 0;
+}
+
+.chat-bubble.ai {
+    background-color: #2196f3;
+    color: white;
+    border-bottom-left-radius: 0;
+}
+
+#chat-input button:hover {
+    background: #45a047;
+}
+
+#chat-input button svg {
+    fill: white;
+    width: 20px;
+    height: 20px;
+}
+#visualization{
+    display: block;
+    flex: 2; /* Le SVG prend le reste */
+    position: relative; /* Important pour calculer la taille du SVG */
+    overflow: hidden;
+}
+#visualization svg {
+    width: 100%; /* Remplit son conteneur */
+    height: 100%; /* Adapte sa hauteur à celle du conteneur */
+    display: block; /* Supprime les marges implicites du SVG */
+}
+#statistics-visualization{
+    height: 70px;
+    position: relative;
+}
+#keywords-cluster{
+    position: relative;
+}
+#cluster-visualization{
+    position: relative;
+}
+#main-container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#chat-section {
+    flex: 1; /* Une moitié de l'écran */
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #ccc;
+    overflow-y: auto;
+    max-width: 350px;
+    position: relative;
+    height: 90%;
+    background: #f1f1f1;
+}
+
+#chat-container {
+    flex: 1; /* Occupation de l'espace pour les messages */
+    padding: 10px;
+    overflow-y: auto;
+    position: relative;
+}
+
+#chat-input {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background: #f9f9f9;
+    border-top: 1px solid #ccc;
+}
+
+#chat-input input {
+    flex: 1;
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    margin-right: 10px;
+}
+
+#chat-input button {
+    background: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+#visualization-section {
+    flex: 2; /* L'autre moitié de l'écran */
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background: #202040;
+    color: white;
+}
+#visualization-controls {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+    background: #333;
+    color: white;
+    border-bottom: 1px solid #444;
+    height: 50px;
+}
+
+#visualization-controls button {
+    background: #555;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+#visualization-controls button:hover {
+    background: #777;
+}
+
+#keywords-visualization, #analysis-visualization {
+    flex: 1;
+    /*border-bottom: 1px solid #ccc;*/
+    overflow: hidden;
+}
+/* Onglets */
+#tabs {
+    display: flex;
+    background: #333;
+    border-bottom: 1px solid #444;
+}
+
+#tabs .tab-button {
+    flex: 1;
+    padding: 10px;
+    cursor: pointer;
+    background: #444;
+    border: none;
+    color: white;
+    font-size: 14px;
+    text-align: center;
+}
+
+#tabs .tab-button.active {
+    background: #202040;
+    border-bottom: 2px solid #00bcd4;
+}
+
+/* Contenu des onglets */
+#tabs-content {
+    flex: 1;
+    position: relative;
+}
+/*
+.tab-content {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background: #202040;
+}
+
+ */
+
+#keywords-cluster, #statistics-visualization, #response-analysis {
+    display: block;
+    margin: auto;
+    width: 100%;
+    height: 100%;
+}
+
+.tab-content {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    height: 100%;
+}
+
+.tab-content.active {
+    display: flex;
+}
+
+#statistics-visualization,
+#keywords-visualization, #reponse_visualisation {
+    width: 100%;
+    height: 100%;
+}

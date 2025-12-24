@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Validation des intentions</title>
+    <script>
+        // Charger les questions inconnues
+        async function loadQuestions() {
+            const response = await fetch('/api/intents/unknown');
+            const data = await response.json();
+
+            const container = document.getElementById("questions");
+            container.innerHTML = "";
+
+            if (data.unknown && data.unknown.length > 0) {
+                data.unknown.forEach((item, index) => {
+                    const div = document.createElement("div");
+                    div.innerHTML = `
+                        <p>Question : ${item.text}</p>
+                        <label for="intent-${index}">Intention :</label>
+                        <input type="text" id="intent-${index}" placeholder="Nouvelle intention ou intention existante">
+                        <button onclick="validateIntent(${index}, \`${item.text.replace(/'/g, "\\'").replace(/"/g, '\\"')}\`)">Valider</button>
+                        <hr>
+                    `;
+                    container.appendChild(div);
+                });
+            } else {
+                container.innerHTML = "<p>Aucune question avec une intention inconnue.</p>";
+            }
+        }
+
+        // Envoyer la validation
+        async function validateIntent(index, question) {
+            const intent = document.getElementById(`intent-${index}`).value;
+
+            if (!intent) {
+                alert("Veuillez entrer une intention.");
+                return;
+            }
+
+            const response = await fetch('/api/intents/validate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text: question, intent })
+            });
+
+            const result = await response.json();
+            alert(result.message);
+
+            // Recharger la liste après validation
+            await loadQuestions();
+        }
+
+        document.addEventListener("DOMContentLoaded", loadQuestions);
+    </script>
+</head>
+<body>
+<h1>Validation des intentions</h1>
+<div id="questions"></div>
+</body>
+</html>
