@@ -1,0 +1,25 @@
+{% extends 'game/base.html.twig' %}
+
+{% block title %}Victoire{% endblock %}
+
+{% block body %}
+    <header>
+        <div>
+            <h1>Bravo {{ team_code }} !</h1>
+            <p class="hint">Vous avez terminé l'aventure.</p>
+        </div>
+        <span class="badge">Final</span>
+    </header>
+
+    <div class="card stack">
+        <div class="status">Score final</div>
+        <h2>{{ completed_count }} / {{ total_steps }} étapes validées</h2>
+        <p class="hint">Merci d'avoir participé. Partagez votre expérience avec l'équipe organisatrice.</p>
+        <a class="btn btn-outline" href="{{ path('game_join') }}">Rejouer</a>
+    </div>
+
+    <div class="card">
+        <h2>Souvenir</h2>
+        <p class="hint">Gardez votre badge numérique et félicitations pour votre performance !</p>
+    </div>
+{% endblock %}

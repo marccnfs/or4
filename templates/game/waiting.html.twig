@@ -1,0 +1,28 @@
+{% extends 'game/base.html.twig' %}
+
+{% block title %}En attente{% endblock %}
+
+{% block body %}
+    <header>
+        <div>
+            <h1>En attente du départ</h1>
+            <p class="hint">Équipe {{ team_code }}</p>
+        </div>
+        <span class="badge">Lobby</span>
+    </header>
+
+    <div class="card stack">
+        {% if game_open %}
+            <div class="status">La partie est ouverte. Préparez-vous !</div>
+        {% else %}
+            <div class="status closed">La partie est temporairement fermée.</div>
+        {% endif %}
+        <p class="hint">Quand le signal est donné, rendez-vous à votre première étape.</p>
+        <a class="btn" href="{{ path('game_step', { step: current_step }) }}">Aller à l'étape {{ current_step }}</a>
+    </div>
+
+    <div class="card">
+        <h2>Conseil</h2>
+        <p class="hint">Gardez ce téléphone avec vous : il affiche votre progression tout au long du jeu.</p>
+    </div>
+{% endblock %}

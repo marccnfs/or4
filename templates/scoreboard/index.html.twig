@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Scoreboard{% endblock %}
+
+{% block body %}
+    <main class="container" data-controller="scoreboard" data-scoreboard-url-value="{{ path('scoreboard_data') }}">
+        <h1>Scoreboard</h1>
+        <p data-scoreboard-updated-at-target>Dernière mise à jour : —</p>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Équipe</th>
+                <th>Score</th>
+                <th>Statut</th>
+            </tr>
+            </thead>
+            <tbody data-scoreboard-rows-target>
+            <tr>
+                <td colspan="3">Chargement…</td>
+            </tr>
+            </tbody>
+        </table>
+    </main>
+{% endblock %}
