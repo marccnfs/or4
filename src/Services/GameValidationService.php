@@ -113,8 +113,12 @@ class GameValidationService
 
         $progress = $this->getOrCreateProgress($team, $step);
         $completed = $this->isQrSequenceCompleted($team);
-        $progress->setState($completed ? self::STATE_VALIDATED : self::STATE_IN_PROGRESS);
-        $progress->setUpdatedAt(new \DateTimeImmutable());
+        if ($completed) {
+            $this->markProgressValidated($progress, $step->getLetter());
+        } else {
+            $progress->setState(self::STATE_IN_PROGRESS);
+            $progress->setUpdatedAt(new \DateTimeImmutable());
+        }
 
         $this->incrementScore($team, true);
 
@@ -243,7 +247,7 @@ class GameValidationService
             });
 
             foreach ($steps as $step) {
-                if (in_array(strtoupper($step->getType()), ['A', 'B', 'C', 'D'], true)) {
+                if (in_array(strtoupper($step->getType()), ['A', 'B', 'C', 'D', 'E'], true)) {
                     $letters[] = $step->getLetter();
                 }
             }

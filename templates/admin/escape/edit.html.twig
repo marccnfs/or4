@@ -8,6 +8,26 @@
     {{ form_start(form) }}
     {{ form_row(form.name) }}
     {{ form_row(form.status) }}
+    <h2>Étapes 1 à 4</h2>
+    {{ form_row(form.step1Letter) }}
+    {{ form_row(form.step2Letter) }}
+    {{ form_row(form.step3Letter) }}
+    {{ form_row(form.step4Letter) }}
+
+    <h2>Étape 5 - QR codes</h2>
+    {{ form_row(form.step5Letter) }}
+    {% for team in 1..8 %}
+        <h3>Équipe {{ team }}</h3>
+        {% for index in 1..5 %}
+            {{ form_row(attribute(form, 'team' ~ team ~ '_qr' ~ index ~ '_code')) }}
+            {% if index < 5 %}
+                {{ form_row(attribute(form, 'team' ~ team ~ '_qr' ~ index ~ '_message')) }}
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+
+    <h2>Étape 6 - Cryptex</h2>
+    {{ form_row(form.cryptexMessage) }}
 
     <button type="submit">Enregistrer</button>
     {{ form_end(form) }}

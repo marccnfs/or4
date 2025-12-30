@@ -3,10 +3,12 @@
 namespace App\Controller\Admin;
 
 use App\Entity\EscapeGame;
+use App\Entity\Step;
 use App\Form\EscapeGameType;
 use App\Repository\EscapeGameRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -23,6 +25,7 @@ class AdminEscapeController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $this->applyConfiguration($escapeGame, $form);
             $escapeGame->setUpdatedAt(new \DateTimeImmutable());
             $entityManager->persist($escapeGame);
             $entityManager->flush();
@@ -60,6 +63,7 @@ class AdminEscapeController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $this->applyConfiguration($escapeGame, $form);
             $escapeGame->setUpdatedAt(new \DateTimeImmutable());
             $entityManager->flush();
 
@@ -84,5 +88,106 @@ class AdminEscapeController extends AbstractController
         }
 
         return $this->redirectToRoute('admin_escape_list');
+    }
+
+    private function applyConfiguration(EscapeGame $escapeGame, FormInterface $form): void
+    {
+        $stepLetters = [
+            'A' => $this->sanitizeLetter($form->get('step1Letter')->getData()),
+            'B' => $this->sanitizeLetter($form->get('step2Letter')->getData()),
+            'C' => $this->sanitizeLetter($form->get('step3Letter')->getData()),
+            'D' => $this->sanitizeLetter($form->get('step4Letter')->getData()),
+            'E' => $this->sanitizeLetter($form->get('step5Letter')->getData()),
+        ];
+
+        $options = $escapeGame->getOptions();
+        $options['steps'] = [
+            'A' => [
+                'solution' => $stepLetters['A'],
+                'letter' => $stepLetters['A'],
+            ],
+            'B' => [
+                'solution' => $stepLetters['B'],
+                'letter' => $stepLetters['B'],
+            ],
+            'C' => [
+                'solution' => $stepLetters['C'],
+                'letter' => $stepLetters['C'],
+            ],
+            'D' => [
+                'solution' => $stepLetters['D'],
+                'letter' => $stepLetters['D'],
+            ],
+            'E' => [
+                'letter' => $stepLetters['E'],
+            ],
+        ];
+
+        $options['cryptex_message'] = (string) $form->get('cryptexMessage')->getData();
+        $options['qr_sequences'] = [
+            'teams' => [],
+        ];
+
+        for ($team = 1; $team <= 8; $team++) {
+            $teamSequences = [];
+            for ($index = 1; $index <= 5; $index++) {
+                $code = trim((string) $form->get(sprintf('team%d_qr%d_code', $team, $index))->getData());
+                $message = null;
+                if ($index < 5) {
+                    $message = $form->get(sprintf('team%d_qr%d_message', $team, $index))->getData();
+                }
+                $teamSequences[] = [
+                    'code' => $code,
+                    'message' => $message,
+                ];
+            }
+            $options['qr_sequences']['teams'][$team] = $teamSequences;
+        }
+
+        $escapeGame->setOptions($options);
+        $this->syncSteps($escapeGame, $stepLetters);
+    }
+
+    private function syncSteps(EscapeGame $escapeGame, array $stepLetters): void
+    {
+        $existingSteps = [];
+        foreach ($escapeGame->getSteps() as $step) {
+            $existingSteps[$step->getType()] = $step;
+        }
+
+        $order = [
+            'A' => 1,
+            'B' => 2,
+            'C' => 3,
+            'D' => 4,
+            'E' => 5,
+            'F' => 6,
+        ];
+
+        foreach ($order as $type => $orderNumber) {
+            $step = $existingSteps[$type] ?? new Step();
+            $step->setType($type);
+            $step->setOrderNumber($orderNumber);
+
+            if (in_array($type, ['A', 'B', 'C', 'D'], true)) {
+                $step->setSolution($stepLetters[$type]);
+                $step->setLetter($stepLetters[$type]);
+            } elseif ($type === 'E') {
+                $step->setSolution('QR');
+                $step->setLetter($stepLetters['E']);
+            } else {
+                $step->setSolution('CR');
+                $step->setLetter('F');
+            }
+
+            if (!$escapeGame->getSteps()->contains($step)) {
+                $escapeGame->addStep($step);
+            }
+        }
+    }
+
+    private function sanitizeLetter(mixed $value): string
+    {
+        return strtoupper(trim((string) $value));
     }
 }

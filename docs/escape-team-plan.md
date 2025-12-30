@@ -23,13 +23,13 @@ Ce document sert de référence centrale pour les améliorations et la suite du 
     - Attente du lancement du jeu par l’admin.
 3. **Jeu : 6 étapes + finale**
     - A–D : saisir une lettre (si correcte → étape validée).
-    - E : séquence de **5 QR codes** (unique par équipe). Le dernier QR valide l’étape et révèle une lettre.
-    - F : remise en ordre des lettres → combinaison d’un cryptalex numérique.
+   - E : séquence de **5 QR codes** (unique par équipe). Les 4 premiers affichent un message, le dernier révèle une lettre.
+   - F : les lettres des étapes A–E forment la combinaison d’un cryptex numérique pour révéler un message.
 4. **Page finale**
     - Affiche victoire + score.
 
 ### Parcours admin (backoffice)
-- **Création** d’un Escape-Team + solutions + QR sequences.
+- **Création** d’un Escape-Team + lettres des étapes 1 à 5 + configuration des QR (8 équipes × 5 QR) + message du cryptex.
 - **Liste** des Escape-Team.
 - **Pilotage** : ouverture inscription, démarrage, arrêt, réinitialisation, édition, suppression.
 
@@ -48,6 +48,7 @@ Contraintes clés :
 - Max 10 équipes par `EscapeGame`.
 - Code d’inscription unique par équipe.
 - Séquence QR unique par équipe (5 QR par équipe).
+- Sélecteur de message parmi 9 lieux pour les 4 premiers QR.
 
 ## Architecture technique
 ### Backend (Symfony)
