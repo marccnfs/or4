@@ -2,6 +2,11 @@
 
 namespace App\Controller\Escapegame;
 
+use App\Entity\Step;
+use App\Entity\Team;
+use App\Repository\TeamRepository;
+use App\Services\GameValidationService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -10,38 +15,21 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class ApiGameController extends AbstractController
 {
-    private const STEP_LETTERS = [
-        'A' => 'A',
-        'B' => 'B',
-        'C' => 'C',
-        'D' => 'D',
-    ];
-
-    private const QR_SEQUENCE = [
-        'QR1',
-        'QR2',
-        'QR3',
-        'QR4',
-        'QR5',
-    ];
-
-    private const QR_HINTS = [
-        1 => 'Indice pour le QR #2.',
-        2 => 'Indice pour le QR #3.',
-        3 => 'Indice pour le QR #4.',
-        4 => 'Indice pour le QR #5.',
-    ];
-
-    private const FINAL_COMBINATION = 'ABCD';
 
     #[Route('/api/step/validate', name: 'api_step_validate', methods: ['POST'])]
-    public function validateStep(Request $request): JsonResponse
+    public function validateStep(
+        Request $request,
+        SessionInterface $session,
+        TeamRepository $teamRepository,
+        EntityManagerInterface $entityManager,
+        GameValidationService $validator
+    ): JsonResponse
     {
         $payload = $this->decodeJson($request);
         $step = strtoupper((string) ($payload['step'] ?? ''));
         $letter = strtoupper(trim((string) ($payload['letter'] ?? '')));
 
-        if (!array_key_exists($step, self::STEP_LETTERS)) {
+        if (!in_array($step, ['A', 'B', 'C', 'D'], true)) {
             return $this->json([
                 'valid' => false,
                 'message' => 'Étape inconnue.',
@@ -55,18 +43,42 @@ class ApiGameController extends AbstractController
             ], JsonResponse::HTTP_BAD_REQUEST);
         }
 
-        $expected = strtoupper(self::STEP_LETTERS[$step]);
-        $valid = $letter === $expected;
+        $team = $this->findTeamFromSession($session, $teamRepository);
+        if ($team === null) {
+            return $this->json([
+                'valid' => false,
+                'message' => 'Équipe introuvable.',
+            ], JsonResponse::HTTP_UNAUTHORIZED);
+        }
+
+        $stepEntity = $this->findStepForTeam($team, $step, $entityManager);
+        if ($stepEntity === null) {
+            return $this->json([
+                'valid' => false,
+                'message' => 'Étape inconnue.',
+            ], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        $result = $validator->validateStep($team, $stepEntity, $payload);
+        if ($result['updated'] ?? false) {
+            $entityManager->flush();
+        }
 
         return $this->json([
-            'valid' => $valid,
+            'valid' => $result['valid'],
             'step' => $step,
-            'message' => $valid ? 'Bonne lettre.' : 'Lettre incorrecte.',
+            'message' => $result['message'],
         ]);
     }
 
     #[Route('/api/qr/scan', name: 'api_qr_scan', methods: ['POST'])]
-    public function scanQr(Request $request, SessionInterface $session): JsonResponse
+    public function scanQr(
+        Request $request,
+        SessionInterface $session,
+        TeamRepository $teamRepository,
+        EntityManagerInterface $entityManager,
+        GameValidationService $validator
+    ): JsonResponse
     {
         $payload = $this->decodeJson($request);
         $code = trim((string) ($payload['code'] ?? ''));
@@ -78,33 +90,43 @@ class ApiGameController extends AbstractController
             ], JsonResponse::HTTP_BAD_REQUEST);
         }
 
-        $sequenceIndex = (int) $session->get('qr_index', 0);
-        $expected = self::QR_SEQUENCE[$sequenceIndex] ?? null;
-
-        if ($expected === null || $code !== $expected) {
+        $team = $this->findTeamFromSession($session, $teamRepository);
+        if ($team === null) {
             return $this->json([
                 'valid' => false,
-                'message' => 'QR incorrect.',
-                'nextHint' => $this->getQrHint($sequenceIndex),
-                'completed' => false,
-            ]);
+                'message' => 'Équipe introuvable.',
+            ], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
-        $sequenceIndex++;
-        $session->set('qr_index', $sequenceIndex);
+        $stepEntity = $this->findStepForTeam($team, 'E', $entityManager);
+        if ($stepEntity === null) {
+            return $this->json([
+                'valid' => false,
+                'message' => 'Étape inconnue.',
+            ], JsonResponse::HTTP_BAD_REQUEST);
+        }
 
-        $completed = $sequenceIndex >= count(self::QR_SEQUENCE);
+        $result = $validator->validateStep($team, $stepEntity, ['code' => $code]);
+        if ($result['updated'] ?? false) {
+            $entityManager->flush();
+        }
 
         return $this->json([
-            'valid' => true,
-            'message' => $completed ? 'Séquence terminée.' : 'QR validé.',
-            'nextHint' => $completed ? null : $this->getQrHint($sequenceIndex),
-            'completed' => $completed,
+            'valid' => $result['valid'],
+            'message' => $result['message'],
+            'nextHint' => $result['nextHint'] ?? null,
+            'completed' => $result['completed'] ?? false,
         ]);
     }
 
     #[Route('/api/final/check', name: 'api_final_check', methods: ['POST'])]
-    public function checkFinal(Request $request): JsonResponse
+    public function checkFinal(
+        Request $request,
+        SessionInterface $session,
+        TeamRepository $teamRepository,
+        EntityManagerInterface $entityManager,
+        GameValidationService $validator
+    ): JsonResponse
     {
         $payload = $this->decodeJson($request);
         $combination = strtoupper(trim((string) ($payload['combination'] ?? '')));
@@ -116,11 +138,30 @@ class ApiGameController extends AbstractController
             ], JsonResponse::HTTP_BAD_REQUEST);
         }
 
-        $valid = $combination === strtoupper(self::FINAL_COMBINATION);
+        $team = $this->findTeamFromSession($session, $teamRepository);
+        if ($team === null) {
+            return $this->json([
+                'valid' => false,
+                'message' => 'Équipe introuvable.',
+            ], JsonResponse::HTTP_UNAUTHORIZED);
+        }
+
+        $stepEntity = $this->findStepForTeam($team, 'F', $entityManager);
+        if ($stepEntity === null) {
+            return $this->json([
+                'valid' => false,
+                'message' => 'Étape inconnue.',
+            ], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        $result = $validator->validateStep($team, $stepEntity, ['combination' => $combination]);
+        if ($result['updated'] ?? false) {
+            $entityManager->flush();
+        }
 
         return $this->json([
-            'valid' => $valid,
-            'message' => $valid ? 'Bonne combinaison.' : 'Combinaison incorrecte.',
+            'valid' => $result['valid'],
+            'message' => $result['message'],
         ]);
     }
 
@@ -131,12 +172,21 @@ class ApiGameController extends AbstractController
         return is_array($payload) ? $payload : [];
     }
 
-    private function getQrHint(int $sequenceIndex): ?string
+    private function findTeamFromSession(SessionInterface $session, TeamRepository $teamRepository): ?Team
     {
-        if (!isset(self::QR_SEQUENCE[$sequenceIndex])) {
+        $teamCode = $session->get('game_team_code');
+        if (!$teamCode) {
             return null;
         }
 
-        return self::QR_HINTS[$sequenceIndex] ?? null;
+        return $teamRepository->findOneBy(['registrationCode' => $teamCode]);
+    }
+
+    private function findStepForTeam(Team $team, string $type, EntityManagerInterface $entityManager): ?Step
+    {
+        return $entityManager->getRepository(Step::class)->findOneBy([
+            'escapeGame' => $team->getEscapeGame(),
+            'type' => $type,
+        ]);
     }
 }

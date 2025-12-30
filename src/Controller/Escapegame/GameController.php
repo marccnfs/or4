@@ -2,7 +2,13 @@
 
 namespace App\Controller\Escapegame;
 
+use App\Entity\Step;
+use App\Entity\Team;
+use App\Repository\TeamRepository;
+use App\Services\GameValidationService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -105,6 +111,63 @@ class GameController extends AbstractController
         ]);
     }
 
+    #[Route('/game/validate', name: 'game_validate', methods: ['POST'])]
+    public function validate(
+        Request $request,
+        SessionInterface $session,
+        TeamRepository $teamRepository,
+        EntityManagerInterface $entityManager,
+        GameValidationService $validator
+    ): JsonResponse {
+        $payload = $this->decodeJson($request);
+        $stepType = strtoupper((string) ($payload['step'] ?? ''));
+
+        if ($stepType === '') {
+            return $this->json([
+                'valid' => false,
+                'message' => 'Étape manquante.',
+            ], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        $team = $this->findTeamFromSession($session, $teamRepository);
+        if ($team === null) {
+            return $this->json([
+                'valid' => false,
+                'message' => 'Équipe introuvable.',
+            ], JsonResponse::HTTP_UNAUTHORIZED);
+        }
+
+        $step = $this->findStepForTeam($team, $stepType, $entityManager);
+        if ($step === null) {
+            return $this->json([
+                'valid' => false,
+                'message' => 'Étape inconnue.',
+            ], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        $result = $validator->validateStep($team, $step, $payload);
+        if ($result['updated'] ?? false) {
+            $entityManager->flush();
+        }
+
+        $response = [
+            'valid' => $result['valid'],
+            'message' => $result['message'],
+            'step' => $stepType,
+        ];
+
+        if (array_key_exists('completed', $result)) {
+            $response['completed'] = $result['completed'];
+        }
+
+        if (array_key_exists('nextHint', $result)) {
+            $response['nextHint'] = $result['nextHint'];
+        }
+
+        return $this->json($response);
+    }
+
+
     #[Route('/game/final', name: 'game_final', methods: ['GET'])]
     public function final(SessionInterface $session): Response
     {
@@ -174,5 +237,29 @@ class GameController extends AbstractController
         }
 
         return $candidateIndex > $referenceIndex;
+    }
+    private function decodeJson(Request $request): array
+    {
+        $payload = json_decode($request->getContent(), true);
+
+        return is_array($payload) ? $payload : [];
+    }
+
+    private function findTeamFromSession(SessionInterface $session, TeamRepository $teamRepository): ?Team
+    {
+        $teamCode = $session->get(self::SESSION_TEAM_CODE);
+        if (!$teamCode) {
+            return null;
+        }
+
+        return $teamRepository->findOneBy(['registrationCode' => $teamCode]);
+    }
+
+    private function findStepForTeam(Team $team, string $type, EntityManagerInterface $entityManager): ?Step
+    {
+        return $entityManager->getRepository(Step::class)->findOneBy([
+            'escapeGame' => $team->getEscapeGame(),
+            'type' => $type,
+        ]);
     }
 }
