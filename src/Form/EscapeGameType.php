@@ -79,7 +79,7 @@ class EscapeGameType extends AbstractType
                 'data' => $getOption(
                     $storedOptions,
                     ['steps', 'A', 'solution'],
-                    $stepsByType['A']?->getSolution() ?? ''
+                    ($stepsByType['A'] ?? null)?->getSolution() ?? ''
                 ),
                 'constraints' => [new NotBlank(), $letterConstraint],
                 'attr' => [
@@ -92,7 +92,7 @@ class EscapeGameType extends AbstractType
                 'data' => $getOption(
                     $storedOptions,
                     ['steps', 'B', 'solution'],
-                    $stepsByType['B']?->getSolution() ?? ''
+                    ($stepsByType['B'] ?? null)?->getSolution() ?? ''
                 ),
                 'constraints' => [new NotBlank(), $letterConstraint],
                 'attr' => [
@@ -105,7 +105,7 @@ class EscapeGameType extends AbstractType
                 'data' => $getOption(
                     $storedOptions,
                     ['steps', 'C', 'solution'],
-                    $stepsByType['C']?->getSolution() ?? ''
+                    ($stepsByType['C'] ?? null)?->getSolution() ?? ''
                 ),
                 'constraints' => [new NotBlank(), $letterConstraint],
                 'attr' => [
@@ -118,7 +118,7 @@ class EscapeGameType extends AbstractType
                 'data' => $getOption(
                     $storedOptions,
                     ['steps', 'D', 'solution'],
-                    $stepsByType['D']?->getSolution() ?? ''
+                    ($stepsByType['D'] ?? null)?->getSolution() ?? ''
                 ),
                 'constraints' => [new NotBlank(), $letterConstraint],
                 'attr' => [
@@ -131,7 +131,7 @@ class EscapeGameType extends AbstractType
                 'data' => $getOption(
                     $storedOptions,
                     ['steps', 'E', 'letter'],
-                    $stepsByType['E']?->getLetter() ?? ''
+                    ($stepsByType['E'] ?? null)?->getLetter() ?? ''
                 ),
                 'constraints' => [new NotBlank(), $letterConstraint],
                 'attr' => [
@@ -179,4 +179,5 @@ class EscapeGameType extends AbstractType
             'data_class' => EscapeGame::class,
         ]);
     }
+
 }
