@@ -1,0 +1,19 @@
+{% extends 'admin_base.html.twig' %}
+
+{% block title %}Éditer un escape{% endblock %}
+
+{% block body %}
+    <h1>Éditer l'escape {{ escape.name }}</h1>
+
+    {{ form_start(form) }}
+    {{ form_row(form.name) }}
+    {{ form_row(form.status) }}
+
+    <button type="submit">Enregistrer</button>
+    {{ form_end(form) }}
+
+    <p>
+        <a href="{{ path('admin_escape_show', { id: escape.id }) }}">Retour</a>
+        <a href="{{ path('admin_escape_list') }}">Liste des escapes</a>
+    </p>
+{% endblock %}

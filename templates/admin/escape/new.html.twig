@@ -1,9 +1,16 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin_base.html.twig' %}
 
 {% block title %}Nouvel escape{% endblock %}
 
 {% block body %}
     <h1>Créer un escape</h1>
 
-    <p>Formulaire de création d'un escape, des solutions et des séquences QR.</p>
+    {{ form_start(form) }}
+    {{ form_row(form.name) }}
+    {{ form_row(form.status) }}
+
+    <button type="submit">Créer</button>
+    {{ form_end(form) }}
+
+    <p><a href="{{ path('admin_escape_list') }}">Retour à la liste</a></p>
 {% endblock %}

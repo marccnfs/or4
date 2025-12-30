@@ -1,9 +1,37 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin_base.html.twig' %}
 
 {% block title %}Liste des escapes{% endblock %}
 
 {% block body %}
     <h1>Liste des escapes</h1>
 
-    <p>Vue d'ensemble des jeux disponibles.</p>
+    <p><a href="{{ path('admin_escape_new') }}">Créer un escape</a></p>
+
+    {% if escapes is empty %}
+        <p>Aucun escape disponible.</p>
+    {% else %}
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom</th>
+                <th>Statut</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for escape in escapes %}
+                <tr>
+                    <td>{{ escape.id }}</td>
+                    <td>{{ escape.name }}</td>
+                    <td>{{ escape.status }}</td>
+                    <td>
+                        <a href="{{ path('admin_escape_show', { id: escape.id }) }}">Voir</a>
+                        <a href="{{ path('admin_escape_edit', { id: escape.id }) }}">Éditer</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
 {% endblock %}

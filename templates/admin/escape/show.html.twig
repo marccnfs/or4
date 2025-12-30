@@ -1,14 +1,28 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin_base.html.twig' %}
 
 {% block title %}Pilotage escape{% endblock %}
 
 {% block body %}
-    <h1>Pilotage de l'escape {{ escapeId }}</h1>
+    <h1>Pilotage de l'escape {{ escape.name }}</h1>
 
-    <ul>
-        <li>Ouvrir les inscriptions</li>
-        <li>Lancer la session</li>
-        <li>Arrêter la session</li>
-        <li>Réinitialiser</li>
-    </ul>
+    <dl>
+        <dt>ID</dt>
+        <dd>{{ escape.id }}</dd>
+        <dt>Statut</dt>
+        <dd>{{ escape.status }}</dd>
+        <dt>Créé le</dt>
+        <dd>{{ escape.createdAt|date('d/m/Y H:i') }}</dd>
+        <dt>Mis à jour le</dt>
+        <dd>{{ escape.updatedAt|date('d/m/Y H:i') }}</dd>
+    </dl>
+
+    <p>
+        <a href="{{ path('admin_escape_edit', { id: escape.id }) }}">Éditer</a>
+        <a href="{{ path('admin_escape_list') }}">Retour à la liste</a>
+    </p>
+
+    <form method="post" action="{{ path('admin_escape_delete', { id: escape.id }) }}" onsubmit="return confirm('Confirmer la suppression ?');">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete_escape_' ~ escape.id) }}">
+        <button type="submit">Supprimer</button>
+    </form>
 {% endblock %}
