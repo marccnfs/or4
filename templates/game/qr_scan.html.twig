@@ -1,0 +1,42 @@
+{% extends 'game/base.html.twig' %}
+
+{% block title %}Scan QR{% endblock %}
+
+{% block body %}
+    <header>
+        <div>
+            <h1>Scan QR</h1>
+            {% if team_code %}
+                <p class="hint">Équipe {{ team_code }}</p>
+            {% else %}
+                <p class="hint">Session non trouvée</p>
+            {% endif %}
+        </div>
+        <span class="badge">QR</span>
+    </header>
+
+    <div class="card stack">
+        <div class="status {% if not result.valid %}closed{% endif %}">
+            {{ result.message }}
+        </div>
+
+        {% if result.nextHint %}
+            <p class="hint">Indice suivant : {{ result.nextHint }}</p>
+        {% endif %}
+
+        {% if result.completed %}
+            <div class="status">Séquence terminée. Vous pouvez revenir à l'étape E.</div>
+        {% endif %}
+
+        {% if team_code %}
+            <a class="btn btn-outline" href="{{ path('game_step', { step: 'E' }) }}">Retour à l'étape E</a>
+        {% else %}
+            <a class="btn" href="{{ path('game_join') }}">Rejoindre une équipe</a>
+        {% endif %}
+    </div>
+
+    <div class="card stack">
+        <p class="hint">Code scanné :</p>
+        <strong>{{ code ?: '—' }}</strong>
+    </div>
+{% endblock %}

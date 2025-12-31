@@ -1,0 +1,65 @@
+{% extends 'admin_base.html.twig' %}
+
+{% block title %}QR codes - {{ escape.name }}{% endblock %}
+
+{% block body %}
+    <h1>QR codes - {{ escape.name }}</h1>
+    <p><strong>Équipe :</strong> {{ team_code }}</p>
+
+    <p>
+        <a href="{{ path('admin_escape_qr_print', { id: escape.id, team: team_number }) }}" target="_blank" rel="noopener">Imprimer</a>
+        <a href="{{ path('admin_escape_edit', { id: escape.id }) }}">Retour à l'édition</a>
+    </p>
+
+    <div class="qr-grid">
+        {% for item in qr_items %}
+            <div class="qr-card">
+                <h2>{{ team_code }}</h2>
+                <span class="qr-label">QR {{ item.index }}</span>
+                {% if item.image %}
+                    <img src="{{ item.image }}" alt="QR {{ item.index }}">
+                    <p class="qr-code">{{ item.code }}</p>
+                {% else %}
+                    <div class="qr-missing">QR non configuré</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <style>
+        .qr-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+        }
+        .qr-card {
+            background: #fff;
+            border: 1px solid #e4e6eb;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+        .qr-card img {
+            width: 180px;
+            height: 180px;
+            object-fit: contain;
+            margin: 12px auto;
+        }
+        .qr-label {
+            display: block;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+        .qr-code {
+            font-size: 0.85rem;
+            color: #4b5563;
+            word-break: break-all;
+        }
+        .qr-missing {
+            padding: 40px 12px;
+            background: #f8f8f9;
+            border-radius: 10px;
+            color: #9ca3af;
+        }
+    </style>
+{% endblock %}

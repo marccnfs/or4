@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR codes - {{ escape.name }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 12mm;
+        }
+        body {
+            font-family: "Inter", "Segoe UI", sans-serif;
+            margin: 0;
+            color: #111827;
+        }
+        .sheet-title {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 8mm;
+        }
+        .qr-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12mm;
+        }
+        .qr-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 6mm;
+            text-align: center;
+            min-height: 120mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4mm;
+        }
+        .qr-card img {
+            width: 70mm;
+            height: 70mm;
+            margin: 0 auto;
+            object-fit: contain;
+        }
+        .qr-card h2 {
+            margin: 0;
+            font-size: 16px;
+        }
+        .qr-label {
+            font-weight: 600;
+        }
+        .qr-code {
+            font-size: 12px;
+            color: #6b7280;
+            word-break: break-all;
+        }
+        .qr-missing {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+<div class="sheet-title">QR codes - {{ escape.name }} • {{ team_code }}</div>
+<div class="qr-grid">
+    {% for item in qr_items %}
+        <div class="qr-card">
+            <h2>{{ team_code }}</h2>
+            <span class="qr-label">QR {{ item.index }}</span>
+            {% if item.image %}
+                <img src="{{ item.image }}" alt="QR {{ item.index }}">
+                <div class="qr-code">{{ item.code }}</div>
+            {% else %}
+                <div class="qr-missing">QR non configuré</div>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+</body>
+</html>

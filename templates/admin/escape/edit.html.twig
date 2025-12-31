@@ -33,6 +33,10 @@
                 {{ form_row(attribute(form, 'team' ~ team ~ '_qr' ~ index ~ '_message')) }}
             {% endif %}
         {% endfor %}
+        <p>
+            <a href="{{ path('admin_escape_qr_preview', { id: escape.id, team: team }) }}">Générer les QR codes</a>
+            <a href="{{ path('admin_escape_qr_print', { id: escape.id, team: team }) }}" target="_blank" rel="noopener">Imprimer</a>
+        </p>
     {% endfor %}
 
     <h2>Étape 6 - Cryptex</h2>

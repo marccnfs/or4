@@ -208,6 +208,50 @@ class GameController extends AbstractController
         ]);
     }
 
+    #[Route('/game/qr/{code}', name: 'game_qr_scan', requirements: ['code' => '[^/]+'], methods: ['GET'])]
+    public function qrScan(
+        string $code,
+        SessionInterface $session,
+        TeamRepository $teamRepository,
+        EntityManagerInterface $entityManager,
+        GameValidationService $validator
+    ): Response {
+        $payload = [
+            'valid' => false,
+            'message' => 'Code QR manquant.',
+            'nextHint' => null,
+            'completed' => false,
+        ];
+
+        $code = trim($code);
+        if ($code !== '') {
+            $team = $this->findTeamFromSession($session, $teamRepository);
+            if ($team === null) {
+                $payload['message'] = 'Équipe introuvable. Merci de rejoindre le jeu.';
+            } else {
+                $step = $this->findStepForTeam($team, 'E', $entityManager);
+                if ($step === null) {
+                    $payload['message'] = 'Étape inconnue.';
+                } else {
+                    $result = $validator->validateStep($team, $step, ['code' => $code]);
+                    if ($result['updated'] ?? false) {
+                        $entityManager->flush();
+                    }
+                    $payload['valid'] = $result['valid'];
+                    $payload['message'] = $result['message'] ?? $payload['message'];
+                    $payload['nextHint'] = $result['nextHint'] ?? null;
+                    $payload['completed'] = $result['completed'] ?? false;
+                }
+            }
+        }
+
+        return $this->render('game/qr_scan.html.twig', [
+            'team_code' => $session->get(self::SESSION_TEAM_CODE),
+            'code' => $code,
+            'result' => $payload,
+        ]);
+    }
+
     #[Route('/game/home', name: 'game_home', methods: ['GET'])]
     public function home(EscapeGameRepository $escapeGameRepository): Response
     {
