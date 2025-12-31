@@ -16,9 +16,12 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class GamePilotController extends AbstractController
 {
     #[Route('/game/pilot', name: 'game_pilot', methods: ['GET'])]
-    public function index(EscapeGameRepository $escapeGameRepository): Response
+    public function index(Request $request, EscapeGameRepository $escapeGameRepository): Response
     {
-        $escapeGame = $escapeGameRepository->findLatest();
+        $escapeId = $request->query->getInt('escape_id', 0);
+        $escapeGame = $escapeId > 0
+            ? $escapeGameRepository->find($escapeId)
+            : $escapeGameRepository->findLatest();
 
         return $this->render('game/pilot.html.twig', [
             'escape_game' => $escapeGame,
