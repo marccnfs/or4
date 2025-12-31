@@ -25,6 +25,27 @@
 
     <div class="card">
         <h2>À afficher sur grand écran</h2>
-        <p class="hint">Partagez cette URL avec les équipes pour rejoindre la mission.</p>
+        <p class="hint">Partagez cette URL avec les équipes pour rejoindre la mission. Le tableau de progression s'affichera automatiquement au lancement du jeu.</p>
     </div>
+
+    <script>
+        (function () {
+            const scoreboardUrl = "{{ path('game_scoreboard') }}";
+            const statusUrl = "{{ path('game_scoreboard_data') }}";
+
+            const checkStatus = () => {
+                fetch(statusUrl, { headers: { 'Accept': 'application/json' } })
+                    .then((response) => response.ok ? response.json() : null)
+                    .then((payload) => {
+                        if (payload && payload.status === 'active') {
+                            window.location.href = scoreboardUrl;
+                        }
+                    })
+                    .catch(() => {});
+            };
+
+            checkStatus();
+            setInterval(checkStatus, 4000);
+        })();
+    </script>
 {% endblock %}

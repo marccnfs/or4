@@ -3,8 +3,16 @@
 {% block title %}Pilotage du jeu{% endblock %}
 
 {% block body %}
-    <div class="o_blk_2">
-        <h1>Pilotage du jeu</h1>
+    <div class="pilot-page" data-pilot-teams-url="{{ path('game_pilot_teams') }}">
+        <div class="pilot-header">
+            <h1>Pilotage du jeu</h1>
+            {% if escape_game %}
+                <div class="pilot-summary">
+                    <div><strong>Escape :</strong> {{ escape_game.name }}</div>
+                    <div><strong>Statut :</strong> {{ escape_game.status }}</div>
+                </div>
+            {% endif %}
+        </div>
 
         {% for message in app.flashes('success') %}
             <div class="alert alert-success">{{ message }}</div>
@@ -14,33 +22,58 @@
         {% endfor %}
 
         {% if escape_game %}
-            <p><strong>Escape :</strong> {{ escape_game.name }} (statut : {{ escape_game.status }})</p>
-            <p><strong>Équipes inscrites :</strong> {{ escape_game.teams|length }}</p>
             <p><strong>Page join :</strong> {{ join_url }}</p>
         {% else %}
             <p>Aucun escape enregistré.</p>
         {% endif %}
+        <div class="pilot-layout">
+            <div class="pilot-teams">
+                <header>
+                    <div>
+                        <h2>Équipes inscrites</h2>
+                        <p class="hint">Mise à jour toutes les 3 secondes.</p>
+                    </div>
+                    <div class="pilot-teams__count" data-pilot-team-count>{{ escape_game ? escape_game.teams|length : 0 }}</div>
+                </header>
+                <ul class="team-list" data-pilot-team-list>
+                    {% if escape_game and escape_game.teams|length > 0 %}
+                        {% for team in escape_game.teams %}
+                            <li>
+                                <span>{{ team.name }}</span>
+                                <span class="team-list__code">{{ team.registrationCode }}</span>
+                                <span class="team-list__state">{{ team.state }}</span>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="pilot-teams__empty" data-pilot-team-empty>Aucune équipe inscrite pour le moment.</li>
+                    {% endif %}
+                </ul>
+                <p class="hint" data-pilot-team-updated></p>
+            </div>
 
-        <div class="o_blk_2">
-            <form method="post" action="{{ path('game_pilot_start') }}">
-                <input type="hidden" name="escape_id" value="{{ escape_game ? escape_game.id : '' }}">
-                <input type="hidden" name="_token" value="{{ escape_game ? csrf_token('game_pilot_' ~ escape_game.id) : '' }}">
-                <button type="submit">Lancer le jeu</button>
-            </form>
+            <div class="pilot-actions">
+                <form method="post" action="{{ path('game_pilot_start') }}">
+                    <input type="hidden" name="escape_id" value="{{ escape_game ? escape_game.id : '' }}">
+                    <input type="hidden" name="_token" value="{{ escape_game ? csrf_token('game_pilot_' ~ escape_game.id) : '' }}">
+                    <button type="submit">Lancer le jeu</button>
+                </form>
 
-            <form method="post" action="{{ path('game_pilot_stop') }}">
-                <input type="hidden" name="escape_id" value="{{ escape_game ? escape_game.id : '' }}">
-                <input type="hidden" name="_token" value="{{ escape_game ? csrf_token('game_pilot_' ~ escape_game.id) : '' }}">
-                <button type="submit">Arrêter le jeu</button>
-            </form>
+                <form method="post" action="{{ path('game_pilot_stop') }}">
+                    <input type="hidden" name="escape_id" value="{{ escape_game ? escape_game.id : '' }}">
+                    <input type="hidden" name="_token" value="{{ escape_game ? csrf_token('game_pilot_' ~ escape_game.id) : '' }}">
+                    <button type="submit">Arrêter le jeu</button>
+                </form>
 
-            <form method="post" action="{{ path('game_pilot_reset') }}" onsubmit="return confirm('Supprimer toutes les équipes inscrites ?');">
-                <input type="hidden" name="escape_id" value="{{ escape_game ? escape_game.id : '' }}">
-                <input type="hidden" name="_token" value="{{ escape_game ? csrf_token('game_pilot_' ~ escape_game.id) : '' }}">
-                <button type="submit">Réinitialiser les équipes</button>
-            </form>
+                <form method="post" action="{{ path('game_pilot_reset') }}" onsubmit="return confirm('Supprimer toutes les équipes inscrites ?');">
+                    <input type="hidden" name="escape_id" value="{{ escape_game ? escape_game.id : '' }}">
+                    <input type="hidden" name="_token" value="{{ escape_game ? csrf_token('game_pilot_' ~ escape_game.id) : '' }}">
+                    <button type="submit">Réinitialiser les équipes</button>
+                </form>
 
-            <a href="{{ home_url }}" target="_blank" rel="noopener">Ouvrir la page d'accueil (grand écran)</a>
+                <a href="{{ home_url }}" target="_blank" rel="noopener">Ouvrir la page d'accueil (grand écran)</a>
+            </div>
+
         </div>
     </div>
+
 {% endblock %}

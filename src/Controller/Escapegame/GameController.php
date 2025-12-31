@@ -213,10 +213,34 @@ class GameController extends AbstractController
     {
         $escapeGame = $escapeGameRepository->findLatest();
 
+        if ($escapeGame !== null && $escapeGame->getStatus() === 'active') {
+            return $this->redirectToRoute('game_scoreboard');
+        }
+
         return $this->render('game/home.html.twig', [
             'escape_game' => $escapeGame,
             'join_url' => $this->generateUrl('game_join', [], UrlGeneratorInterface::ABSOLUTE_URL),
         ]);
+    }
+
+    #[Route('/game/scoreboard', name: 'game_scoreboard', methods: ['GET'])]
+    public function scoreboard(EscapeGameRepository $escapeGameRepository, TeamRepository $teamRepository): Response
+    {
+        $escapeGame = $escapeGameRepository->findLatest();
+        $scoreboard = $this->buildScoreboardPayload($escapeGame, $teamRepository);
+
+        return $this->render('game/scoreboard.html.twig', [
+            'escape_game' => $escapeGame,
+            'scoreboard' => $scoreboard,
+        ]);
+    }
+
+    #[Route('/game/scoreboard/data', name: 'game_scoreboard_data', methods: ['GET'])]
+    public function scoreboardData(EscapeGameRepository $escapeGameRepository, TeamRepository $teamRepository): JsonResponse
+    {
+        $escapeGame = $escapeGameRepository->findLatest();
+
+        return $this->json($this->buildScoreboardPayload($escapeGame, $teamRepository));
     }
 
     #[Route('/game/validate', name: 'game_validate', methods: ['POST'])]
@@ -408,6 +432,62 @@ class GameController extends AbstractController
         return $team;
     }
 
+    private function buildScoreboardPayload(?EscapeGame $escapeGame, TeamRepository $teamRepository): array
+    {
+        if ($escapeGame === null) {
+            return [
+                'status' => 'offline',
+                'escape_name' => null,
+                'total_steps' => 0,
+                'teams' => [],
+            ];
+        }
+
+        $teams = $teamRepository->findBy(['escapeGame' => $escapeGame], ['id' => 'ASC']);
+        $totalSteps = $escapeGame->getSteps()->count();
+        $payloadTeams = [];
+
+        foreach ($teams as $team) {
+            $validatedSteps = 0;
+            $latestUpdate = null;
+            foreach ($team->getTeamStepProgresses() as $progress) {
+                if ($progress->getState() === 'validated') {
+                    $validatedSteps++;
+                }
+                $updatedAt = $progress->getUpdatedAt();
+                if ($latestUpdate === null || $updatedAt > $latestUpdate) {
+                    $latestUpdate = $updatedAt;
+                }
+            }
+
+            $payloadTeams[] = [
+                'name' => $team->getName(),
+                'code' => $team->getRegistrationCode(),
+                'state' => $team->getState(),
+                'score' => $team->getScore(),
+                'validated_steps' => $validatedSteps,
+                'last_update' => $latestUpdate?->format('H:i'),
+            ];
+        }
+
+        usort($payloadTeams, static function (array $left, array $right): int {
+            if ($left['validated_steps'] === $right['validated_steps']) {
+                return $left['name'] <=> $right['name'];
+            }
+
+            return $right['validated_steps'] <=> $left['validated_steps'];
+        });
+
+        return [
+            'status' => $escapeGame->getStatus(),
+            'escape_name' => $escapeGame->getName(),
+            'total_steps' => $totalSteps,
+            'teams' => $payloadTeams,
+            'updated_at' => $escapeGame->getUpdatedAt()->format('H:i'),
+        ];
+    }
+
+
     private function configureQrSequences(Team $team, EscapeGame $escapeGame, ?int $teamIndex): void
     {
         if ($teamIndex === null) {
@@ -436,4 +516,5 @@ class GameController extends AbstractController
             $orderNumber++;
         }
     }
+
 }

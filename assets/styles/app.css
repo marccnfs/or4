@@ -197,7 +197,198 @@ text {
 #visualization-controls button:hover {
     background: #777;
 }
+.pilot-page,
+.scoreboard-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 16px 40px;
+}
 
+.pilot-header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.pilot-summary {
+    display: grid;
+    gap: 12px;
+    font-size: 1.05rem;
+}
+
+.pilot-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: 24px;
+}
+
+.pilot-actions {
+    display: grid;
+    gap: 12px;
+}
+
+.pilot-actions form,
+.pilot-actions a {
+    width: 100%;
+}
+
+.pilot-actions button,
+.pilot-actions a {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: none;
+    background: #2c2c5a;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+}
+
+.pilot-actions button:hover,
+.pilot-actions a:hover {
+    background: #3c3c7a;
+}
+
+.pilot-teams {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.pilot-teams header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.pilot-teams__count {
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.team-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 10px;
+}
+
+.team-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(16, 16, 32, 0.75);
+}
+
+.team-list__code {
+    font-size: 0.95rem;
+    opacity: 0.85;
+}
+
+.team-list__state {
+    font-size: 0.85rem;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #1f3b73;
+}
+
+.scoreboard-page {
+    max-width: 1400px;
+}
+
+.scoreboard-header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.scoreboard-status {
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: #1f3b73;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.85rem;
+}
+
+.scoreboard-meta {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    font-size: 1rem;
+}
+
+.scoreboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 24px;
+    background: rgba(15, 15, 32, 0.65);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.scoreboard-table th,
+.scoreboard-table td {
+    padding: 14px 16px;
+    text-align: left;
+}
+
+.scoreboard-table thead {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.scoreboard-table tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.scoreboard-progress {
+    position: relative;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.scoreboard-progress span {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: linear-gradient(90deg, #3ab5ff, #8bf7d3);
+    border-radius: 999px;
+}
+
+.scoreboard-progress-meta {
+    font-size: 0.85rem;
+    margin-top: 6px;
+    opacity: 0.8;
+}
+
+.scoreboard-empty {
+    text-align: center;
+    padding: 20px;
+    font-style: italic;
+    opacity: 0.8;
+}
+
+@media (max-width: 1024px) {
+    .pilot-layout {
+        grid-template-columns: 1fr;
+    }
+}
 #keywords-visualization, #analysis-visualization {
     flex: 1;
     /*border-bottom: 1px solid #ccc;*/

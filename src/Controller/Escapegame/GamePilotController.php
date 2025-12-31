@@ -4,8 +4,10 @@ namespace App\Controller\Escapegame;
 
 use App\Entity\EscapeGame;
 use App\Repository\EscapeGameRepository;
+use App\Repository\TeamRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -98,6 +100,36 @@ class GamePilotController extends AbstractController
         return $this->redirectToRoute('game_pilot');
     }
 
+    #[Route('/game/pilot/teams', name: 'game_pilot_teams', methods: ['GET'])]
+    public function teams(EscapeGameRepository $escapeGameRepository, TeamRepository $teamRepository): JsonResponse
+    {
+        $escapeGame = $escapeGameRepository->findLatest();
+        if ($escapeGame === null) {
+            return $this->json([
+                'status' => 'offline',
+                'teams' => [],
+                'count' => 0,
+            ]);
+        }
+
+        $teams = $teamRepository->findBy(['escapeGame' => $escapeGame], ['id' => 'ASC']);
+        $payload = array_map(static function ($team): array {
+            return [
+                'name' => $team->getName(),
+                'code' => $team->getRegistrationCode(),
+                'state' => $team->getState(),
+                'score' => $team->getScore(),
+            ];
+        }, $teams);
+
+        return $this->json([
+            'status' => $escapeGame->getStatus(),
+            'teams' => $payload,
+            'count' => count($payload),
+            'updated_at' => $escapeGame->getUpdatedAt()->format('H:i'),
+        ]);
+    }
+
     private function resolveEscapeGame(Request $request, EscapeGameRepository $escapeGameRepository): ?EscapeGame
     {
         $escapeId = $request->request->get('escape_id');
@@ -107,4 +139,5 @@ class GamePilotController extends AbstractController
 
         return $escapeGameRepository->findLatest();
     }
+
 }
