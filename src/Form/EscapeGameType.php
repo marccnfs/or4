@@ -73,6 +73,54 @@ class EscapeGameType extends AbstractType
                     'Actif' => 'active',
                 ],
             ])
+            ->add('team1Code', TextType::class, [
+                'label' => 'Code équipe 1',
+                'mapped' => false,
+                'data' => $getOption($storedOptions, ['team_codes', 1], ''),
+                'constraints' => [new NotBlank()],
+            ])
+            ->add('team2Code', TextType::class, [
+                'label' => 'Code équipe 2',
+                'mapped' => false,
+                'data' => $getOption($storedOptions, ['team_codes', 2], ''),
+                'constraints' => [new NotBlank()],
+            ])
+            ->add('team3Code', TextType::class, [
+                'label' => 'Code équipe 3',
+                'mapped' => false,
+                'data' => $getOption($storedOptions, ['team_codes', 3], ''),
+                'constraints' => [new NotBlank()],
+            ])
+            ->add('team4Code', TextType::class, [
+                'label' => 'Code équipe 4',
+                'mapped' => false,
+                'data' => $getOption($storedOptions, ['team_codes', 4], ''),
+                'constraints' => [new NotBlank()],
+            ])
+            ->add('team5Code', TextType::class, [
+                'label' => 'Code équipe 5',
+                'mapped' => false,
+                'data' => $getOption($storedOptions, ['team_codes', 5], ''),
+                'constraints' => [new NotBlank()],
+            ])
+            ->add('team6Code', TextType::class, [
+                'label' => 'Code équipe 6',
+                'mapped' => false,
+                'data' => $getOption($storedOptions, ['team_codes', 6], ''),
+                'constraints' => [new NotBlank()],
+            ])
+            ->add('team7Code', TextType::class, [
+                'label' => 'Code équipe 7',
+                'mapped' => false,
+                'data' => $getOption($storedOptions, ['team_codes', 7], ''),
+                'constraints' => [new NotBlank()],
+            ])
+            ->add('team8Code', TextType::class, [
+                'label' => 'Code équipe 8',
+                'mapped' => false,
+                'data' => $getOption($storedOptions, ['team_codes', 8], ''),
+                'constraints' => [new NotBlank()],
+            ])
             ->add('step1Letter', TextType::class, [
                 'label' => 'Étape 1 - Lettre attendue',
                 'mapped' => false,

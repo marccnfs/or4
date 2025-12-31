@@ -92,6 +92,11 @@ class AdminEscapeController extends AbstractController
 
     private function applyConfiguration(EscapeGame $escapeGame, FormInterface $form): void
     {
+        $teamCodes = [];
+        for ($team = 1; $team <= 8; $team++) {
+            $teamCodes[$team] = strtoupper(trim((string) $form->get(sprintf('team%dCode', $team))->getData()));
+        }
+
         $stepLetters = [
             'A' => $this->sanitizeLetter($form->get('step1Letter')->getData()),
             'B' => $this->sanitizeLetter($form->get('step2Letter')->getData()),
@@ -101,6 +106,7 @@ class AdminEscapeController extends AbstractController
         ];
 
         $options = $escapeGame->getOptions();
+        $options['team_codes'] = $teamCodes;
         $options['steps'] = [
             'A' => [
                 'solution' => $stepLetters['A'],
@@ -190,4 +196,5 @@ class AdminEscapeController extends AbstractController
     {
         return strtoupper(trim((string) $value));
     }
+
 }

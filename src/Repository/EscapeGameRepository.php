@@ -30,4 +30,33 @@ class EscapeGameRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function findLatest(): ?EscapeGame
+    {
+        return $this->createQueryBuilder('escape_game')
+            ->orderBy('escape_game.updatedAt', 'DESC')
+            ->addOrderBy('escape_game.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
+     * @param string[] $statuses
+     */
+    public function findLatestByStatuses(array $statuses): ?EscapeGame
+    {
+        if ($statuses === []) {
+            return null;
+        }
+
+        return $this->createQueryBuilder('escape_game')
+            ->andWhere('escape_game.status IN (:statuses)')
+            ->setParameter('statuses', $statuses)
+            ->orderBy('escape_game.updatedAt', 'DESC')
+            ->addOrderBy('escape_game.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

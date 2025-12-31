@@ -13,9 +13,17 @@
 
     <div class="card stack">
         <div class="status">Suivez les instructions de l'animateur pour cette étape.</div>
-        <p class="hint">Lorsque vous avez terminé, validez pour passer à l'étape suivante.</p>
+        <p class="hint">Lorsque vous avez trouvé la lettre, validez pour passer à l'étape suivante.</p>
+
+        {% if error %}
+            <div class="status closed">{{ error }}</div>
+        {% endif %}
 
         <form method="post">
+            <label>
+                <span class="hint">Lettre attendue</span>
+                <input class="input" type="text" name="letter" maxlength="1" required>
+            </label>
             <button class="btn" type="submit">Valider l'étape {{ step }}</button>
         </form>
     </div>
@@ -30,4 +38,5 @@
             {% endfor %}
         </div>
     </div>
+
 {% endblock %}

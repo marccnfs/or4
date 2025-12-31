@@ -1,0 +1,46 @@
+{% extends 'admin_base.html.twig' %}
+
+{% block title %}Pilotage du jeu{% endblock %}
+
+{% block body %}
+    <div class="o_blk_2">
+        <h1>Pilotage du jeu</h1>
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">{{ message }}</div>
+        {% endfor %}
+
+        {% if escape_game %}
+            <p><strong>Escape :</strong> {{ escape_game.name }} (statut : {{ escape_game.status }})</p>
+            <p><strong>Équipes inscrites :</strong> {{ escape_game.teams|length }}</p>
+            <p><strong>Page join :</strong> {{ join_url }}</p>
+        {% else %}
+            <p>Aucun escape enregistré.</p>
+        {% endif %}
+
+        <div class="o_blk_2">
+            <form method="post" action="{{ path('game_pilot_start') }}">
+                <input type="hidden" name="escape_id" value="{{ escape_game ? escape_game.id : '' }}">
+                <input type="hidden" name="_token" value="{{ escape_game ? csrf_token('game_pilot_' ~ escape_game.id) : '' }}">
+                <button type="submit">Lancer le jeu</button>
+            </form>
+
+            <form method="post" action="{{ path('game_pilot_stop') }}">
+                <input type="hidden" name="escape_id" value="{{ escape_game ? escape_game.id : '' }}">
+                <input type="hidden" name="_token" value="{{ escape_game ? csrf_token('game_pilot_' ~ escape_game.id) : '' }}">
+                <button type="submit">Arrêter le jeu</button>
+            </form>
+
+            <form method="post" action="{{ path('game_pilot_reset') }}" onsubmit="return confirm('Supprimer toutes les équipes inscrites ?');">
+                <input type="hidden" name="escape_id" value="{{ escape_game ? escape_game.id : '' }}">
+                <input type="hidden" name="_token" value="{{ escape_game ? csrf_token('game_pilot_' ~ escape_game.id) : '' }}">
+                <button type="submit">Réinitialiser les équipes</button>
+            </form>
+
+            <a href="{{ home_url }}" target="_blank" rel="noopener">Ouvrir la page d'accueil (grand écran)</a>
+        </div>
+    </div>
+{% endblock %}

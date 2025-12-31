@@ -1,0 +1,30 @@
+{% extends 'game/base.html.twig' %}
+
+{% block title %}Accueil jeu{% endblock %}
+
+{% block body %}
+    <header>
+        <div>
+            <h1>Accueil du jeu</h1>
+            {% if escape_game %}
+                <p class="hint">Escape : {{ escape_game.name }}</p>
+            {% else %}
+                <p class="hint">Aucun escape enregistré.</p>
+            {% endif %}
+        </div>
+        <span class="badge">Écran</span>
+    </header>
+
+    <div class="card stack">
+        <div class="status">Les équipes rejoignent la partie via l'adresse suivante :</div>
+        <div>
+            <strong>{{ join_url }}</strong>
+        </div>
+        <a class="btn" href="{{ join_url }}" target="_blank" rel="noopener">Ouvrir la page join</a>
+    </div>
+
+    <div class="card">
+        <h2>À afficher sur grand écran</h2>
+        <p class="hint">Partagez cette URL avec les équipes pour rejoindre la mission.</p>
+    </div>
+{% endblock %}

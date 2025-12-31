@@ -8,6 +8,15 @@
     {{ form_start(form) }}
     {{ form_row(form.name) }}
     {{ form_row(form.status) }}
+    <h2>Codes d'équipe</h2>
+    {{ form_row(form.team1Code) }}
+    {{ form_row(form.team2Code) }}
+    {{ form_row(form.team3Code) }}
+    {{ form_row(form.team4Code) }}
+    {{ form_row(form.team5Code) }}
+    {{ form_row(form.team6Code) }}
+    {{ form_row(form.team7Code) }}
+    {{ form_row(form.team8Code) }}
     <h2>Étapes 1 à 4</h2>
     {{ form_row(form.step1Letter) }}
     {{ form_row(form.step2Letter) }}
@@ -36,4 +45,5 @@
         <a href="{{ path('admin_escape_show', { id: escape.id }) }}">Retour</a>
         <a href="{{ path('admin_escape_list') }}">Liste des escapes</a>
     </p>
+
 {% endblock %}

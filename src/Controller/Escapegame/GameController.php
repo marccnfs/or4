@@ -2,8 +2,11 @@
 
 namespace App\Controller\Escapegame;
 
+use App\Entity\EscapeGame;
 use App\Entity\Step;
 use App\Entity\Team;
+use App\Entity\TeamQrSequence;
+use App\Repository\EscapeGameRepository;
 use App\Repository\TeamRepository;
 use App\Services\GameValidationService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class GameController extends AbstractController
 {
@@ -21,19 +25,48 @@ class GameController extends AbstractController
     private const SESSION_CURRENT_STEP = 'game_current_step';
 
     #[Route('/join', name: 'game_join', methods: ['GET', 'POST'])]
-    public function join(Request $request, SessionInterface $session): Response
+    public function join(
+        Request $request,
+        SessionInterface $session,
+        EscapeGameRepository $escapeGameRepository,
+        TeamRepository $teamRepository,
+        EntityManagerInterface $entityManager
+    ): Response
     {
-        $gameOpen = $this->isGameOpen();
+        $escapeGame = $escapeGameRepository->findLatest();
+        $gameOpen = $this->isGameOpen($escapeGame);
         $error = null;
 
         if ($request->isMethod('POST')) {
             if (!$gameOpen) {
                 $error = 'Les inscriptions sont actuellement fermées.';
             } else {
-                $teamCode = trim((string) $request->request->get('team_code'));
+                $teamCode = strtoupper(trim((string) $request->request->get('team_code')));
                 if ($teamCode === '') {
                     $error = 'Merci de saisir un code d\'équipe.';
+                } elseif ($escapeGame === null) {
+                    $error = 'Aucun jeu actif pour le moment.';
+                } elseif (!$this->isTeamCodeAllowed($escapeGame, $teamCode)) {
+                    $error = 'Code d\'équipe invalide.';
                 } else {
+                    $existingTeam = $teamRepository->findOneBy(['registrationCode' => $teamCode]);
+                    if ($existingTeam !== null) {
+                        if ($existingTeam->getEscapeGame()->getId() !== $escapeGame->getId()) {
+                            $error = 'Ce code ne correspond pas au jeu en cours.';
+                        }
+                    } else {
+                        $this->registerTeam($escapeGame, $teamCode, $entityManager);
+                        $entityManager->flush();
+                    }
+
+                    if ($error !== null) {
+                        return $this->render('game/join.html.twig', [
+                            'game_open' => $gameOpen,
+                            'error' => $error,
+                            'team_code' => $session->get(self::SESSION_TEAM_CODE),
+                            'escape_game' => $escapeGame,
+                        ]);
+                    }
                     $session->set(self::SESSION_TEAM_CODE, $teamCode);
                     $session->set(self::SESSION_CURRENT_STEP, 'A');
                     $session->set(self::SESSION_PROGRESS, $this->initializeProgress());
@@ -47,36 +80,63 @@ class GameController extends AbstractController
             'game_open' => $gameOpen,
             'error' => $error,
             'team_code' => $session->get(self::SESSION_TEAM_CODE),
+            'escape_game' => $escapeGame,
         ]);
     }
 
     #[Route('/waiting', name: 'game_waiting', methods: ['GET'])]
-    public function waiting(SessionInterface $session): Response
+    public function waiting(SessionInterface $session, TeamRepository $teamRepository): Response
     {
         $teamCode = $session->get(self::SESSION_TEAM_CODE);
         if (!$teamCode) {
             return $this->redirectToRoute('game_join');
         }
+        $team = $teamRepository->findOneBy(['registrationCode' => $teamCode]);
+        if ($team === null) {
+            return $this->redirectToRoute('game_join');
+        }
 
+        $escapeGame = $team->getEscapeGame();
+        $status = $escapeGame->getStatus();
         $currentStep = $session->get(self::SESSION_CURRENT_STEP, 'A');
+
+        if ($status === 'active') {
+            return $this->redirectToRoute('game_step', ['step' => $currentStep]);
+        }
 
         return $this->render('game/waiting.html.twig', [
             'team_code' => $teamCode,
-            'game_open' => $this->isGameOpen(),
+            'game_status' => $status,
             'current_step' => $currentStep,
         ]);
     }
 
     #[Route('/game/step/{step}', name: 'game_step', requirements: ['step' => '[A-F]'], methods: ['GET', 'POST'])]
-    public function step(string $step, Request $request, SessionInterface $session): Response
+    public function step(
+        string $step,
+        Request $request,
+        SessionInterface $session,
+        TeamRepository $teamRepository,
+        EntityManagerInterface $entityManager
+    ): Response
     {
         $teamCode = $session->get(self::SESSION_TEAM_CODE);
         if (!$teamCode) {
             return $this->redirectToRoute('game_join');
         }
 
+        $team = $teamRepository->findOneBy(['registrationCode' => $teamCode]);
+        if ($team === null) {
+            return $this->redirectToRoute('game_join');
+        }
+
+        if ($team->getEscapeGame()->getStatus() !== 'active') {
+            return $this->redirectToRoute('game_waiting');
+        }
+
         $progress = $session->get(self::SESSION_PROGRESS, $this->initializeProgress());
         $currentStep = $session->get(self::SESSION_CURRENT_STEP, 'A');
+        $error = null;
 
         if (!array_key_exists($step, $progress)) {
             return $this->redirectToRoute('game_step', ['step' => $currentStep]);
@@ -87,19 +147,34 @@ class GameController extends AbstractController
         }
 
         if ($request->isMethod('POST')) {
-            $progress[$step]['completed'] = true;
-            $progress[$step]['completedAt'] = (new \DateTimeImmutable())->format('H:i');
+            $letter = strtoupper(trim((string)$request->request->get('letter')));
+            if ($letter === '') {
+                $error = 'Merci de saisir une lettre.';
+            } else {
+                $stepEntity = $this->findStepForTeam($team, $step, $entityManager);
+                if ($stepEntity === null) {
+                    $error = 'Étape inconnue.';
+                } else {
+                    $expected = strtoupper(trim((string)$stepEntity->getLetter()));
+                    if ($letter === $expected) {
+                        $progress[$step]['completed'] = true;
+                        $progress[$step]['completedAt'] = (new \DateTimeImmutable())->format('H:i');
 
-            $nextStep = $this->getNextStep($step);
-            if ($nextStep === null) {
-                $session->set(self::SESSION_PROGRESS, $progress);
-                return $this->redirectToRoute('game_final');
+                        $nextStep = $this->getNextStep($step);
+                        if ($nextStep === null) {
+                            $session->set(self::SESSION_PROGRESS, $progress);
+                            return $this->redirectToRoute('game_final');
+                        }
+
+                        $session->set(self::SESSION_PROGRESS, $progress);
+                        $session->set(self::SESSION_CURRENT_STEP, $nextStep);
+
+                        return $this->redirectToRoute('game_step', ['step' => $nextStep]);
+                    }
+
+                    $error = 'Recommencez, ce n\'est pas la bonne réponse.';
+                }
             }
-
-            $session->set(self::SESSION_PROGRESS, $progress);
-            $session->set(self::SESSION_CURRENT_STEP, $nextStep);
-
-            return $this->redirectToRoute('game_step', ['step' => $nextStep]);
         }
 
         return $this->render('game/step.html.twig', [
@@ -107,7 +182,40 @@ class GameController extends AbstractController
             'step' => $step,
             'current_step' => $currentStep,
             'progress' => $progress,
-            'game_open' => $this->isGameOpen(),
+            'error' => $error,
+        ]);
+    }
+
+    #[Route('/game/status', name: 'game_status', methods: ['GET'])]
+    public function status(SessionInterface $session, TeamRepository $teamRepository): JsonResponse
+    {
+        $teamCode = $session->get(self::SESSION_TEAM_CODE);
+        if (!$teamCode) {
+            return $this->json([
+                'status' => 'unknown',
+            ], JsonResponse::HTTP_UNAUTHORIZED);
+        }
+
+        $team = $teamRepository->findOneBy(['registrationCode' => $teamCode]);
+        if ($team === null) {
+            return $this->json([
+                'status' => 'unknown',
+            ], JsonResponse::HTTP_UNAUTHORIZED);
+        }
+
+        return $this->json([
+            'status' => $team->getEscapeGame()->getStatus(),
+        ]);
+    }
+
+    #[Route('/game/home', name: 'game_home', methods: ['GET'])]
+    public function home(EscapeGameRepository $escapeGameRepository): Response
+    {
+        $escapeGame = $escapeGameRepository->findLatest();
+
+        return $this->render('game/home.html.twig', [
+            'escape_game' => $escapeGame,
+            'join_url' => $this->generateUrl('game_join', [], UrlGeneratorInterface::ABSOLUTE_URL),
         ]);
     }
 
@@ -186,14 +294,13 @@ class GameController extends AbstractController
         ]);
     }
 
-    private function isGameOpen(): bool
+    private function isGameOpen(?EscapeGame $escapeGame): bool
     {
-        $flag = getenv('GAME_OPEN');
-        if ($flag === false) {
-            return true;
+        if ($escapeGame === null) {
+            return false;
         }
 
-        return filter_var($flag, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? true;
+        return $escapeGame->getStatus() === 'waiting';
     }
 
     private function initializeProgress(): array
@@ -261,5 +368,72 @@ class GameController extends AbstractController
             'escapeGame' => $team->getEscapeGame(),
             'type' => $type,
         ]);
+    }
+
+    private function isTeamCodeAllowed(EscapeGame $escapeGame, string $teamCode): bool
+    {
+        return $this->findTeamIndex($escapeGame, $teamCode) !== null;
+    }
+
+    private function findTeamIndex(EscapeGame $escapeGame, string $teamCode): ?int
+    {
+        $codes = $escapeGame->getOptions()['team_codes'] ?? [];
+        foreach ($codes as $index => $code) {
+            if (strtoupper(trim((string) $code)) === $teamCode) {
+                return (int) $index;
+            }
+        }
+
+        return null;
+    }
+
+    private function registerTeam(
+        EscapeGame $escapeGame,
+        string $teamCode,
+        EntityManagerInterface $entityManager
+    ): Team {
+        $teamIndex = $this->findTeamIndex($escapeGame, $teamCode);
+        $team = new Team();
+        $team->setEscapeGame($escapeGame);
+        $team->setName(sprintf('Équipe %d', $teamIndex ?? 0));
+        $team->setRegistrationCode($teamCode);
+        $team->setQrToken(bin2hex(random_bytes(8)));
+        $team->setState('waiting');
+        $team->setScore(0);
+        $team->setLetterOrder([]);
+
+        $this->configureQrSequences($team, $escapeGame, $teamIndex);
+        $entityManager->persist($team);
+
+        return $team;
+    }
+
+    private function configureQrSequences(Team $team, EscapeGame $escapeGame, ?int $teamIndex): void
+    {
+        if ($teamIndex === null) {
+            return;
+        }
+
+        $sequences = $escapeGame->getOptions()['qr_sequences']['teams'][$teamIndex] ?? [];
+        $orderNumber = 1;
+        foreach ($sequences as $sequence) {
+            if (!is_array($sequence)) {
+                continue;
+            }
+
+            $qrCode = trim((string) ($sequence['code'] ?? ''));
+            if ($qrCode === '') {
+                continue;
+            }
+
+            $teamSequence = new TeamQrSequence();
+            $teamSequence->setTeam($team);
+            $teamSequence->setOrderNumber($orderNumber);
+            $teamSequence->setQrCode($qrCode);
+            $teamSequence->setHint($sequence['message'] ?? null);
+            $teamSequence->setValidated(false);
+            $team->addTeamQrSequence($teamSequence);
+            $orderNumber++;
+        }
     }
 }

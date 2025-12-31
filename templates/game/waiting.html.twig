@@ -12,17 +12,34 @@
     </header>
 
     <div class="card stack">
-        {% if game_open %}
+        {% if game_status == 'waiting' %}
             <div class="status">La partie est ouverte. Préparez-vous !</div>
-        {% else %}
+            <p class="hint">Quand le signal est donné, vous serez redirigé automatiquement.</p>
+        {% elseif game_status == 'offline' %}
             <div class="status closed">La partie est temporairement fermée.</div>
+            <p class="hint">Patientez jusqu'à la relance par l'animateur.</p>
+        {% else %}
+            <div class="status">La partie démarre...</div>
         {% endif %}
-        <p class="hint">Quand le signal est donné, rendez-vous à votre première étape.</p>
-        <a class="btn" href="{{ path('game_step', { step: current_step }) }}">Aller à l'étape {{ current_step }}</a>
+        <a class="btn btn-outline" href="{{ path('game_step', { step: current_step }) }}">Accéder à l'étape {{ current_step }}</a>
     </div>
 
     <div class="card">
         <h2>Conseil</h2>
         <p class="hint">Gardez ce téléphone avec vous : il affiche votre progression tout au long du jeu.</p>
     </div>
+    <script>
+        const pollStatus = () => {
+            fetch("{{ path('game_status') }}", { credentials: "same-origin" })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'active') {
+                        window.location.href = "{{ path('game_step', { step: current_step }) }}";
+                    }
+                })
+                .catch(() => {});
+        };
+
+        setInterval(pollStatus, 3000);
+    </script>
 {% endblock %}
