@@ -89,6 +89,11 @@ class GameValidationService
             ];
         }
 
+        $sequences = $team->getTeamQrSequences()->toArray();
+        usort($sequences, static function (TeamQrSequence $left, TeamQrSequence $right): int {
+            return $left->getOrderNumber() <=> $right->getOrderNumber();
+        });
+
         $nextSequence = $this->getNextQrSequence($team);
         if ($nextSequence === null) {
             return [
@@ -99,17 +104,34 @@ class GameValidationService
             ];
         }
 
-        if ($code !== $nextSequence->getQrCode()) {
+        $matchingSequence = null;
+        foreach ($sequences as $sequence) {
+            if ($sequence->getQrCode() === $code) {
+                $matchingSequence = $sequence;
+                break;
+            }
+        }
+
+        if ($matchingSequence === null) {
             return [
                 'valid' => false,
-                'message' => 'QR incorrect.',
+                'message' => 'Ce QR code ne correspond pas à votre équipe.',
+                'completed' => false,
+                'updated' => false,
+            ];
+        }
+
+        if ($matchingSequence !== $nextSequence) {
+            return [
+                'valid' => false,
+                'message' => 'Ordre incorrect. Scannez le prochain QR code dans l\'ordre.',
                 'nextHint' => $nextSequence->getHint(),
                 'completed' => false,
                 'updated' => false,
             ];
         }
 
-        $nextSequence->setValidated(true);
+        $matchingSequence->setValidated(true);
 
         $progress = $this->getOrCreateProgress($team, $step);
         $completed = $this->isQrSequenceCompleted($team);
@@ -121,10 +143,14 @@ class GameValidationService
         }
 
         $this->incrementScore($team, true);
+        $responseMessage = $matchingSequence->getHint();
+        if ($responseMessage === null) {
+            $responseMessage = $completed ? 'Séquence terminée.' : 'QR validé.';
+        }
 
         return [
             'valid' => true,
-            'message' => $completed ? 'Séquence terminée.' : 'QR validé.',
+            'message' => $responseMessage,
             'nextHint' => $this->getNextQrHint($team),
             'completed' => $completed,
             'updated' => true,

@@ -117,11 +117,20 @@ class GamePilotController extends AbstractController
 
         $teams = $teamRepository->findBy(['escapeGame' => $escapeGame], ['id' => 'ASC']);
         $payload = array_map(static function ($team): array {
+            $totalQr = $team->getTeamQrSequences()->count();
+            $scannedQr = 0;
+            foreach ($team->getTeamQrSequences() as $sequence) {
+                if ($sequence->isValidated()) {
+                    $scannedQr++;
+                }
+            }
             return [
                 'name' => $team->getName(),
                 'code' => $team->getRegistrationCode(),
                 'state' => $team->getState(),
                 'score' => $team->getScore(),
+                'qr_scanned' => $scannedQr,
+                'qr_total' => $totalQr,
             ];
         }, $teams);
 

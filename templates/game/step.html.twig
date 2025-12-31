@@ -19,6 +19,15 @@
             <div class="status closed">{{ error }}</div>
         {% endif %}
 
+        {% if step == 'E' %}
+            <div class="status">
+                Pour trouver la dernière lettre suivez maintenant la piste des QR code. Commencez par scanner le premier
+                qui est sur votre table, et suivez ainsi la piste jusqu'au dernier QR code qui vous révèlera la lettre à
+                inscrire ci dessous. Note : suivez les QR code dans l'ordre, et uniquement ceux qui porte le code :
+                "{{ team_code }}".
+            </div>
+        {% endif %}
+
         <form method="post">
             <label>
                 <span class="hint">Lettre attendue</span>

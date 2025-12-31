@@ -38,10 +38,13 @@
                 <ul class="team-list" data-pilot-team-list>
                     {% if escape_game and escape_game.teams|length > 0 %}
                         {% for team in escape_game.teams %}
+                            {% set qr_total = team.teamQrSequences|length %}
+                            {% set qr_scanned = team.teamQrSequences|filter(sequence => sequence.validated)|length %}
                             <li>
                                 <span>{{ team.name }}</span>
                                 <span class="team-list__code">{{ team.registrationCode }}</span>
                                 <span class="team-list__state">{{ team.state }}</span>
+                                <span class="team-list__qr">QR {{ qr_scanned }}/{{ qr_total }}</span>
                             </li>
                         {% endfor %}
                     {% else %}

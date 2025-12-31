@@ -72,9 +72,18 @@ const setupPilotTeams = () => {
             state.classList.add('team-list__state');
             state.textContent = team.state;
 
+            const qr = document.createElement('span');
+            qr.classList.add('team-list__qr');
+            if (team.qr_total && team.qr_total > 0) {
+                qr.textContent = `QR ${team.qr_scanned ?? 0}/${team.qr_total}`;
+            } else {
+                qr.textContent = 'QR —';
+            }
+
             item.appendChild(name);
             item.appendChild(code);
             item.appendChild(state);
+            item.appendChild(qr);
             list.appendChild(item);
         });
     });
