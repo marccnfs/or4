@@ -36,6 +36,7 @@ class GameController extends AbstractController
         $escapeGame = $escapeGameRepository->findLatest();
         $gameOpen = $this->isGameOpen($escapeGame);
         $error = null;
+        $team = null;
 
         if ($request->isMethod('POST')) {
             if (!$gameOpen) {
@@ -55,7 +56,7 @@ class GameController extends AbstractController
                             $error = 'Ce code ne correspond pas au jeu en cours.';
                         }
                     } else {
-                        $this->registerTeam($escapeGame, $teamCode, $entityManager);
+                        $team = $this->registerTeam($escapeGame, $teamCode, $entityManager);
                         $entityManager->flush();
                     }
 
@@ -68,8 +69,9 @@ class GameController extends AbstractController
                         ]);
                     }
                     $session->set(self::SESSION_TEAM_CODE, $teamCode);
-                    $session->set(self::SESSION_CURRENT_STEP, 'A');
-                    $session->set(self::SESSION_PROGRESS, $this->initializeProgress());
+                    $progress = $team !== null ? $this->buildTeamProgress($team) : $this->initializeProgress();
+                    $session->set(self::SESSION_PROGRESS, $progress);
+                    $session->set(self::SESSION_CURRENT_STEP, $this->resolveCurrentStep($progress));
 
                     return $this->redirectToRoute('game_waiting');
                 }
@@ -98,7 +100,10 @@ class GameController extends AbstractController
 
         $escapeGame = $team->getEscapeGame();
         $status = $escapeGame->getStatus();
-        $currentStep = $session->get(self::SESSION_CURRENT_STEP, 'A');
+        $progress = $this->buildTeamProgress($team);
+        $currentStep = $this->resolveCurrentStep($progress);
+        $session->set(self::SESSION_PROGRESS, $progress);
+        $session->set(self::SESSION_CURRENT_STEP, $currentStep);
 
         if ($status === 'active') {
             return $this->redirectToRoute('game_step', ['step' => $currentStep]);
@@ -117,7 +122,8 @@ class GameController extends AbstractController
         Request $request,
         SessionInterface $session,
         TeamRepository $teamRepository,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        GameValidationService $validator
     ): Response
     {
         $teamCode = $session->get(self::SESSION_TEAM_CODE);
@@ -134,8 +140,10 @@ class GameController extends AbstractController
             return $this->redirectToRoute('game_waiting');
         }
 
-        $progress = $session->get(self::SESSION_PROGRESS, $this->initializeProgress());
-        $currentStep = $session->get(self::SESSION_CURRENT_STEP, 'A');
+        $progress = $this->buildTeamProgress($team);
+        $currentStep = $this->resolveCurrentStep($progress);
+        $session->set(self::SESSION_PROGRESS, $progress);
+        $session->set(self::SESSION_CURRENT_STEP, $currentStep);
         $error = null;
 
         if (!array_key_exists($step, $progress)) {
@@ -155,24 +163,26 @@ class GameController extends AbstractController
                 if ($stepEntity === null) {
                     $error = 'Étape inconnue.';
                 } else {
-                    $expected = strtoupper(trim((string)$stepEntity->getLetter()));
-                    if ($letter === $expected) {
-                        $progress[$step]['completed'] = true;
-                        $progress[$step]['completedAt'] = (new \DateTimeImmutable())->format('H:i');
+                    $result = $validator->validateStep($team, $stepEntity, ['letter' => $letter]);
+                    if ($result['updated'] ?? false) {
+                        $entityManager->flush();
+                    }
+
+                    if ($result['valid']) {
+                        $progress = $this->buildTeamProgress($team);
+                        $currentStep = $this->resolveCurrentStep($progress);
+                        $session->set(self::SESSION_PROGRESS, $progress);
+                        $session->set(self::SESSION_CURRENT_STEP, $currentStep);
 
                         $nextStep = $this->getNextStep($step);
                         if ($nextStep === null) {
-                            $session->set(self::SESSION_PROGRESS, $progress);
                             return $this->redirectToRoute('game_final');
                         }
-
-                        $session->set(self::SESSION_PROGRESS, $progress);
-                        $session->set(self::SESSION_CURRENT_STEP, $nextStep);
 
                         return $this->redirectToRoute('game_step', ['step' => $nextStep]);
                     }
 
-                    $error = 'Recommencez, ce n\'est pas la bonne réponse.';
+                    $error = $result['message'] ?? 'Recommencez, ce n\'est pas la bonne réponse.';
                 }
             }
         }
@@ -576,6 +586,39 @@ class GameController extends AbstractController
             'updated_at' => $escapeGame->getUpdatedAt()->format('H:i'),
         ];
     }
+
+    private function buildTeamProgress(Team $team): array
+    {
+        $progress = $this->initializeProgress();
+
+        foreach ($team->getTeamStepProgresses() as $stepProgress) {
+            $stepType = strtoupper($stepProgress->getStep()?->getType() ?? '');
+            if (!array_key_exists($stepType, $progress)) {
+                continue;
+            }
+
+            if ($stepProgress->getState() === 'validated') {
+                $progress[$stepType]['completed'] = true;
+                $progress[$stepType]['completedAt'] = $stepProgress->getUpdatedAt()->format('H:i');
+            }
+        }
+
+        return $progress;
+    }
+
+    private function resolveCurrentStep(array $progress): string
+    {
+        foreach ($this->getSteps() as $step) {
+            if (!($progress[$step]['completed'] ?? false)) {
+                return $step;
+            }
+        }
+
+        $steps = $this->getSteps();
+
+        return $steps[count($steps) - 1] ?? 'F';
+    }
+
 
 
     private function configureQrSequences(Team $team, EscapeGame $escapeGame, ?int $teamIndex): void

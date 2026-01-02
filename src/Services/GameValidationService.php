@@ -28,6 +28,10 @@ class GameValidationService
     {
         $type = strtoupper($step->getType());
 
+        if ($type === 'E' && array_key_exists('letter', $payload)) {
+            return $this->validateQrLetterStep($team, $step, $payload);
+        }
+
         return match ($type) {
             'A', 'B', 'C', 'D' => $this->validateLetterStep($team, $step, $payload),
             'E' => $this->validateQrStep($team, $step, $payload),
@@ -172,6 +176,51 @@ class GameValidationService
             'updated' => true,
         ];
     }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function validateQrLetterStep(Team $team, Step $step, array $payload): array
+    {
+        $letter = strtoupper(trim((string) ($payload['letter'] ?? '')));
+        if ($letter === '') {
+            return [
+                'valid' => false,
+                'message' => 'Lettre manquante.',
+                'updated' => false,
+            ];
+        }
+
+        if (!$this->isQrSequenceCompleted($team)) {
+            return [
+                'valid' => false,
+                'message' => 'Séquence QR non terminée.',
+                'updated' => false,
+            ];
+        }
+
+        $expected = strtoupper(trim($step->getLetter()));
+        if ($letter !== $expected) {
+            return [
+                'valid' => false,
+                'message' => 'Lettre incorrecte.',
+                'updated' => false,
+            ];
+        }
+
+        $progress = $this->getOrCreateProgress($team, $step);
+        $wasValidated = $progress->getState() === self::STATE_VALIDATED;
+        $this->markProgressValidated($progress, $letter);
+        $this->incrementScore($team, !$wasValidated);
+
+        return [
+            'valid' => true,
+            'message' => 'Bonne lettre.',
+            'updated' => true,
+        ];
+    }
+
+
 
     /**
      * @return array<string, mixed>
