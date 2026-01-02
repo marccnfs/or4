@@ -23,7 +23,7 @@ class GamePilotController extends AbstractController
             ? $escapeGameRepository->find($escapeId)
             : $escapeGameRepository->findLatest();
 
-        return $this->render('game/pilot.html.twig', [
+        return $this->render('admin/escape/pilot.html.twig', [
             'escape_game' => $escapeGame,
             'join_url' => $this->generateUrl('game_join', [], UrlGeneratorInterface::ABSOLUTE_URL),
             'home_url' => $this->generateUrl('game_home', [], UrlGeneratorInterface::ABSOLUTE_URL),

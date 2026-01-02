@@ -279,7 +279,7 @@ class GameController extends AbstractController
             return $this->redirectToRoute('game_scoreboard');
         }
 
-        return $this->render('game/home.html.twig', [
+        return $this->render('screen/home.html.twig', [
             'escape_game' => $escapeGame,
             'join_url' => $this->generateUrl('game_join', [], UrlGeneratorInterface::ABSOLUTE_URL),
         ]);
@@ -291,7 +291,7 @@ class GameController extends AbstractController
         $escapeGame = $escapeGameRepository->findLatest();
         $scoreboard = $this->buildScoreboardPayload($escapeGame, $teamRepository);
 
-        return $this->render('game/scoreboard.html.twig', [
+        return $this->render('screen/scoreboard.html.twig', [
             'escape_game' => $escapeGame,
             'scoreboard' => $scoreboard,
         ]);
