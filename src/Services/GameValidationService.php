@@ -94,7 +94,13 @@ class GameValidationService
             return $left->getOrderNumber() <=> $right->getOrderNumber();
         });
 
-        $nextSequence = $this->getNextQrSequence($team);
+        $nextSequence = null;
+        foreach ($sequences as $sequence) {
+            if (!$sequence->isValidated()) {
+                $nextSequence = $sequence;
+                break;
+            }
+        }
         if ($nextSequence === null) {
             return [
                 'valid' => false,
@@ -121,7 +127,17 @@ class GameValidationService
             ];
         }
 
-        if ($matchingSequence !== $nextSequence) {
+        if ($matchingSequence->isValidated()) {
+            return [
+                'valid' => true,
+                'message' => $matchingSequence->getHint() ?? 'QR déjà validé.',
+                'nextHint' => $this->getNextQrHint($team),
+                'completed' => $this->isQrSequenceCompleted($team),
+                'updated' => false,
+            ];
+        }
+
+        if ($matchingSequence->getOrderNumber() !== $nextSequence->getOrderNumber()) {
             return [
                 'valid' => false,
                 'message' => 'Ordre incorrect. Scannez le prochain QR code dans l\'ordre.',
