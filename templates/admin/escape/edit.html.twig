@@ -3,6 +3,7 @@
 {% block title %}Éditer un escape{% endblock %}
 
 {% block body %}
+    <div class="pilot-page">
     <h1>Éditer l'escape {{ escape.name }}</h1>
 
     {{ form_start(form) }}
@@ -49,5 +50,5 @@
         <a href="{{ path('admin_escape_show', { id: escape.id }) }}">Retour</a>
         <a href="{{ path('admin_escape_list') }}">Liste des escapes</a>
     </p>
-
+    </div>
 {% endblock %}

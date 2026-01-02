@@ -3,6 +3,7 @@
 {% block title %}Pilotage escape{% endblock %}
 
 {% block body %}
+    <div class="pilot-page">
     <h1>Pilotage de l'escape {{ escape.name }}</h1>
 
     <dl>
@@ -26,4 +27,5 @@
         <input type="hidden" name="_token" value="{{ csrf_token('delete_escape_' ~ escape.id) }}">
         <button type="submit">Supprimer</button>
     </form>
+    </div>
 {% endblock %}

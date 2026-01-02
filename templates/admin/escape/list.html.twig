@@ -3,6 +3,7 @@
 {% block title %}Liste des escapes{% endblock %}
 
 {% block body %}
+    <div class="pilot-page">
     <h1>Liste des escapes</h1>
 
     <p><a href="{{ path('admin_escape_new') }}">Créer un escape</a></p>
@@ -34,4 +35,5 @@
             </tbody>
         </table>
     {% endif %}
+    </div>
 {% endblock %}

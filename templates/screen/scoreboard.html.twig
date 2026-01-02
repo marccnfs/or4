@@ -1,0 +1,58 @@
+{% extends 'admin_base.html.twig' %}
+
+{% block title %}Tableau de progression{% endblock %}
+
+{% block content %}{% endblock %}
+
+{% block body %}
+    <div class="scoreboard-page" data-scoreboard-url="{{ path('game_scoreboard_data') }}">
+        <div class="scoreboard-header">
+            <div>
+                <h1>Tableau de progression</h1>
+                <p class="hint">
+                    {{ scoreboard.escape_name ? 'Escape : ' ~ scoreboard.escape_name : 'Aucun escape en cours.' }}
+                </p>
+            </div>
+            <div class="scoreboard-meta">
+                <span class="scoreboard-status" data-scoreboard-status>{{ scoreboard.status }}</span>
+                <span><strong>Étapes :</strong> <span data-scoreboard-total>{{ scoreboard.total_steps }}</span></span>
+                <span data-scoreboard-updated>
+                    {{ scoreboard.updated_at ? 'Mis à jour à ' ~ scoreboard.updated_at : '' }}
+                </span>
+            </div>
+        </div>
+
+        <table class="scoreboard-table">
+            <thead>
+            <tr>
+                <th>Équipe</th>
+                <th>Code</th>
+                <th>Progression</th>
+                <th>Dernière action</th>
+            </tr>
+            </thead>
+            <tbody data-scoreboard-rows>
+            {% if scoreboard.teams|length > 0 %}
+                {% for team in scoreboard.teams %}
+                    {% set percent = scoreboard.total_steps > 0 ? (team.validated_steps / scoreboard.total_steps * 100) : 0 %}
+                    <tr>
+                        <td>{{ team.name }}</td>
+                        <td>{{ team.code }}</td>
+                        <td>
+                            <div class="scoreboard-progress">
+                                <span style="width: {{ percent }}%"></span>
+                            </div>
+                            <div class="scoreboard-progress-meta">{{ team.validated_steps }}/{{ scoreboard.total_steps }}</div>
+                        </td>
+                        <td>{{ team.last_update ? team.last_update : '—' }}</td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="4" class="scoreboard-empty">Aucune équipe inscrite pour le moment.</td>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

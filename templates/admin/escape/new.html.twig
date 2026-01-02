@@ -3,6 +3,7 @@
 {% block title %}Nouvel escape{% endblock %}
 
 {% block body %}
+    <div class="pilot-page">
     <h1>Créer un escape</h1>
 
     {{ form_start(form) }}
@@ -42,4 +43,5 @@
     {{ form_end(form) }}
 
     <p><a href="{{ path('admin_escape_list') }}">Retour à la liste</a></p>
+    </div>
 {% endblock %}
