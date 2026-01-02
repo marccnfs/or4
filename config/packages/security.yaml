@@ -23,6 +23,8 @@ security:
               username_parameter: email
               password_parameter: password
               enable_csrf: true
+              default_target_path: /admin/board
+              always_use_default_target_path: true
 
             logout:
               path: app_logout

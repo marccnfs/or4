@@ -207,7 +207,7 @@ pointer-events: none; /* Empêche D3.js de capter les clics ici */
     gap: 24px;
 }
 .page_fix {
-    height: 100vh;
+    min-height: 100vh;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -549,6 +549,57 @@ footer {
         grid-template-columns: 1fr;
     }
 }
+@media (max-width: 720px) {
+    .page {
+        padding: 20px 16px 28px;
+    }
+
+    .page_fix {
+        padding: 20px 16px 28px;
+    }
+
+    .first_title h1 {
+        font-size: 2.2rem;
+    }
+
+    .badge2 {
+        position: static;
+    }
+
+    .pilot-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .pilot-actions {
+        width: 100%;
+    }
+
+    .pilot-actions form,
+    .pilot-actions a {
+        width: 100%;
+    }
+
+    .team-list li {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .scoreboard-header {
+        align-items: flex-start;
+    }
+
+    .scoreboard-meta {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .scoreboard-table {
+        display: block;
+        overflow-x: auto;
+    }
+}
 #keywords-visualization, #analysis-visualization {
     flex: 1;
     /*border-bottom: 1px solid #ccc;*/
@@ -620,7 +671,9 @@ footer {
     width: 100%;
     height: 100%;
 }
-.back_head_desk{
+.back_head_desk {
     background-repeat: no-repeat;
-    background-size: contain;
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
 }
