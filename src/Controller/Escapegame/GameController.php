@@ -211,8 +211,10 @@ class GameController extends AbstractController
     #[Route('/game/qr/{code}', name: 'game_qr_scan', requirements: ['code' => '[^/]+'], methods: ['GET'])]
     public function qrScan(
         string $code,
+        Request $request,
         SessionInterface $session,
         TeamRepository $teamRepository,
+        EscapeGameRepository $escapeGameRepository,
         EntityManagerInterface $entityManager,
         GameValidationService $validator
     ): Response {
@@ -225,7 +227,13 @@ class GameController extends AbstractController
 
         $code = trim($code);
         if ($code !== '') {
-            $team = $this->findTeamFromSession($session, $teamRepository);
+            $team = $this->resolveTeamForQrScan(
+                $session,
+                $request,
+                $teamRepository,
+                $escapeGameRepository,
+                $entityManager
+            );
             if ($team === null) {
                 $payload['message'] = 'Équipe introuvable. Merci de rejoindre le jeu.';
             } else {
@@ -429,6 +437,44 @@ class GameController extends AbstractController
 
         return $teamRepository->findOneBy(['registrationCode' => $teamCode]);
     }
+
+    private function resolveTeamForQrScan(
+        SessionInterface $session,
+        Request $request,
+        TeamRepository $teamRepository,
+        EscapeGameRepository $escapeGameRepository,
+        EntityManagerInterface $entityManager
+    ): ?Team {
+        $team = $this->findTeamFromSession($session, $teamRepository);
+        if ($team !== null) {
+            return $team;
+        }
+
+        $sessionCode = strtoupper(trim((string) $session->get(self::SESSION_TEAM_CODE)));
+        $queryCode = strtoupper(trim((string) $request->query->get('team')));
+        $teamCode = $sessionCode !== '' ? $sessionCode : $queryCode;
+        if ($teamCode === '') {
+            return null;
+        }
+
+        $team = $teamRepository->findOneBy(['registrationCode' => $teamCode]);
+        if ($team !== null) {
+            $session->set(self::SESSION_TEAM_CODE, $teamCode);
+            return $team;
+        }
+
+        $escapeGame = $escapeGameRepository->findLatest();
+        if ($escapeGame === null || !$this->isTeamCodeAllowed($escapeGame, $teamCode)) {
+            return null;
+        }
+
+        $team = $this->registerTeam($escapeGame, $teamCode, $entityManager);
+        $entityManager->flush();
+        $session->set(self::SESSION_TEAM_CODE, $teamCode);
+
+        return $team;
+    }
+
 
     private function findStepForTeam(Team $team, string $type, EntityManagerInterface $entityManager): ?Step
     {

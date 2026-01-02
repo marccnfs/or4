@@ -71,7 +71,10 @@ class AdminEscapeQrController extends AbstractController
             $image = null;
 
             if ($code !== '') {
-                $url = $urlGenerator->generate('game_qr_scan', ['code' => $code], UrlGeneratorInterface::ABSOLUTE_URL);
+                $url = $urlGenerator->generate('game_qr_scan', [
+                    'code' => $code,
+                    'team' => $teamCode,
+                ], UrlGeneratorInterface::ABSOLUTE_URL);
                 $image = $qrCodeService->getQrImageUrl($url);
             }
 
