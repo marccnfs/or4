@@ -1,33 +1,33 @@
-{% extends 'game/base.html.twig' %}
+{% extends 'game/base_desk.html.twig' %}
 
 {% block title %}Accueil jeu{% endblock %}
 
 {% block body %}
     <header>
-        <div>
-            <h1>Accueil du jeu</h1>
+        <div class="first_title">
+            {# <h1>{{ escape_game.name }}</h1> #}
+            <h1>L'escape</h1>
             {% if escape_game %}
-                <p class="hint">Escape : {{ escape_game.name }}</p>
+                <p class="hint2">des</p>
             {% else %}
                 <p class="hint">Aucun escape enregistré.</p>
             {% endif %}
         </div>
-        <span class="badge">Écran</span>
+        <span class="badge2">ça va commencer....</span>
     </header>
 
-    <div class="card stack">
-        <div class="status">Les équipes rejoignent la partie via l'adresse suivante :</div>
-        <div>
-            <strong>{{ join_url }}</strong>
-        </div>
-        <a class="btn" href="{{ join_url }}" target="_blank" rel="noopener">Ouvrir la page join</a>
+    <div class="card stack soli">
+        <div class="status">Rejoignez la partie via l'adresse suivante :</div>
+        {#<div class="lien_jeu">{{ join_url }}</div>
+         <a class="btn" href="{{ join_url }}" target="_blank" rel="noopener">Ouvrir la page join</a> #}
+        <div class="btn">{{ join_url }}</div>
     </div>
-
-    <div class="card">
-        <h2>À afficher sur grand écran</h2>
-        <p class="hint">Partagez cette URL avec les équipes pour rejoindre la mission. Le tableau de progression s'affichera automatiquement au lancement du jeu.</p>
+{#
+    <div class="info">
+        <h2>ça va bientôt commencer...</h2>
+        <p class="hint">...</p>
     </div>
-
+#}
     <script>
         (function () {
             const scoreboardUrl = "{{ path('game_scoreboard') }}";

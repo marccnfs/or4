@@ -6,9 +6,9 @@
     <div class="pilot-page" >
 
         <div class="pilot-header">
-            <h1>Bienvenue sur Sjbd Space</h1>
+            <h1>Board Sjbd Space</h1>
             <div class="pilot-actions">
-                <a href="{{ path('app_login') }}" class="btn btn--primary">Se connecter</a>
+                <a href="{{ path('logout') }}" class="btn btn--primary">Se déconnecter</a>
             </div>
             {#
             <div class="pilot-summary">
@@ -22,14 +22,13 @@
             <div class="pilot-teams">
                 <header>
                     <div>
-                        <h2>what is this ?</h2>
+                        <h2>actions</h2>
                     </div>
                 </header>
                 <ul class="team-list" data-pilot-team-list>
-                            <li>
-                                <span class="team-list__code">advanced experiences for communities</span>
-                                <span class="team-list__state">with codex</span>
-                            </li>
+                    <li>
+                        <a href="{{ path('admin_escape_list') }}" target="_blank">liste escape</a>
+                    </li>
                 </ul>
             </div>
         </div>

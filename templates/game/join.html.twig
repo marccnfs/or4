@@ -3,13 +3,15 @@
 {% block title %}Rejoindre une partie{% endblock %}
 
 {% block body %}
-    <header>
-        <div>
-            <h1>Rejoindre la mission</h1>
-            <p class="hint">Scannez le QR code ou entrez votre code d'équipe.</p>
-        </div>
-        <span class="badge">Join</span>
-    </header>
+
+        <header>
+            <div class="titre_header">
+                <h1>Rejoindre la mission</h1>
+                <p class="hint">Entrez votre nom d'équipe.</p>
+            </div>
+            <span class="badge">Join</span>
+        </header>
+
 
     <div class="card stack">
         {% if not game_open %}
@@ -24,8 +26,8 @@
 
         <form method="post" class="stack">
             <label>
-                <span class="hint">Code d'équipe</span>
-                <input class="input" type="text" name="team_code" placeholder="Ex: OR4-2024" value="{{ team_code }}" required>
+                <span class="hint">Nom d'équipe</span>
+                <input class="input" type="text" name="team_code" placeholder="Ex: cactus" value="{{ team_code }}" required>
             </label>
             <button class="btn" type="submit" {% if not game_open %}disabled{% endif %}>Continuer</button>
         </form>
@@ -33,6 +35,6 @@
 
     <div class="card">
         <h2>Besoin d'aide ?</h2>
-        <p class="hint">Demandez à l'animateur votre code, puis validez pour accéder à la salle d'attente.</p>
+        <p class="hint">Le nom de votre equipe est indiqué sur votre table de jeu. Entrez le nom, puis validez pour accéder à la salle d'attente.</p>
     </div>
 {% endblock %}

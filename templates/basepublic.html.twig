@@ -5,19 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Jeu OR4{% endblock %}</title>
     {% block stylesheets %}
-        {{ encore_entry_link_tags('app_mob') }}
+        {{ encore_entry_link_tags('app') }}
     {% endblock %}
 </head>
 {% block javascripts %}
-    {{ encore_entry_script_tags('app_mob') }}
+    {{ encore_entry_script_tags('app') }}
 {% endblock %}
 <body>
-{#  <div class="back_head" style="background-image: url('/img/backgrounds/fond_escape.png')"> #}
-    <div class="back_head" style="background-image: url('/img/backgrounds/fond_escape_2.jpg')">
-<div class="page">
+<div class="page pilot">
     {% block body %}{% endblock %}
     <footer>sjbd advanced experiences</footer>
-</div>
 </div>
 </body>
 </html>

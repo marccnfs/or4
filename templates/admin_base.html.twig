@@ -9,15 +9,15 @@
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
         {% endblock %}
-        {% block content %}
-            <div class="o_blk_1">
-                <h1>SJBD SPACE</h1>
-            </div>
-        {% endblock content %}
-        {% block javascripts %}
-           {{ encore_entry_script_tags('app') }}
-        {% endblock %}
     </head>
+    {% block javascripts %}
+        {{ encore_entry_script_tags('app') }}
+    {% endblock %}
+    {% block content %}
+        <div class="o_blk_1">
+            <h1>SJBD SPACE</h1>
+        </div>
+    {% endblock content %}
     <body>
         {% block body %}{% endblock %}
     </body>

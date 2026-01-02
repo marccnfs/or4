@@ -1,0 +1,126 @@
+:root {
+    color-scheme: light;
+    font-size: 16px;
+}
+* {
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    font-family: "Inter", "Segoe UI", sans-serif;
+    background: #a6d9fe;
+    color: #797ed9;
+}
+.page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 20px 32px;
+    gap: 24px;
+}
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.titre_header{
+    padding-top: 115px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+}
+.titre_header .hint{
+    font-size: 1rem;
+    color: #4b5563;
+    text-align: end;
+}
+
+.badge {
+    background: #101e4a;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+}
+.card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 12px 28px rgba(16, 30, 74, 0.08);
+}
+.stack {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 14px 18px;
+    border-radius: 14px;
+    border: none;
+    background: #101e4a;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+.btn-outline {
+    background: transparent;
+    border: 1px solid #101e4a;
+    color: #101e4a;
+}
+.input {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1px solid #d3d8e6;
+    font-size: 1rem;
+}
+.hint {
+    font-size: 0.9rem;
+    color: #4b5563;
+}
+.status {
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    background: #e9efff;
+    color: #1d3a8a;
+}
+.status.closed {
+    background: #ffe8e8;
+    color: #a32424;
+}
+.progress {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 8px;
+}
+.progress span {
+    padding: 10px 0;
+    text-align: center;
+    border-radius: 10px;
+    background: #f1f4ff;
+    font-weight: 600;
+}
+.progress span.completed {
+    background: #d7f5e1;
+    color: #166534;
+}
+footer {
+    margin-top: auto;
+    text-align: center;
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+.back_head{
+    background-size: contain;
+    background-repeat: no-repeat;
+}
