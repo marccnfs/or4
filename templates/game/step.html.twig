@@ -6,9 +6,9 @@
     <header>
         <div>
             <h1>Étape {{ step }}</h1>
-            <p class="hint">Équipe {{ team_code }} • Étape en cours : {{ current_step }}</p>
+           {#  <p class="hint">Équipe {{ team_code }} • Étape en cours : {{ current_step }}</p> #}
         </div>
-        <span class="badge">{{ step }}</span>
+        <span class="badge">{{ team_code }}</span>
     </header>
 
     <div class="card stack">
@@ -28,10 +28,10 @@
             </div>
         {% endif %}
 
-        <form method="post">
+        <form method="post" class="form_step">
             <label>
-                <span class="hint">Lettre attendue</span>
-                <input class="input" type="text" name="letter" maxlength="1" required>
+               {#  <span class="hint">Lettre attendue</span> #}
+                <input class="input" type="text" placeholder="Lettre attendue..." name="letter" maxlength="1" required>
             </label>
             <button class="btn" type="submit">Valider l'étape {{ step }}</button>
         </form>

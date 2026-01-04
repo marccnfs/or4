@@ -7,7 +7,7 @@
         <header>
             <div class="titre_header">
                 <h1>Rejoindre la mission</h1>
-                <p class="hint">Entrez votre nom d'équipe.</p>
+                {#  <p class="hint">Entrez votre nom d'équipe.</p> #}
             </div>
             <span class="badge">Join</span>
         </header>
@@ -29,12 +29,12 @@
                 <span class="hint">Nom d'équipe</span>
                 <input class="input" type="text" name="team_code" placeholder="Ex: cactus" value="{{ team_code }}" required>
             </label>
-            <button class="btn" type="submit" {% if not game_open %}disabled{% endif %}>Continuer</button>
+            <button class="btn" type="submit" {% if not game_open %}disabled{% endif %}>Confirmer</button>
         </form>
     </div>
 
-    <div class="card">
+    <div class="card_help">
         <h2>Besoin d'aide ?</h2>
-        <p class="hint">Le nom de votre equipe est indiqué sur votre table de jeu. Entrez le nom, puis validez pour accéder à la salle d'attente.</p>
+        <p class="hint">Le nom de votre équipe est indiqué sur votre table de jeu. Saisissez votre nom et confirmez pour entrer dans la salle d'attente.</p>
     </div>
 {% endblock %}

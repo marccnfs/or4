@@ -8,7 +8,7 @@
         {{ encore_entry_link_tags('app_mob') }}
     {% endblock %}
 </head>
-{% set imgback = (back  ? '/img/backgrounds/fond_escape_2.jpg' : (step == 'E' ? '/img/backgrounds/chesseqrcode.png' : '/img/backgrounds/fond_mob_agent.png') ) %}
+{% set imgback = (back  ? '/img/backgrounds/fond_escape_2.jpg' : (step is defined and step == 'E' ? '/img/backgrounds/chesseqrcode.png' : '/img/backgrounds/fond_mob_agent.png') ) %}
 {% block javascripts %}
     {{ encore_entry_script_tags('app_mob') }}
 {% endblock %}
@@ -17,7 +17,7 @@
     <div class="back_head" style="background-image: url({{ imgback }})">
 <div class="page">
     {% block body %}{% endblock %}
-    <footer>sjbd advanced experiences</footer>
+  {#   <footer>sjbd advanced experiences</footer> #}
 </div>
 </div>
 </body>

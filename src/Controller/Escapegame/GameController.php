@@ -83,6 +83,7 @@ class GameController extends AbstractController
             'error' => $error,
             'team_code' => $session->get(self::SESSION_TEAM_CODE),
             'escape_game' => $escapeGame,
+            'back'=> false
         ]);
     }
 
@@ -113,6 +114,7 @@ class GameController extends AbstractController
             'team_code' => $teamCode,
             'game_status' => $status,
             'current_step' => $currentStep,
+            'back'=> false
         ]);
     }
 
