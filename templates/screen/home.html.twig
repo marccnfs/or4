@@ -3,10 +3,11 @@
 {% block title %}Accueil jeu{% endblock %}
 
 {% block body %}
-    <header data-controller="home"
-            data-home-url-value="{{ path('game_scoreboard_data') }}"
-            data-home-stream-url-value="{{ path('game_status_stream') }}"
-            data-home-redirect-url-value="{{ path('game_scoreboard') }}">
+    <header data-controller="game-sync"
+            data-game-sync-url-value="{{ path('game_scoreboard_data') }}"
+            data-game-sync-mercure-url-value="{{ mercure_public_url }}"
+            data-game-sync-topic-value="{{ escape_game ? '/escape/' ~ escape_game.id ~ '/status' : '' }}"
+            data-game-sync-redirect-url-value="{{ path('game_scoreboard') }}">
         <div class="first_title">
             {# <h1>{{ escape_game.name }}</h1> #}
             <h1>L'escape</h1>

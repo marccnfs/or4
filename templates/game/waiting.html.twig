@@ -4,10 +4,11 @@
 
 {% block body %}
 
-    <header data-controller="waiting"
-            data-waiting-url-value="{{ path('game_status') }}"
-            data-waiting-stream-url-value="{{ path('game_status_stream') }}"
-            data-waiting-redirect-url-value="{{ path('game_step', { step: current_step }) }}">
+    <header data-controller="game-sync"
+            data-game-sync-url-value="{{ path('game_status') }}"
+            data-game-sync-mercure-url-value="{{ mercure_public_url }}"
+            data-game-sync-topic-value="{{ escape_id ? '/escape/' ~ escape_id ~ '/status' : '' }}"
+            data-game-sync-redirect-url-value="{{ path('game_step', { step: current_step }) }}">
         <div class="titre_header">
             <h1>En attente du départ</h1>
            {#  <p class="hint">Équipe {{ team_code }}</p> #}

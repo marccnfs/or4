@@ -8,6 +8,7 @@ use App\Entity\Team;
 use App\Entity\TeamQrSequence;
 use App\Repository\EscapeGameRepository;
 use App\Repository\TeamRepository;
+use App\Services\GameStateBroadcaster;
 use App\Services\GameValidationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -115,6 +116,7 @@ class GameController extends AbstractController
             'team_code' => $teamCode,
             'game_status' => $status,
             'current_step' => $currentStep,
+            'escape_id' => $escapeGame->getId(),
             'back'=> false
         ]);
     }
@@ -292,10 +294,10 @@ class GameController extends AbstractController
     }
 
     #[Route('/game/scoreboard', name: 'game_scoreboard', methods: ['GET'])]
-    public function scoreboard(EscapeGameRepository $escapeGameRepository, TeamRepository $teamRepository): Response
+    public function scoreboard(EscapeGameRepository $escapeGameRepository, GameStateBroadcaster $broadcaster): Response
     {
         $escapeGame = $escapeGameRepository->findLatest();
-        $scoreboard = $this->buildScoreboardPayload($escapeGame, $teamRepository);
+        $scoreboard = $broadcaster->buildScoreboardPayload($escapeGame);
 
         return $this->render('screen/scoreboard.html.twig', [
             'escape_game' => $escapeGame,
@@ -305,23 +307,23 @@ class GameController extends AbstractController
     }
 
     #[Route('/game/scoreboard/data', name: 'game_scoreboard_data', methods: ['GET'])]
-    public function scoreboardData(EscapeGameRepository $escapeGameRepository, TeamRepository $teamRepository): JsonResponse
+    public function scoreboardData(EscapeGameRepository $escapeGameRepository, GameStateBroadcaster $broadcaster): JsonResponse
     {
         $escapeGame = $escapeGameRepository->findLatest();
 
-        return $this->json($this->buildScoreboardPayload($escapeGame, $teamRepository));
+        return $this->json($broadcaster->buildScoreboardPayload($escapeGame));
     }
 
     #[Route('/game/scoreboard/stream', name: 'game_scoreboard_stream', methods: ['GET'])]
-    public function scoreboardStream(EscapeGameRepository $escapeGameRepository, TeamRepository $teamRepository): StreamedResponse
+    public function scoreboardStream(EscapeGameRepository $escapeGameRepository, GameStateBroadcaster $broadcaster): StreamedResponse
     {
-        $response = new StreamedResponse(function () use ($escapeGameRepository, $teamRepository): void {
+        $response = new StreamedResponse(function () use ($escapeGameRepository, $broadcaster): void {
             ignore_user_abort(true);
             $start = time();
             $lastPayload = null;
 
             while (!connection_aborted() && (time() - $start) < 20) {
-                $payload = $this->buildScoreboardPayload($escapeGameRepository->findLatest(), $teamRepository);
+                $payload = $broadcaster->buildScoreboardPayload($escapeGameRepository->findLatest());
                 $encoded = json_encode($payload);
 
                 if ($encoded !== $lastPayload) {
@@ -609,68 +611,6 @@ class GameController extends AbstractController
         $entityManager->persist($team);
 
         return $team;
-    }
-
-    private function buildScoreboardPayload(?EscapeGame $escapeGame, TeamRepository $teamRepository): array
-    {
-        if ($escapeGame === null) {
-            return [
-                'status' => 'offline',
-                'escape_name' => null,
-                'total_steps' => 0,
-                'teams' => [],
-                'updated_at' => null,
-            ];
-        }
-
-        $teams = $teamRepository->findBy(['escapeGame' => $escapeGame], ['id' => 'ASC']);
-        $totalSteps = $escapeGame->getSteps()->count();
-        $payloadTeams = [];
-        $latestUpdate = $escapeGame->getUpdatedAt();
-
-        foreach ($teams as $team) {
-            $validatedSteps = 0;
-            $latestTeamUpdate = null;
-            foreach ($team->getTeamStepProgresses() as $progress) {
-                if ($progress->getState() === 'validated') {
-                    $validatedSteps++;
-                }
-                $updatedAt = $progress->getUpdatedAt();
-                if ($latestTeamUpdate === null || $updatedAt > $latestTeamUpdate) {
-                    $latestTeamUpdate = $updatedAt;
-                }
-            }
-
-            if ($latestTeamUpdate !== null && $latestTeamUpdate > $latestUpdate) {
-                $latestUpdate = $latestTeamUpdate;
-            }
-
-
-            $payloadTeams[] = [
-                'name' => $team->getName(),
-                'code' => $team->getRegistrationCode(),
-                'state' => $team->getState(),
-                'score' => $team->getScore(),
-                'validated_steps' => $validatedSteps,
-                'last_update' => $latestTeamUpdate?->format('H:i'),
-            ];
-        }
-
-        usort($payloadTeams, static function (array $left, array $right): int {
-            if ($left['validated_steps'] === $right['validated_steps']) {
-                return $left['name'] <=> $right['name'];
-            }
-
-            return $right['validated_steps'] <=> $left['validated_steps'];
-        });
-
-        return [
-            'status' => $escapeGame->getStatus(),
-            'escape_name' => $escapeGame->getName(),
-            'total_steps' => $totalSteps,
-            'teams' => $payloadTeams,
-            'updated_at' => $latestUpdate->format('H:i'),
-        ];
     }
 
     private function buildTeamProgress(Team $team): array

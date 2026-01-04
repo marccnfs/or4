@@ -4,9 +4,10 @@
 
 {% block body %}
     <div class="pilot-page"
-         data-controller="pilot-teams"
-         data-pilot-teams-url-value="{{ path('game_pilot_teams') }}"
-         data-pilot-teams-stream-url-value="{{ path('game_pilot_teams_stream') }}">
+         data-controller="pilot-teams-sync"
+         data-pilot-teams-sync-url-value="{{ path('game_pilot_teams') }}"
+         data-pilot-teams-sync-mercure-url-value="{{ mercure_public_url }}"
+         data-pilot-teams-sync-topic-value="{{ escape_game ? '/escape/' ~ escape_game.id ~ '/scoreboard' : '' }}">
         <div class="pilot-header">
             <h1>Pilotage du jeu</h1>
             {% if escape_game %}
@@ -36,9 +37,9 @@
                         <h2>Équipes inscrites</h2>
                         <p class="hint">Mise à jour toutes les 3 secondes.</p>
                     </div>
-                    <div class="pilot-teams__count" data-pilot-teams-target="count">{{ escape_game ? escape_game.teams|length : 0 }}</div>
+                    <div class="pilot-teams__count" data-pilot-teams-sync-target="count">{{ escape_game ? escape_game.teams|length : 0 }}</div>
                 </header>
-                <ul class="team-list" data-pilot-teams-target="list">
+                <ul class="team-list" data-pilot-teams-sync-target="list">
                     {% if escape_game and escape_game.teams|length > 0 %}
                         {% for team in escape_game.teams %}
                             {% set qr_total = team.teamQrSequences|length %}
@@ -54,7 +55,7 @@
                         <li class="pilot-teams__empty">Aucune équipe inscrite pour le moment.</li>
                     {% endif %}
                 </ul>
-                <p class="hint" data-pilot-teams-target="updated"></p>
+                <p class="hint" data-pilot-teams-sync-target="updated"></p>
             </div>
 
             <div class="pilot-actions">

@@ -6,9 +6,10 @@
 
 {% block body %}
     <div class="scoreboard-page"
-         data-controller="scoreboard"
-         data-scoreboard-url-value="{{ path('game_scoreboard_data') }}"
-         data-scoreboard-stream-url-value="{{ path('game_scoreboard_stream') }}">
+         data-controller="scoreboard-sync"
+         data-scoreboard-sync-url-value="{{ path('game_scoreboard_data') }}"
+         data-scoreboard-sync-mercure-url-value="{{ mercure_public_url }}"
+         data-scoreboard-sync-topic-value="{{ escape_game ? '/escape/' ~ escape_game.id ~ '/scoreboard' : '' }}">
         <div class="scoreboard-header">
             <div>
                 <h1>Tableau de progression</h1>
@@ -17,9 +18,9 @@
                 </p>
             </div>
             <div class="scoreboard-meta">
-                <span class="scoreboard-status" data-scoreboard-target="status">{{ scoreboard.status }}</span>
-                <span><strong>Étapes :</strong> <span data-scoreboard-target="total">{{ scoreboard.total_steps }}</span></span>
-                <span data-scoreboard-target="updated">
+                <span class="scoreboard-status" data-scoreboard-sync-target="status">{{ scoreboard.status }}</span>
+                <span><strong>Étapes :</strong> <span data-scoreboard-sync-target="total">{{ scoreboard.total_steps }}</span></span>
+                <span data-scoreboard-sync-target="updated">
                     {{ scoreboard.updated_at ? 'Mis à jour à ' ~ scoreboard.updated_at : '' }}
                 </span>
             </div>
@@ -34,7 +35,7 @@
                 <th>Dernière action</th>
             </tr>
             </thead>
-            <tbody data-scoreboard-target="rows">
+            <tbody data-scoreboard-sync-target="rows">
             {% if scoreboard.teams|length > 0 %}
                 {% for team in scoreboard.teams %}
                     {% set percent = scoreboard.total_steps > 0 ? (team.validated_steps / scoreboard.total_steps * 100) : 0 %}
