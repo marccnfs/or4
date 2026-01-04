@@ -476,6 +476,9 @@ footer {
     gap: 16px;
     align-items: center;
     justify-content: space-between;
+    background-color: #66b7fd;
+    padding: 10px;
+    border-radius: 25px;
 }
 
 .scoreboard-status {
@@ -499,7 +502,7 @@ footer {
     width: 100%;
     border-collapse: collapse;
     margin-top: 24px;
-    background: rgba(15, 15, 32, 0.65);
+    background: rgb(12 84 146);
     border-radius: 16px;
     overflow: hidden;
 }

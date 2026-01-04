@@ -1,4 +1,4 @@
-{% extends 'admin_base.html.twig' %}
+{% extends '/game/base_desk.html.twig' %}
 
 {% block title %}Tableau de progression{% endblock %}
 
@@ -9,8 +9,8 @@
         <div class="scoreboard-header">
             <div>
                 <h1>Tableau de progression</h1>
-                <p class="hint">
-                    {{ scoreboard.escape_name ? 'Escape : ' ~ scoreboard.escape_name : 'Aucun escape en cours.' }}
+            {#    <p class="hint">{{ scoreboard.escape_name ? 'Escape : ' ~ scoreboard.escape_name : 'Aucun escape en cours.' }}  #}
+                <p class="hint">{{ scoreboard.escape_name ? '' : 'Aucun escape en cours.' }}
                 </p>
             </div>
             <div class="scoreboard-meta">

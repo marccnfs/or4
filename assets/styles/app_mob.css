@@ -47,7 +47,7 @@ header {
     font-size: 0.85rem;
 }
 .card {
-    background: #fff;
+    background: #ffffff87;
     border-radius: 18px;
     padding: 20px;
     box-shadow: 0 12px 28px rgba(16, 30, 74, 0.08);
@@ -78,11 +78,12 @@ header {
     color: #101e4a;
 }
 .input {
-    width: 100%;
+    width: 100px;
     padding: 14px 16px;
     border-radius: 12px;
     border: 1px solid #d3d8e6;
     font-size: 1rem;
+    margin: 20px;
 }
 .hint {
     font-size: 0.9rem;

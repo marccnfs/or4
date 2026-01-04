@@ -193,6 +193,7 @@ class GameController extends AbstractController
             'current_step' => $currentStep,
             'progress' => $progress,
             'error' => $error,
+            'back'=> false
         ]);
     }
 
@@ -267,6 +268,7 @@ class GameController extends AbstractController
             'team_code' => $session->get(self::SESSION_TEAM_CODE),
             'code' => $code,
             'result' => $payload,
+            'back'=> false
         ]);
     }
 
@@ -282,6 +284,7 @@ class GameController extends AbstractController
         return $this->render('screen/home.html.twig', [
             'escape_game' => $escapeGame,
             'join_url' => $this->generateUrl('game_join', [], UrlGeneratorInterface::ABSOLUTE_URL),
+            'back'=> true
         ]);
     }
 
@@ -294,6 +297,7 @@ class GameController extends AbstractController
         return $this->render('screen/scoreboard.html.twig', [
             'escape_game' => $escapeGame,
             'scoreboard' => $scoreboard,
+            'back'=> false
         ]);
     }
 
@@ -377,6 +381,7 @@ class GameController extends AbstractController
             'team_code' => $teamCode,
             'completed_count' => $completedCount,
             'total_steps' => count($progress),
+            'back'=> false
         ]);
     }
 

@@ -8,11 +8,12 @@
         {{ encore_entry_link_tags('app') }}
     {% endblock %}
 </head>
+{% set imgback = (back  ? '/img/backgrounds/fond_large_escape3.jpeg' : '/img/backgrounds/fond_score.png') %}
 {% block javascripts %}
     {{ encore_entry_script_tags('app') }}
 {% endblock %}
 <body>
-<div class="back_head_desk" style="background-image: url('/img/backgrounds/fond_large_escape3.jpeg')">
+    <div class="back_head_desk" style="background-image: url({{ imgback }})">
     <div class="page_fix">
         {% block body %}{% endblock %}
        {# <footer>OR4 • Expérience mobile</footer> #}

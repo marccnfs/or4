@@ -8,12 +8,13 @@
         {{ encore_entry_link_tags('app_mob') }}
     {% endblock %}
 </head>
+{% set imgback = (back  ? '/img/backgrounds/fond_escape_2.jpg' : (step == 'E' ? '/img/backgrounds/chesseqrcode.png' : '/img/backgrounds/fond_mob_agent.png') ) %}
 {% block javascripts %}
     {{ encore_entry_script_tags('app_mob') }}
 {% endblock %}
 <body>
 {#  <div class="back_head" style="background-image: url('/img/backgrounds/fond_escape.png')"> #}
-    <div class="back_head" style="background-image: url('/img/backgrounds/fond_escape_2.jpg')">
+    <div class="back_head" style="background-image: url({{ imgback }})">
 <div class="page">
     {% block body %}{% endblock %}
     <footer>sjbd advanced experiences</footer>
