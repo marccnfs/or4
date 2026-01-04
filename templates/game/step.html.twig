@@ -28,6 +28,10 @@
                 inscrire ci dessous. Note : suivez les QR code dans l'ordre, et uniquement ceux qui porte le code :
                 "{{ team_code }}".
             </div>
+            <div class="status">
+                QR déjà scannés :
+                {{ scanned_qr_codes is not empty ? scanned_qr_codes|join(', ') : 'Aucun pour le moment.' }}
+            </div>
         {% endif %}
 
         <form method="post" class="form_step" data-game-target="form" data-action="submit->game#validate" data-turbo="false">

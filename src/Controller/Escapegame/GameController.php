@@ -197,12 +197,24 @@ class GameController extends AbstractController
             }
         }
 
+        $scannedQrCodes = [];
+        if ($step === 'E') {
+            $qrSequences = $team->getTeamQrSequences()->toArray();
+            usort($qrSequences, static fn (TeamQrSequence $left, TeamQrSequence $right): int => $left->getOrderNumber() <=> $right->getOrderNumber());
+            foreach ($qrSequences as $sequence) {
+                if ($sequence->isValidated()) {
+                    $scannedQrCodes[] = sprintf('QR%d', $sequence->getOrderNumber());
+                }
+            }
+        }
+
         return $this->render('game/step.html.twig', [
             'team_code' => $teamCode,
             'step' => $step,
             'current_step' => $currentStep,
             'progress' => $progress,
             'error' => $error,
+            'scanned_qr_codes' => $scannedQrCodes,
             'back'=> false
         ]);
     }

@@ -132,9 +132,12 @@ class GameValidationService
         }
 
         if ($matchingSequence->getOrderNumber() !== $nextSequence->getOrderNumber()) {
+            $message = $nextSequence->getOrderNumber() === 1
+                ? 'Commencez par le premier QR code.'
+                : 'Ordre incorrect. Scannez le QR code suivant.';
             return [
                 'valid' => false,
-                'message' => 'Ordre incorrect. Scannez le prochain QR code dans l\'ordre.',
+                'message' => $message,
                 'nextHint' => $nextSequence->getHint(),
                 'completed' => false,
                 'updated' => false,
