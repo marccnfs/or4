@@ -132,13 +132,18 @@ class GameController extends AbstractController
     ): Response
     {
         $teamCode = $session->get(self::SESSION_TEAM_CODE);
-        if (!$teamCode) {
-            return $this->redirectToRoute('game_join');
+        $team = null;
+        if ($teamCode) {
+            $team = $teamRepository->findOneBy(['registrationCode' => $teamCode]);
         }
 
-        $team = $teamRepository->findOneBy(['registrationCode' => $teamCode]);
         if ($team === null) {
-            return $this->redirectToRoute('game_join');
+            $team = $this->resolveTeamFromRequest($request, $teamRepository);
+            if ($team === null) {
+                return $this->redirectToRoute('game_join');
+            }
+            $teamCode = $team->getRegistrationCode();
+            $session->set(self::SESSION_TEAM_CODE, $teamCode);
         }
 
         if ($team->getEscapeGame()->getStatus() !== 'active') {
@@ -242,6 +247,7 @@ class GameController extends AbstractController
         ];
 
         $code = trim($code);
+        $resolvedTeamCode = $session->get(self::SESSION_TEAM_CODE);
         if ($code !== '') {
             $team = $this->resolveTeamForQrScan(
                 $session,
@@ -253,6 +259,7 @@ class GameController extends AbstractController
             if ($team === null) {
                 $payload['message'] = 'Équipe introuvable. Merci de rejoindre le jeu.';
             } else {
+                $resolvedTeamCode = $team->getRegistrationCode();
                 $step = $this->findStepForTeam($team, 'E', $entityManager);
                 if ($step === null) {
                     $payload['message'] = 'Étape inconnue.';
@@ -270,7 +277,7 @@ class GameController extends AbstractController
         }
 
         return $this->render('game/qr_scan.html.twig', [
-            'team_code' => $session->get(self::SESSION_TEAM_CODE),
+            'team_code' => $resolvedTeamCode,
             'code' => $code,
             'result' => $payload,
             'back'=> false
@@ -564,6 +571,24 @@ class GameController extends AbstractController
         $session->set(self::SESSION_TEAM_CODE, $teamCode);
 
         return $team;
+    }
+
+    private function resolveTeamFromRequest(Request $request, TeamRepository $teamRepository): ?Team
+    {
+        $teamCode = strtoupper(trim((string) $request->query->get('team')));
+        if ($teamCode !== '') {
+            $team = $teamRepository->findOneBy(['registrationCode' => $teamCode]);
+            if ($team !== null) {
+                return $team;
+            }
+        }
+
+        $token = trim((string) $request->query->get('token'));
+        if ($token !== '') {
+            return $teamRepository->findOneBy(['qrToken' => $token]);
+        }
+
+        return null;
     }
 
 

@@ -75,6 +75,7 @@ class AdminEscapeController extends AbstractController
         return $this->render('admin/escape/edit.html.twig', [
             'escape' => $escapeGame,
             'form' => $form,
+            'edit'=> true,
         ]);
     }
 

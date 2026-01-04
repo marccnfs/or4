@@ -47,26 +47,27 @@ header {
     font-size: 0.85rem;
 }
 .card {
-    background: #6f89ad4d;
+    background: #66b7fd;
     border-radius: 18px;
     padding: 20px;
     box-shadow: inset -1px 1px 6px 7px rgba(16, 30, 74, 0.08);
 }
 .card_help {
-    background: #f3f4f5;
+    background: rgb(12 84 146);
+    color: #fff;
     border-radius: 18px;
     padding: 20px;
     box-shadow: inset -1px 1px 6px 7px rgba(16, 30, 74, 0.08);
 }
 .card_help h2{
-    color:#1f3b73;
+    color:#dadce1;
     text-align: center;
     margin-block-start: 0;
     margin-block-end: 0;
 }
 .card_help .hint{
     font-size: 1rem;
-    color: #011531;
+    color: #e1e4e7;
 }
 .stack {
     display: flex;
@@ -110,15 +111,15 @@ header {
 }
 .hint {
     font-size: 0.9rem;
-    color: #4b5563;
+    color: #ffffff;
 }
 .status {
     padding: 10px 14px;
     border-radius: 12px;
     font-weight: 600;
     font-size: 0.9rem;
-    background: #e9efff;
-    color: #1d3a8a;
+    background: rgb(12 84 146);
+    color: #ffffff;
 }
 .status.closed {
     background: #ffe8e8;
@@ -166,5 +167,125 @@ footer {
 
     .card {
         padding: 24px;
+    }
+}
+/* === Stepper (progression horizontale mobile-first) === */
+.stepper {
+    --line-bg: rgba(255, 255, 255, 0.35);
+    --dot-size: 34px;
+    --dot-border: 2px;
+
+    list-style: none;
+    padding: 10px 6px 0;
+    margin: 8px 0 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.stepper__item {
+    flex: 1;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* La barre entre les points (ligne de fond) */
+.stepper__item:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: calc(var(--dot-size) / 2 - 1px);
+    left: calc(50% + (var(--dot-size) / 2));
+    right: calc(-50% + (var(--dot-size) / 2));
+    height: 2px;
+    background: var(--line-bg);
+    border-radius: 999px;
+}
+
+/* Le point (gris par défaut) */
+.stepper__dot {
+    width: var(--dot-size);
+    height: var(--dot-size);
+    border-radius: 999px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    font-weight: 800;
+    font-size: 0.95rem;
+    line-height: 1;
+
+    background: rgba(255, 255, 255, 0.25);
+    border: var(--dot-border) solid rgba(255, 255, 255, 0.55);
+    color: rgba(255, 255, 255, 0.8);
+
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+}
+
+/* Optionnel : label sous chaque point */
+.stepper__label {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.75rem;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* === États complétés : couleur vive différente selon l'étape === */
+
+/* Étape 1 */
+.stepper__item.is-complete[data-step="1"] .stepper__dot {
+    background: #22c55e;
+    border-color: rgba(255, 255, 255, 0.85);
+    color: #0b1b12;
+}
+
+/* Étape 2 */
+.stepper__item.is-complete[data-step="2"] .stepper__dot {
+    background: #f59e0b;
+    border-color: rgba(255, 255, 255, 0.85);
+    color: #1f1403;
+}
+
+/* Étape 3 */
+.stepper__item.is-complete[data-step="3"] .stepper__dot {
+    background: #3b82f6;
+    border-color: rgba(255, 255, 255, 0.85);
+    color: #071427;
+}
+
+/* Étape 4 */
+.stepper__item.is-complete[data-step="4"] .stepper__dot {
+    background: #a855f7;
+    border-color: rgba(255, 255, 255, 0.85);
+    color: #12061f;
+}
+
+/* Étape 5 */
+.stepper__item.is-complete[data-step="5"] .stepper__dot {
+    background: #ef4444;
+    border-color: rgba(255, 255, 255, 0.85);
+    color: #240506;
+}
+
+/* La portion de barre "active" : on colorie la ligne après une étape complétée */
+.stepper__item.is-complete:not(:last-child)::after {
+    background: rgba(255, 255, 255, 0.75);
+}
+
+/* Un peu plus compact sur très petit écran */
+@media (max-width: 360px) {
+    .stepper {
+        --dot-size: 30px;
+        gap: 8px;
+        padding-left: 0;
+        padding-right: 0;
+    }
+    .stepper__dot {
+        font-size: 0.9rem;
     }
 }

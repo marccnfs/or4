@@ -12,6 +12,11 @@ body .pilot{
     min-height: 100vh;
     background-color: #161414;
 }
+.black_sjbd_edit{
+    min-height: 100vh;
+    background-color: #161414;
+    overflow: scroll;
+}
 text {
 font-family: Arial, sans-serif;
 font-size: 14px;
@@ -228,6 +233,7 @@ pointer-events: none; /* Empêche D3.js de capter les clics ici */
 .first_title h1{
     font-size: 3rem;
     margin: 0;
+    padding-top: 15px;
 }
 header {
     display: flex;
@@ -319,8 +325,10 @@ header {
     color: #4b5563;
 }
 .hint2{
-    font-size: 1.5rem;
-    color: #7cd015;
+    font-size: 3rem;
+    color: #8a0609;
+    font-weight: 600;
+    margin-block: 0;
 }
 .status {
     padding: 10px 14px;

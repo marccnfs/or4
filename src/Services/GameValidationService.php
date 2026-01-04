@@ -93,18 +93,8 @@ class GameValidationService
             ];
         }
 
-        $sequences = $team->getTeamQrSequences()->toArray();
-        usort($sequences, static function (TeamQrSequence $left, TeamQrSequence $right): int {
-            return $left->getOrderNumber() <=> $right->getOrderNumber();
-        });
-
-        $nextSequence = null;
-        foreach ($sequences as $sequence) {
-            if (!$sequence->isValidated()) {
-                $nextSequence = $sequence;
-                break;
-            }
-        }
+        $sequences = $this->getSortedQrSequences($team);
+        $nextSequence = $this->getNextQrSequenceFromList($sequences);
         if ($nextSequence === null) {
             return [
                 'valid' => false,
@@ -116,7 +106,7 @@ class GameValidationService
 
         $matchingSequence = null;
         foreach ($sequences as $sequence) {
-            if ($sequence->getQrCode() === $code) {
+            if (strcasecmp($sequence->getQrCode(), $code) === 0) {
                 $matchingSequence = $sequence;
                 break;
             }
@@ -135,8 +125,8 @@ class GameValidationService
             return [
                 'valid' => true,
                 'message' => $matchingSequence->getHint() ?? 'QR déjà validé.',
-                'nextHint' => $this->getNextQrHint($team),
-                'completed' => $this->isQrSequenceCompleted($team),
+                'nextHint' => $this->getNextQrHintFromList($sequences),
+                'completed' => $this->areQrSequencesCompleted($sequences),
                 'updated' => false,
             ];
         }
@@ -154,7 +144,7 @@ class GameValidationService
         $matchingSequence->setValidated(true);
 
         $progress = $this->getOrCreateProgress($team, $step);
-        $completed = $this->isQrSequenceCompleted($team);
+        $completed = $this->areQrSequencesCompleted($sequences);
         if ($completed) {
             $this->markProgressValidated($progress, $step->getLetter());
         } else {
@@ -171,7 +161,7 @@ class GameValidationService
         return [
             'valid' => true,
             'message' => $responseMessage,
-            'nextHint' => $this->getNextQrHint($team),
+            'nextHint' => $this->getNextQrHintFromList($sequences),
             'completed' => $completed,
             'updated' => true,
         ];
@@ -295,10 +285,35 @@ class GameValidationService
 
     private function getNextQrSequence(Team $team): ?TeamQrSequence
     {
-        $sequences = $team->getTeamQrSequences()->toArray();
-        usort($sequences, static function (TeamQrSequence $left, TeamQrSequence $right): int {
-            return $left->getOrderNumber() <=> $right->getOrderNumber();
-        });
+        return $this->getNextQrSequenceFromList($this->getSortedQrSequences($team));
+    }
+
+    private function isQrSequenceCompleted(Team $team): bool
+    {
+        return $this->areQrSequencesCompleted($this->getSortedQrSequences($team));
+    }
+
+    private function getNextQrHint(Team $team): ?string
+    {
+        return $this->getNextQrHintFromList($this->getSortedQrSequences($team));
+    }
+
+    /**
+     * @return TeamQrSequence[]
+     */
+    private function getSortedQrSequences(Team $team): array
+    {
+        return $this->entityManager->getRepository(TeamQrSequence::class)->findBy(
+            ['team' => $team],
+            ['orderNumber' => 'ASC']
+        );
+    }
+
+    /**
+     * @param TeamQrSequence[] $sequences
+     */
+    private function getNextQrSequenceFromList(array $sequences): ?TeamQrSequence
+    {
 
         foreach ($sequences as $sequence) {
             if (!$sequence->isValidated()) {
@@ -309,9 +324,12 @@ class GameValidationService
         return null;
     }
 
-    private function isQrSequenceCompleted(Team $team): bool
+    /**
+     * @param TeamQrSequence[] $sequences
+     */
+    private function areQrSequencesCompleted(array $sequences): bool
     {
-        foreach ($team->getTeamQrSequences() as $sequence) {
+        foreach ($sequences as $sequence) {
             if (!$sequence->isValidated()) {
                 return false;
             }
@@ -320,11 +338,12 @@ class GameValidationService
         return true;
     }
 
-    private function getNextQrHint(Team $team): ?string
+    /**
+     * @param TeamQrSequence[] $sequences
+     */
+    private function getNextQrHintFromList(array $sequences): ?string
     {
-        $next = $this->getNextQrSequence($team);
-
-        return $next?->getHint();
+        return $this->getNextQrSequenceFromList($sequences)?->getHint();
     }
 
     private function buildFinalCombination(Team $team): string

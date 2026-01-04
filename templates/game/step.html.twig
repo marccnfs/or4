@@ -43,7 +43,7 @@
         {% endif %}
     </div>
 
-    <div class="card">
+    {#  <div class="card">
         <h2>Progression</h2>
         <div class="progress">
             {% for label, data in progress %}
@@ -52,6 +52,25 @@
             </span>
             {% endfor %}
         </div>
+    </div>
+    #}
+
+    <div class="card">
+        <h2>Progression</h2>
+
+        <ol class="stepper" aria-label="Progression">
+            {% for label, data in progress %}
+                {% set stepIndex = loop.index %}
+
+                <li class="stepper__item {% if data.completed %}is-complete{% endif %}"
+                    data-step="{{ stepIndex }}"
+                    aria-current="{% if data.completed and loop.last %}step{% endif %}">
+                    <span class="stepper__dot" aria-hidden="true">{{ stepIndex }}</span>
+                    {# Optionnel : afficher le label sous la barre (si tu veux) #}
+                    {# <span class="stepper__label">{{ label }}</span> #}
+                </li>
+            {% endfor %}
+        </ol>
     </div>
 
 {% endblock %}
