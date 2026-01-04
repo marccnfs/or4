@@ -3,7 +3,10 @@
 {% block title %}Accueil jeu{% endblock %}
 
 {% block body %}
-    <header>
+    <header data-controller="home"
+            data-home-url-value="{{ path('game_scoreboard_data') }}"
+            data-home-stream-url-value="{{ path('game_status_stream') }}"
+            data-home-redirect-url-value="{{ path('game_scoreboard') }}">
         <div class="first_title">
             {# <h1>{{ escape_game.name }}</h1> #}
             <h1>L'escape</h1>
@@ -28,24 +31,4 @@
         <p class="hint">...</p>
     </div>
 #}
-    <script>
-        (function () {
-            const scoreboardUrl = "{{ path('game_scoreboard') }}";
-            const statusUrl = "{{ path('game_scoreboard_data') }}";
-
-            const checkStatus = () => {
-                fetch(statusUrl, { headers: { 'Accept': 'application/json' } })
-                    .then((response) => response.ok ? response.json() : null)
-                    .then((payload) => {
-                        if (payload && payload.status === 'active') {
-                            window.location.href = scoreboardUrl;
-                        }
-                    })
-                    .catch(() => {});
-            };
-
-            checkStatus();
-            setInterval(checkStatus, 4000);
-        })();
-    </script>
 {% endblock %}

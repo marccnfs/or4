@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -311,6 +312,39 @@ class GameController extends AbstractController
         return $this->json($this->buildScoreboardPayload($escapeGame, $teamRepository));
     }
 
+    #[Route('/game/scoreboard/stream', name: 'game_scoreboard_stream', methods: ['GET'])]
+    public function scoreboardStream(EscapeGameRepository $escapeGameRepository, TeamRepository $teamRepository): StreamedResponse
+    {
+        $response = new StreamedResponse(function () use ($escapeGameRepository, $teamRepository): void {
+            ignore_user_abort(true);
+            $start = time();
+            $lastPayload = null;
+
+            while (!connection_aborted() && (time() - $start) < 20) {
+                $payload = $this->buildScoreboardPayload($escapeGameRepository->findLatest(), $teamRepository);
+                $encoded = json_encode($payload);
+
+                if ($encoded !== $lastPayload) {
+                    echo "event: scoreboard\n";
+                    echo 'data: ' . $encoded . "\n\n";
+                    $lastPayload = $encoded;
+                    if (function_exists('ob_flush')) {
+                        @ob_flush();
+                    }
+                    flush();
+                }
+
+                sleep(1);
+            }
+        });
+
+        $response->headers->set('Content-Type', 'text/event-stream');
+        $response->headers->set('Cache-Control', 'no-cache');
+        $response->headers->set('X-Accel-Buffering', 'no');
+
+        return $response;
+    }
+
     #[Route('/game/validate', name: 'game_validate', methods: ['POST'])]
     public function validate(
         Request $request,
@@ -365,6 +399,44 @@ class GameController extends AbstractController
         }
 
         return $this->json($response);
+    }
+
+    #[Route('/game/status/stream', name: 'game_status_stream', methods: ['GET'])]
+    public function statusStream(EscapeGameRepository $escapeGameRepository): StreamedResponse
+    {
+        $response = new StreamedResponse(function () use ($escapeGameRepository): void {
+            ignore_user_abort(true);
+            $start = time();
+            $lastPayload = null;
+
+            while (!connection_aborted() && (time() - $start) < 20) {
+                $escapeGame = $escapeGameRepository->findLatest();
+                $payload = [
+                    'status' => $escapeGame?->getStatus() ?? 'offline',
+                    'escape_name' => $escapeGame?->getName(),
+                    'updated_at' => $escapeGame?->getUpdatedAt()?->format('H:i'),
+                ];
+                $encoded = json_encode($payload);
+
+                if ($encoded !== $lastPayload) {
+                    echo "event: escape_status\n";
+                    echo 'data: ' . $encoded . "\n\n";
+                    $lastPayload = $encoded;
+                    if (function_exists('ob_flush')) {
+                        @ob_flush();
+                    }
+                    flush();
+                }
+
+                sleep(1);
+            }
+        });
+
+        $response->headers->set('Content-Type', 'text/event-stream');
+        $response->headers->set('Cache-Control', 'no-cache');
+        $response->headers->set('X-Accel-Buffering', 'no');
+
+        return $response;
     }
 
 
@@ -547,25 +619,32 @@ class GameController extends AbstractController
                 'escape_name' => null,
                 'total_steps' => 0,
                 'teams' => [],
+                'updated_at' => null,
             ];
         }
 
         $teams = $teamRepository->findBy(['escapeGame' => $escapeGame], ['id' => 'ASC']);
         $totalSteps = $escapeGame->getSteps()->count();
         $payloadTeams = [];
+        $latestUpdate = $escapeGame->getUpdatedAt();
 
         foreach ($teams as $team) {
             $validatedSteps = 0;
-            $latestUpdate = null;
+            $latestTeamUpdate = null;
             foreach ($team->getTeamStepProgresses() as $progress) {
                 if ($progress->getState() === 'validated') {
                     $validatedSteps++;
                 }
                 $updatedAt = $progress->getUpdatedAt();
-                if ($latestUpdate === null || $updatedAt > $latestUpdate) {
-                    $latestUpdate = $updatedAt;
+                if ($latestTeamUpdate === null || $updatedAt > $latestTeamUpdate) {
+                    $latestTeamUpdate = $updatedAt;
                 }
             }
+
+            if ($latestTeamUpdate !== null && $latestTeamUpdate > $latestUpdate) {
+                $latestUpdate = $latestTeamUpdate;
+            }
+
 
             $payloadTeams[] = [
                 'name' => $team->getName(),
@@ -573,7 +652,7 @@ class GameController extends AbstractController
                 'state' => $team->getState(),
                 'score' => $team->getScore(),
                 'validated_steps' => $validatedSteps,
-                'last_update' => $latestUpdate?->format('H:i'),
+                'last_update' => $latestTeamUpdate?->format('H:i'),
             ];
         }
 
@@ -590,7 +669,7 @@ class GameController extends AbstractController
             'escape_name' => $escapeGame->getName(),
             'total_steps' => $totalSteps,
             'teams' => $payloadTeams,
-            'updated_at' => $escapeGame->getUpdatedAt()->format('H:i'),
+            'updated_at' => $latestUpdate->format('H:i'),
         ];
     }
 

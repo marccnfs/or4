@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -141,6 +142,74 @@ class GamePilotController extends AbstractController
             'updated_at' => $escapeGame->getUpdatedAt()->format('H:i'),
         ]);
     }
+
+    #[Route('/game/pilot/teams/stream', name: 'game_pilot_teams_stream', methods: ['GET'])]
+    public function teamsStream(EscapeGameRepository $escapeGameRepository, TeamRepository $teamRepository): StreamedResponse
+    {
+        $response = new StreamedResponse(function () use ($escapeGameRepository, $teamRepository): void {
+            ignore_user_abort(true);
+            $start = time();
+            $lastPayload = null;
+
+            while (!connection_aborted() && (time() - $start) < 20) {
+                $escapeGame = $escapeGameRepository->findLatest();
+                if ($escapeGame === null) {
+                    $payload = [
+                        'status' => 'offline',
+                        'teams' => [],
+                        'count' => 0,
+                        'updated_at' => null,
+                    ];
+                } else {
+                    $teams = $teamRepository->findBy(['escapeGame' => $escapeGame], ['id' => 'ASC']);
+                    $payloadTeams = array_map(static function ($team): array {
+                        $totalQr = $team->getTeamQrSequences()->count();
+                        $scannedQr = 0;
+                        foreach ($team->getTeamQrSequences() as $sequence) {
+                            if ($sequence->isValidated()) {
+                                $scannedQr++;
+                            }
+                        }
+                        return [
+                            'name' => $team->getName(),
+                            'code' => $team->getRegistrationCode(),
+                            'state' => $team->getState(),
+                            'score' => $team->getScore(),
+                            'qr_scanned' => $scannedQr,
+                            'qr_total' => $totalQr,
+                        ];
+                    }, $teams);
+
+                    $payload = [
+                        'status' => $escapeGame->getStatus(),
+                        'teams' => $payloadTeams,
+                        'count' => count($payloadTeams),
+                        'updated_at' => $escapeGame->getUpdatedAt()->format('H:i'),
+                    ];
+                }
+
+                $encoded = json_encode($payload);
+                if ($encoded !== $lastPayload) {
+                    echo "event: pilot_teams\n";
+                    echo 'data: ' . $encoded . "\n\n";
+                    $lastPayload = $encoded;
+                    if (function_exists('ob_flush')) {
+                        @ob_flush();
+                    }
+                    flush();
+                }
+
+                sleep(1);
+            }
+        });
+
+        $response->headers->set('Content-Type', 'text/event-stream');
+        $response->headers->set('Cache-Control', 'no-cache');
+        $response->headers->set('X-Accel-Buffering', 'no');
+
+        return $response;
+    }
+
 
     private function resolveEscapeGame(Request $request, EscapeGameRepository $escapeGameRepository): ?EscapeGame
     {

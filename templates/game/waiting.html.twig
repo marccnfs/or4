@@ -4,7 +4,10 @@
 
 {% block body %}
 
-    <header>
+    <header data-controller="waiting"
+            data-waiting-url-value="{{ path('game_status') }}"
+            data-waiting-stream-url-value="{{ path('game_status_stream') }}"
+            data-waiting-redirect-url-value="{{ path('game_step', { step: current_step }) }}">
         <div class="titre_header">
             <h1>En attente du départ</h1>
            {#  <p class="hint">Équipe {{ team_code }}</p> #}
@@ -30,18 +33,4 @@
         <p class="hint">Gardez ce téléphone avec vous : il affiche votre progression tout au long du jeu.</p>
     </div>
 #}
-    <script>
-        const pollStatus = () => {
-            fetch("{{ path('game_status') }}", { credentials: "same-origin" })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'active') {
-                        window.location.href = "{{ path('game_step', { step: current_step }) }}";
-                    }
-                })
-                .catch(() => {});
-        };
-
-        setInterval(pollStatus, 3000);
-    </script>
 {% endblock %}

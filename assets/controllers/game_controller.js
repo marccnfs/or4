@@ -1,7 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
-    static targets = ['input', 'step', 'status'];
+    static targets = ['input', 'step', 'status', 'form'];
     static values = {
         endpoint: String,
     };
@@ -23,6 +23,14 @@ export default class extends Controller {
         });
 
         this.updateStatus(response.message || (response.valid ? 'Lettre validée.' : 'Lettre incorrecte.'));
+
+        if (response.valid) {
+            if (this.hasFormTarget && this.hasStepTarget) {
+                this.formTarget.submit();
+            } else {
+                window.location.reload();
+            }
+        }
     }
 
     async postJson(url, payload) {
@@ -50,4 +58,5 @@ export default class extends Controller {
             this.statusTarget.textContent = message;
         }
     }
+
 }

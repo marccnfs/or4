@@ -5,7 +5,10 @@
 {% block content %}{% endblock %}
 
 {% block body %}
-    <div class="scoreboard-page" data-scoreboard-url="{{ path('game_scoreboard_data') }}">
+    <div class="scoreboard-page"
+         data-controller="scoreboard"
+         data-scoreboard-url-value="{{ path('game_scoreboard_data') }}"
+         data-scoreboard-stream-url-value="{{ path('game_scoreboard_stream') }}">
         <div class="scoreboard-header">
             <div>
                 <h1>Tableau de progression</h1>
@@ -14,9 +17,9 @@
                 </p>
             </div>
             <div class="scoreboard-meta">
-                <span class="scoreboard-status" data-scoreboard-status>{{ scoreboard.status }}</span>
-                <span><strong>Étapes :</strong> <span data-scoreboard-total>{{ scoreboard.total_steps }}</span></span>
-                <span data-scoreboard-updated>
+                <span class="scoreboard-status" data-scoreboard-target="status">{{ scoreboard.status }}</span>
+                <span><strong>Étapes :</strong> <span data-scoreboard-target="total">{{ scoreboard.total_steps }}</span></span>
+                <span data-scoreboard-target="updated">
                     {{ scoreboard.updated_at ? 'Mis à jour à ' ~ scoreboard.updated_at : '' }}
                 </span>
             </div>
@@ -31,7 +34,7 @@
                 <th>Dernière action</th>
             </tr>
             </thead>
-            <tbody data-scoreboard-rows>
+            <tbody data-scoreboard-target="rows">
             {% if scoreboard.teams|length > 0 %}
                 {% for team in scoreboard.teams %}
                     {% set percent = scoreboard.total_steps > 0 ? (team.validated_steps / scoreboard.total_steps * 100) : 0 %}
