@@ -13,6 +13,8 @@ export default class extends Controller {
         pollingInterval: Number,
         reconnectDelay: Number,
         fallbackTimeout: Number,
+        reloadOnChange: Boolean,
+        currentStatus: String,
     };
 
     connect() {
@@ -125,6 +127,7 @@ export default class extends Controller {
 
         try {
             const response = await fetch(this.urlValue, {
+                cache: 'no-store',
                 headers: { Accept: 'application/json' },
             });
 
@@ -140,8 +143,17 @@ export default class extends Controller {
     }
 
     handleStatus(payload) {
-        if (payload && payload.status === 'active' && this.redirectUrlValue) {
+        if (!payload) {
+            return;
+        }
+
+        if (payload.status === 'active' && this.redirectUrlValue) {
             window.location.href = this.redirectUrlValue;
+            return;
+        }
+
+        if (this.reloadOnChangeValue && this.hasCurrentStatusValue && payload.status !== this.currentStatusValue) {
+            window.location.reload();
         }
     }
 }

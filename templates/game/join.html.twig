@@ -4,7 +4,12 @@
 
 {% block body %}
 
-        <header>
+    <header data-controller="game-sync"
+            data-game-sync-url-value="{{ path('game_scoreboard_data') }}"
+            data-game-sync-mercure-url-value="{{ mercure_public_url }}"
+            data-game-sync-topic-value="{{ escape_game ? '/escape/' ~ escape_game.id ~ '/status' : '' }}"
+            data-game-sync-reload-on-change-value="true"
+            data-game-sync-current-status-value="{{ escape_game ? escape_game.status : 'offline' }}">
             <div class="titre_header">
                 <h1>Rejoindre la mission</h1>
                 {#  <p class="hint">Entrez votre nom d'équipe.</p> #}
