@@ -1,0 +1,13 @@
+services:
+  mercure:
+    image: dunglas/mercure
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3001:80"
+    environment:
+      SERVER_NAME: ":80"
+      MERCURE_PUBLISHER_JWT_KEY: "24210e07cd4cc6a40c82e18ba2c2efaaf5d18a6c6a52774bb0ee90968f74c71c"
+      MERCURE_SUBSCRIBER_JWT_KEY: "8ac871f66d7e942a590ca6c852f1258217c89b1124eb624b73cac07c69fd7524"
+      MERCURE_EXTRA_DIRECTIVES: |
+        cors_origins http://127.0.0.1:8000 http://localhost:8000 http://127.0.0.1:8080 http://localhost:8080
+        anonymous

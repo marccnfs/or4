@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>Mercure dev listen</title>
+</head>
+<body>
+<h1>Mercure dev listen</h1>
+<pre id="out">En attente…</pre>
+
+<script>
+    const hub = "{{ mercure_public_url }}";
+    const url = new URL(hub);
+    url.searchParams.append('topic', '/test');
+
+    const out = document.getElementById('out');
+    const es = new EventSource(url.toString());
+
+    es.onmessage = (e) => {
+        out.textContent = `Reçu: ${e.data}\n\n` + out.textContent;
+    };
+
+    es.onerror = () => {
+        out.textContent = `ERREUR: connexion Mercure perdue (reconnexion auto)…\n\n` + out.textContent;
+    };
+</script>
+</body>
+</html>
