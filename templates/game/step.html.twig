@@ -25,25 +25,33 @@
             <div class="status">
                 Pour trouver la dernière lettre suivez maintenant la piste des QR code. Commencez par scanner le premier
                 qui est sur votre table, et suivez ainsi la piste jusqu'au dernier QR code qui vous révèlera la lettre à
-                inscrire ci dessous. Note : suivez les QR code dans l'ordre, et uniquement ceux qui porte le code :
+                inscrire  inscrire. Note : suivez les QR code dans l'ordre, et uniquement ceux qui portent le code :
                 "{{ team_code }}".
             </div>
             <div class="status">
                 QR déjà scannés :
                 {{ scanned_qr_codes is not empty ? scanned_qr_codes|join(', ') : 'Aucun pour le moment.' }}
             </div>
+            {% if progress['E'] is defined and progress['E'].completed %}
+                <div class="status">Séquence terminée. Vous pouvez passer à l'étape F.</div>
+                <a class="btn" href="{{ path('game_final') }}">Accéder à l'étape finale</a>
+            {% else %}
+                <div class="hint">Scannez chaque QR code pour faire avancer la séquence.</div>
+            {% endif %}
         {% endif %}
 
-        <form method="post" class="form_step" data-game-target="form" data-action="submit->game#validate" data-turbo="false">
-            <input type="hidden" value="{{ step }}" data-game-target="step">
-            <label>
-               {#  <span class="hint">Lettre attendue</span> #}
-                <input class="input" type="text" placeholder="Lettre attendue..." name="letter" maxlength="1" required data-game-target="input">
-            </label>
-            <button class="btn" type="submit">Valider l'étape {{ step }}</button>
-        </form>
-        {% if not error %}
-            <div class="status closed" data-game-status-target></div>
+        {% if step in ['A', 'B', 'C', 'D'] %}
+            <form method="post" class="form_step" data-game-target="form" data-action="submit->game#validate" data-turbo="false">
+                <input type="hidden" value="{{ step }}" data-game-target="step">
+                <label>
+                    {#  <span class="hint">Lettre attendue</span> #}
+                    <input class="input" type="text" placeholder="Lettre attendue..." name="letter" maxlength="1" required data-game-target="input">
+                </label>
+                <button class="btn" type="submit">Valider l'étape {{ step }}</button>
+            </form>
+            {% if not error %}
+                <div class="status closed" data-game-status-target></div>
+            {% endif %}
         {% endif %}
     </div>
 

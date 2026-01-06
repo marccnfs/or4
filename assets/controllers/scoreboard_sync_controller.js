@@ -173,6 +173,11 @@ export default class extends Controller {
         teams.forEach((team) => {
             const row = document.createElement('tr');
 
+            const isWinner = totalSteps > 0 && team.validated_steps >= totalSteps;
+            if (isWinner) {
+                row.classList.add('scoreboard-winner');
+            }
+
             const name = document.createElement('td');
             name.textContent = team.name;
 

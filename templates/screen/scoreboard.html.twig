@@ -39,7 +39,8 @@
             {% if scoreboard.teams|length > 0 %}
                 {% for team in scoreboard.teams %}
                     {% set percent = scoreboard.total_steps > 0 ? (team.validated_steps / scoreboard.total_steps * 100) : 0 %}
-                    <tr>
+                    {% set isWinner = scoreboard.total_steps > 0 and team.validated_steps >= scoreboard.total_steps %}
+                    <tr class="{{ isWinner ? 'scoreboard-winner' : '' }}">
                         <td>{{ team.name }}</td>
                         <td>{{ team.code }}</td>
                         <td>

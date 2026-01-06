@@ -28,10 +28,6 @@ class GameValidationService
     {
         $type = strtoupper($step->getType());
 
-        if ($type === 'E' && array_key_exists('letter', $payload)) {
-            return $this->validateQrLetterStep($team, $step, $payload);
-        }
-
         return match ($type) {
             'A', 'B', 'C', 'D' => $this->validateLetterStep($team, $step, $payload),
             'E' => $this->validateQrStep($team, $step, $payload),
@@ -122,19 +118,25 @@ class GameValidationService
         }
 
         if ($matchingSequence->isValidated()) {
+            $nextHint = $matchingSequence->getHint();
+            $message = $this->buildAlreadyScannedMessage($matchingSequence, $nextHint);
+            $completed = $this->areQrSequencesCompleted($sequences);
             return [
                 'valid' => true,
-                'message' => $matchingSequence->getHint() ?? 'QR déjà validé.',
-                'nextHint' => $this->getNextQrHintFromList($sequences),
-                'completed' => $this->areQrSequencesCompleted($sequences),
+                'message' => $message,
+                'nextHint' => $completed ? null : $this->getNextQrHintFromList($sequences),
+                'completed' => $completed,
                 'updated' => false,
             ];
         }
 
         if ($matchingSequence->getOrderNumber() !== $nextSequence->getOrderNumber()) {
             $message = $nextSequence->getOrderNumber() === 1
-                ? 'Commencez par le premier QR code.'
-                : 'Ordre incorrect. Scannez le QR code suivant.';
+                ? 'Commencez par le QR1.'
+                : sprintf(
+                    'Il faut d\'abord que vous trouviez le QR%d avant de scanner celui-ci.',
+                    $nextSequence->getOrderNumber()
+                );
             return [
                 'valid' => false,
                 'message' => $message,
@@ -156,15 +158,14 @@ class GameValidationService
         }
 
         $this->incrementScore($team, true);
-        $responseMessage = $matchingSequence->getHint();
-        if ($responseMessage === null) {
-            $responseMessage = $completed ? 'Séquence terminée.' : 'QR validé.';
-        }
+        $responseMessage = $completed
+            ? strtoupper($step->getLetter())
+            : ($matchingSequence->getHint() ?? 'QR validé.');
 
         return [
             'valid' => true,
             'message' => $responseMessage,
-            'nextHint' => $this->getNextQrHintFromList($sequences),
+            'nextHint' => $completed ? null : $this->getNextQrHintFromList($sequences),
             'completed' => $completed,
             'updated' => true,
         ];
@@ -173,44 +174,18 @@ class GameValidationService
     /**
      * @return array<string, mixed>
      */
-    private function validateQrLetterStep(Team $team, Step $step, array $payload): array
+    private function buildAlreadyScannedMessage(TeamQrSequence $sequence, ?string $hint): string
     {
-        $letter = strtoupper(trim((string) ($payload['letter'] ?? '')));
-        if ($letter === '') {
-            return [
-                'valid' => false,
-                'message' => 'Lettre manquante.',
-                'updated' => false,
-            ];
+        if ($hint !== null && $hint !== '') {
+            return sprintf(
+                'Vous avez déjà scanné ce QR code, trouvez maintenant le suivant dans "%s".',
+                $hint
+            );
         }
+        return $sequence->getOrderNumber() === 5
+            ? 'Séquence terminée.'
+            : 'Vous avez déjà scanné ce QR code.';
 
-        if (!$this->isQrSequenceCompleted($team)) {
-            return [
-                'valid' => false,
-                'message' => 'Séquence QR non terminée.',
-                'updated' => false,
-            ];
-        }
-
-        $expected = strtoupper(trim($step->getLetter()));
-        if ($letter !== $expected) {
-            return [
-                'valid' => false,
-                'message' => 'Lettre incorrecte.',
-                'updated' => false,
-            ];
-        }
-
-        $progress = $this->getOrCreateProgress($team, $step);
-        $wasValidated = $progress->getState() === self::STATE_VALIDATED;
-        $this->markProgressValidated($progress, $letter);
-        $this->incrementScore($team, !$wasValidated);
-
-        return [
-            'valid' => true,
-            'message' => 'Bonne lettre.',
-            'updated' => true,
-        ];
     }
 
 
@@ -284,21 +259,6 @@ class GameValidationService
         $this->entityManager->persist($progress);
 
         return $progress;
-    }
-
-    private function getNextQrSequence(Team $team): ?TeamQrSequence
-    {
-        return $this->getNextQrSequenceFromList($this->getSortedQrSequences($team));
-    }
-
-    private function isQrSequenceCompleted(Team $team): bool
-    {
-        return $this->areQrSequencesCompleted($this->getSortedQrSequences($team));
-    }
-
-    private function getNextQrHint(Team $team): ?string
-    {
-        return $this->getNextQrHintFromList($this->getSortedQrSequences($team));
     }
 
     /**

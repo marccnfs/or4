@@ -164,7 +164,7 @@ class GameController extends AbstractController
             return $this->redirectToRoute('game_step', ['step' => $currentStep]);
         }
 
-        if ($request->isMethod('POST')) {
+        if ($request->isMethod('POST') && in_array($step, ['A', 'B', 'C', 'D'], true)) {
             $letter = strtoupper(trim((string)$request->request->get('letter')));
             if ($letter === '') {
                 $error = 'Merci de saisir une lettre.';
@@ -206,6 +206,10 @@ class GameController extends AbstractController
                     $scannedQrCodes[] = sprintf('QR%d', $sequence->getOrderNumber());
                 }
             }
+        }
+
+        if ($step === 'F') {
+            return $this->redirectToRoute('game_final');
         }
 
         return $this->render('game/step.html.twig', [
@@ -462,20 +466,43 @@ class GameController extends AbstractController
 
 
     #[Route('/game/final', name: 'game_final', methods: ['GET'])]
-    public function final(SessionInterface $session): Response
+    public function final(
+        SessionInterface $session,
+        TeamRepository $teamRepository
+    ): Response
     {
         $teamCode = $session->get(self::SESSION_TEAM_CODE);
         if (!$teamCode) {
             return $this->redirectToRoute('game_join');
         }
 
-        $progress = $session->get(self::SESSION_PROGRESS, $this->initializeProgress());
-        $completedCount = count(array_filter($progress, static fn (array $data): bool => $data['completed']));
+        $team = $teamRepository->findOneBy(['registrationCode' => $teamCode]);
+        if ($team === null) {
+            return $this->redirectToRoute('game_join');
+        }
+
+        if ($team->getEscapeGame()->getStatus() !== 'active') {
+            return $this->redirectToRoute('game_waiting');
+        }
+
+        $progress = $this->buildTeamProgress($team);
+        $currentStep = $this->resolveCurrentStep($progress);
+        if ($currentStep !== 'F') {
+            return $this->redirectToRoute('game_step', ['step' => $currentStep]);
+        }
+
+        $letters = $this->resolveFinalLetters($team);
+        $scrambled = $letters;
+        shuffle($scrambled);
+
+        $options = $team->getEscapeGame()->getOptions();
 
         return $this->render('game/final.html.twig', [
             'team_code' => $teamCode,
-            'completed_count' => $completedCount,
-            'total_steps' => count($progress),
+            'letters' => $letters,
+            'scrambled_letters' => $scrambled,
+            'combination' => implode('', $letters),
+            'cryptex_message' => $options['cryptex_message'] ?? 'Bravo !',
             'back'=> false
         ]);
     }
@@ -713,4 +740,29 @@ class GameController extends AbstractController
         }
     }
 
+    /**
+     * @return string[]
+     */
+    private function resolveFinalLetters(Team $team): array
+    {
+        $letters = $team->getLetterOrder();
+
+        if ($letters === []) {
+            $steps = $team->getEscapeGame()->getSteps()->toArray();
+            usort($steps, static function (Step $left, Step $right): int {
+                return $left->getOrderNumber() <=> $right->getOrderNumber();
+            });
+
+            foreach ($steps as $step) {
+                if (in_array(strtoupper($step->getType()), ['A', 'B', 'C', 'D', 'E'], true)) {
+                    $letters[] = $step->getLetter();
+                }
+            }
+        }
+
+        $letters = array_filter($letters, static fn (string $letter): bool => trim($letter) !== '');
+        $letters = array_map(static fn (string $letter): string => strtoupper($letter), $letters);
+
+        return array_values($letters);
+    }
 }

@@ -342,6 +342,12 @@ header {
     background: #ffe8e8;
     color: #a32424;
 }
+.scoreboard-winner {
+    background: #fff7d6;
+}
+.scoreboard-winner td:first-child::before {
+    content: '🏆 ';
+}
 .progress {
     display: grid;
     grid-template-columns: repeat(3, 1fr);

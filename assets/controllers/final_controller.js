@@ -4,23 +4,56 @@ export default class extends Controller {
     static targets = ['input', 'status'];
     static values = {
         endpoint: String,
+        step: String,
     };
 
     async check(event) {
-        event.preventDefault();
+        if (event) {
+            event.preventDefault();
+        }
 
-        const combination = this.hasInputTarget ? this.inputTarget.value : event.params.combination;
+        const combination = this.hasInputTarget
+            ? this.inputTarget.value
+            : (event?.detail?.solution || event?.params?.combination);
 
         if (!combination) {
             this.updateStatus('Merci de saisir la combinaison finale.');
             return;
         }
 
-        const response = await this.postJson(this.endpointValue || '/api/final/check', {
-            combination,
-        });
+        const payload = { combination };
+        if (this.hasStepValue) {
+            payload.step = this.stepValue;
+        }
+
+        const response = await this.postJson(this.endpointValue || '/api/final/check', payload);
 
         this.updateStatus(response.message || (response.valid ? 'Combinaison validée.' : 'Combinaison incorrecte.'));
+    }
+
+    handleSolved(event) {
+        this.check(event);
+        this.revealSecret(event?.target);
+    }
+
+    revealSecret(root) {
+        if (!root) {
+            return;
+        }
+
+        const secret = root.querySelector('[data-cryptex-target="secret"]');
+        if (secret) {
+            secret.hidden = false;
+        }
+
+        const reveal = root.querySelector('[data-cryptex-target="reveal"]');
+        if (reveal) {
+            reveal.hidden = true;
+            reveal.disabled = true;
+        }
+    }
+    handleReveal(event) {
+        this.revealSecret(event.target.closest('[data-cryptex-target="solution"]'));
     }
 
     async postJson(url, payload) {

@@ -1,0 +1,45 @@
+{% extends 'game/base.html.twig' %}
+
+{% block title %}Étape F{% endblock %}
+
+{% block body %}
+    <header>
+        <div>
+            <h1>Étape F</h1>
+        </div>
+        <span class="badge">{{ team_code }}</span>
+    </header>
+
+    <div class="card stack">
+        <div class="status">Vous avez toutes les lettres. Remettez-les dans le bon ordre pour ouvrir le cryptex.</div>
+        <p class="hint">Une fois la combinaison trouvée, le message final apparaîtra automatiquement.</p>
+    </div>
+
+    <div class="card stack final-letters-card">
+        <h2>Lettres trouvées</h2>
+        <div class="final-letters" aria-label="Lettres trouvées">
+            {% for letter in scrambled_letters %}
+                <span class="final-letter">{{ letter }}</span>
+            {% endfor %}
+        </div>
+        <p class="hint">Remettez ces lettres dans l'ordre des étapes A à E pour former la combinaison.</p>
+    </div>
+
+    <div class="card stack"
+         data-controller="final"
+         data-final-endpoint-value="{{ path('api_final_check') }}"
+         data-final-step-value="F"
+         data-action="cryptex:solved->final#handleSolved">
+        <h2>Cryptex final</h2>
+        {% include 'game/exemple_cryptex/_cryptex.html.twig' with {
+            cfg: {
+                solution: combination,
+                alphabet: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+                scramble: true,
+                autocheck: true,
+                successMessage: cryptex_message
+            }
+        } %}
+        <div class="status closed" data-final-target="status"></div>
+    </div>
+{% endblock %}
