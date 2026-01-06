@@ -21,8 +21,10 @@
             {% endif %}
         </div>
         <span class="badge2">ça va commencer....</span>
-        <div class="home-countdown" data-game-sync-target="countdown" hidden>3</div>
     </header>
+
+    {% include 'screen/_overlay.html.twig' with { seconds: 3, auto_start: false, game_sync_target: 'countdownOverlay' } %}
+
 
     <div class="card stack soli">
         <div class="status">Rejoignez la partie via l'adresse suivante :</div>

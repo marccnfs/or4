@@ -8,7 +8,8 @@
      data-game-sync-url-value="{{ path('game_status') }}"
      data-game-sync-mercure-url-value="{{ mercure_public_url }}"
      data-game-sync-topic-value="{{ escape_id ? '/escape/' ~ escape_id ~ '/status' : '' }}"
-     data-game-sync-finished-redirect-url-value="{{ path('game_waiting') }}">
+     data-game-sync-finished-redirect-url-value="{{ path('game_waiting') }}"
+     data-game-sync-inactive-redirect-url-value="{{ path('game_waiting') }}">
     <header>
         <div>
             <h1>Étape {{ step }}</h1>

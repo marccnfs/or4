@@ -1,8 +1,9 @@
 <div
         data-controller="countdown"
-        data-countdown-seconds-value="3"
-        data-countdown-go-text-value="GO!"
-        data-countdown-auto-start-value="true"
+        data-countdown-seconds-value="{{ seconds|default(3) }}"
+        data-countdown-go-text-value="{{ go_text|default('GO!') }}"
+        data-countdown-auto-start-value="{{ auto_start is defined ? (auto_start ? 'true' : 'false') : 'false' }}"
+        {% if game_sync_target is defined %}data-game-sync-target="{{ game_sync_target }}"{% endif %}
 >
     <!-- Ton contenu home existant (visuel + QR code) -->
 

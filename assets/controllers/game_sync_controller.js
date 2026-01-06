@@ -19,7 +19,7 @@ export default class extends Controller {
         countdownSeconds: Number,
     };
 
-    static targets = ['countdown'];
+    static targets = ['countdown', 'countdownOverlay'];
 
 
     connect() {
@@ -28,6 +28,7 @@ export default class extends Controller {
         this.mercureReady = false;
         this.countdownTimer = null;
         this.countdownStarted = false;
+        this.countdownDoneHandler = null;
         this.connectMercure();
     }
 
@@ -35,6 +36,7 @@ export default class extends Controller {
         this.disconnectMercure();
         this.stopPolling();
         this.stopCountdown();
+        this.clearCountdownDoneHandler();
     }
 
     connectMercure() {
@@ -160,6 +162,10 @@ export default class extends Controller {
                 return;
             }
 
+            if (this.startOverlayCountdown()) {
+                return;
+            }
+
             if (this.hasCountdownSecondsValue && this.countdownSecondsValue > 0 && this.hasCountdownTarget) {
                 this.startCountdown();
                 return;
@@ -177,6 +183,34 @@ export default class extends Controller {
             window.location.reload();
         }
     }
+    startOverlayCountdown() {
+        if (!this.hasCountdownOverlayTarget) {
+            return false;
+        }
+
+        const controller = this.application.getControllerForElementAndIdentifier(
+            this.countdownOverlayTarget,
+            'countdown',
+        );
+        if (!controller) {
+            return false;
+        }
+
+        this.countdownStarted = true;
+        this.clearCountdownDoneHandler();
+        this.countdownDoneHandler = () => {
+            window.location.href = this.redirectUrlValue;
+        };
+        this.countdownOverlayTarget.addEventListener('countdown:done', this.countdownDoneHandler, { once: true });
+
+        if (this.hasCountdownSecondsValue && this.countdownSecondsValue > 0) {
+            controller.secondsValue = this.countdownSecondsValue;
+        }
+        controller.start();
+
+        return true;
+    }
+
     startCountdown() {
         if (this.countdownStarted) {
             return;
@@ -203,5 +237,12 @@ export default class extends Controller {
             window.clearInterval(this.countdownTimer);
             this.countdownTimer = null;
         }
+    }
+
+    clearCountdownDoneHandler() {
+        if (this.countdownDoneHandler && this.hasCountdownOverlayTarget) {
+            this.countdownOverlayTarget.removeEventListener('countdown:done', this.countdownDoneHandler);
+        }
+        this.countdownDoneHandler = null;
     }
 }
