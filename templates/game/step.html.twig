@@ -3,17 +3,29 @@
 {% block title %}Étape {{ step }}{% endblock %}
 
 {% block body %}
+<div class="step-page"
+     data-controller="step-controls game-sync"
+     data-game-sync-url-value="{{ path('game_status') }}"
+     data-game-sync-mercure-url-value="{{ mercure_public_url }}"
+     data-game-sync-topic-value="{{ escape_id ? '/escape/' ~ escape_id ~ '/status' : '' }}"
+     data-game-sync-finished-redirect-url-value="{{ path('game_waiting') }}">
     <header>
         <div>
             <h1>Étape {{ step }}</h1>
-           {#  <p class="hint">Équipe {{ team_code }} • Étape en cours : {{ current_step }}</p> #}
+            {#  <p class="hint">Équipe {{ team_code }} • Étape en cours : {{ current_step }}</p> #}
         </div>
         <span class="badge">{{ team_code }}</span>
     </header>
 
     <div class="card stack"
-         data-controller="game"
-         data-game-endpoint-value="{{ path('game_validate') }}">
+         data-controller="{% if step == 'E' %}game team-sync{% else %}game{% endif %}"
+         data-game-endpoint-value="{{ path('game_validate') }}"
+            {% if step == 'E' and team_payload %}
+        data-team-sync-url-value="{{ path('game_team_state') }}"
+        data-team-sync-mercure-url-value="{{ mercure_public_url }}"
+        data-team-sync-topic-value="/escape/{{ team_payload.escape_id }}/team/{{ team_payload.id }}/state"
+        data-team-sync-current-updated-value="{{ team_payload.updated_at }}"
+            {% endif %}>
         <div class="status">Suivez les instructions de l'animateur pour cette étape.</div>
         <p class="hint">Lorsque vous avez trouvé la lettre, validez pour passer à l'étape suivante.</p>
 
@@ -67,22 +79,22 @@
     </div>
     #}
 
-    <div class="card">
-        <h2>Progression</h2>
+        <div class="card">
+            <h2>Progression</h2>
 
-        <ol class="stepper" aria-label="Progression">
-            {% for label, data in progress %}
-                {% set stepIndex = loop.index %}
+            <ol class="stepper" aria-label="Progression">
+                {% for label, data in progress %}
+                    {% set stepIndex = loop.index %}
 
-                <li class="stepper__item {% if data.completed %}is-complete{% endif %}"
-                    data-step="{{ stepIndex }}"
-                    aria-current="{% if data.completed and loop.last %}step{% endif %}">
-                    <span class="stepper__dot" aria-hidden="true">{{ stepIndex }}</span>
-                    {# Optionnel : afficher le label sous la barre (si tu veux) #}
-                    {# <span class="stepper__label">{{ label }}</span> #}
-                </li>
-            {% endfor %}
-        </ol>
-    </div>
+                    <li class="stepper__item {% if data.completed %}is-complete{% endif %}"
+                        data-step="{{ stepIndex }}"
+                        aria-current="{% if data.completed and loop.last %}step{% endif %}">
+                        <span class="stepper__dot" aria-hidden="true">{{ stepIndex }}</span>
+                        {# Optionnel : afficher le label sous la barre (si tu veux) #}
+                        {# <span class="stepper__label">{{ label }}</span> #}
+                    </li>
+                {% endfor %}
+            </ol>
+        </div>
 
 {% endblock %}

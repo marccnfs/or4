@@ -12,10 +12,8 @@ export default class extends Controller {
         pollingInterval: Number,
         reconnectDelay: Number,
         fallbackTimeout: Number,
-        winnerUrl: String,
+        currentUpdated: String,
     };
-
-    static targets = ['rows', 'total', 'status', 'updated'];
 
     connect() {
         this.pollingTimer = null;
@@ -55,9 +53,9 @@ export default class extends Controller {
             this.clearFallbackTimer();
 
             try {
-                this.updateScoreboard(JSON.parse(event.data));
+                this.handlePayload(JSON.parse(event.data));
             } catch (error) {
-                console.error('Mercure scoreboard payload invalid', error);
+                console.error('Mercure team payload invalid', error);
             }
         };
         this.eventSource.onerror = () => {
@@ -106,9 +104,9 @@ export default class extends Controller {
             return;
         }
 
-        this.fetchScoreboard();
+        this.fetchState();
         this.pollingTimer = window.setInterval(
-            () => this.fetchScoreboard(),
+            () => this.fetchState(),
             this.pollingIntervalValue || DEFAULT_POLLING_INTERVAL,
         );
     }
@@ -120,7 +118,7 @@ export default class extends Controller {
         }
     }
 
-    async fetchScoreboard() {
+    async fetchState() {
         if (!this.urlValue) {
             return;
         }
@@ -135,83 +133,27 @@ export default class extends Controller {
             }
 
             const payload = await response.json();
-            this.updateScoreboard(payload);
+            this.handlePayload(payload);
         } catch (error) {
-            if (this.hasRowsTarget) {
-                this.rowsTarget.innerHTML = '<tr><td colspan="4">Erreur de chargement.</td></tr>';
-            }
+            // no-op
         }
     }
 
-    updateScoreboard(payload) {
-        if (payload?.winner && this.hasWinnerUrlValue) {
-            window.location.href = this.winnerUrlValue;
-            return;
-        }
-        if (this.hasStatusTarget) {
-            this.statusTarget.textContent = payload.status ?? '';
-        }
-        if (this.hasTotalTarget) {
-            this.totalTarget.textContent = payload.total_steps ?? '0';
-        }
-        if (this.hasUpdatedTarget) {
-            this.updatedTarget.textContent = payload.updated_at
-                ? `Mis à jour à ${payload.updated_at}`
-                : '';
-        }
-
-        if (!this.hasRowsTarget) {
+    handlePayload(payload) {
+        if (!payload) {
             return;
         }
 
-        this.renderRows(payload.teams || [], payload.total_steps ?? 0);
-    }
-
-    renderRows(teams, totalSteps) {
-        if (teams.length === 0) {
-            this.rowsTarget.innerHTML = '<tr><td colspan="4" class="scoreboard-empty">Aucune équipe inscrite pour le moment.</td></tr>';
+        const updatedAt = payload.updated_at || '';
+        if (this.hasCurrentUpdatedValue && updatedAt && updatedAt !== this.currentUpdatedValue) {
+            window.location.reload();
             return;
         }
 
-        this.rowsTarget.innerHTML = '';
+        if (!this.hasCurrentUpdatedValue) {
+            return;
+        }
 
-        teams.forEach((team) => {
-            const row = document.createElement('tr');
-
-            const isWinner = totalSteps > 0 && team.validated_steps >= totalSteps;
-            if (isWinner) {
-                row.classList.add('scoreboard-winner');
-            }
-
-            const name = document.createElement('td');
-            name.textContent = team.name;
-
-            const code = document.createElement('td');
-            code.textContent = team.code;
-
-            const progressCell = document.createElement('td');
-            const bar = document.createElement('div');
-            bar.classList.add('scoreboard-progress');
-            const barFill = document.createElement('span');
-            const percent = totalSteps > 0 ? Math.min((team.validated_steps / totalSteps) * 100, 100) : 0;
-            barFill.style.width = `${percent}%`;
-            bar.appendChild(barFill);
-
-            const meta = document.createElement('div');
-            meta.classList.add('scoreboard-progress-meta');
-            meta.textContent = `${team.validated_steps}/${totalSteps}`;
-
-            progressCell.appendChild(bar);
-            progressCell.appendChild(meta);
-
-            const lastUpdate = document.createElement('td');
-            lastUpdate.textContent = team.last_update || '—';
-
-            row.appendChild(name);
-            row.appendChild(code);
-            row.appendChild(progressCell);
-            row.appendChild(lastUpdate);
-            this.rowsTarget.appendChild(row);
-        });
+        this.currentUpdatedValue = updatedAt;
     }
 }

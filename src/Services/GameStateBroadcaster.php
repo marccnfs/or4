@@ -70,6 +70,7 @@ class GameStateBroadcaster
                 'status' => 'offline',
                 'escape_name' => null,
                 'total_steps' => 0,
+                'winner' => null,
                 'teams' => [],
                 'updated_at' => null,
             ];
@@ -119,10 +120,21 @@ class GameStateBroadcaster
             return $right['validated_steps'] <=> $left['validated_steps'];
         });
 
+        $options = $escapeGame->getOptions();
+        $winner = null;
+        if (!empty($options['winner_team_name'])) {
+            $winner = [
+                'name' => $options['winner_team_name'],
+                'code' => $options['winner_team_code'] ?? null,
+            ];
+        }
+
+
         return [
             'status' => $escapeGame->getStatus(),
             'escape_name' => $escapeGame->getName(),
             'total_steps' => $totalSteps,
+            'winner' => $winner,
             'teams' => $payloadTeams,
             'updated_at' => $latestUpdate->format('H:i'),
         ];
@@ -131,13 +143,22 @@ class GameStateBroadcaster
     /**
      * @return array<string, mixed>
      */
-    private function buildTeamPayload(Team $team): array
+    /**
+     * @return array<string, mixed>
+     */
+    public function buildTeamPayload(Team $team): array
     {
         [$qrScanned, $qrTotal] = $this->getQrCounts($team);
 
         $latestUpdate = $team->getEscapeGame()->getUpdatedAt();
         foreach ($team->getTeamStepProgresses() as $progress) {
             $updatedAt = $progress->getUpdatedAt();
+            if ($updatedAt > $latestUpdate) {
+                $latestUpdate = $updatedAt;
+            }
+        }
+        foreach ($team->getTeamQrSequences() as $sequence) {
+            $updatedAt = $sequence->getUpdatedAt();
             if ($updatedAt > $latestUpdate) {
                 $latestUpdate = $updatedAt;
             }

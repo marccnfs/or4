@@ -103,6 +103,8 @@ class GameController extends AbstractController
 
         $escapeGame = $team->getEscapeGame();
         $status = $escapeGame->getStatus();
+        $options = $escapeGame->getOptions();
+        $winnerName = $options['winner_team_name'] ?? null;
         $progress = $this->buildTeamProgress($team);
         $currentStep = $this->resolveCurrentStep($progress);
         $session->set(self::SESSION_PROGRESS, $progress);
@@ -117,6 +119,7 @@ class GameController extends AbstractController
             'game_status' => $status,
             'current_step' => $currentStep,
             'escape_id' => $escapeGame->getId(),
+            'winner_name' => $winnerName,
             'back'=> false
         ]);
     }
@@ -128,6 +131,7 @@ class GameController extends AbstractController
         SessionInterface $session,
         TeamRepository $teamRepository,
         EntityManagerInterface $entityManager,
+        GameStateBroadcaster $broadcaster,
         GameValidationService $validator
     ): Response
     {
@@ -198,6 +202,7 @@ class GameController extends AbstractController
         }
 
         $scannedQrCodes = [];
+        $teamPayload = null;
         if ($step === 'E') {
             $qrSequences = $team->getTeamQrSequences()->toArray();
             usort($qrSequences, static fn (TeamQrSequence $left, TeamQrSequence $right): int => $left->getOrderNumber() <=> $right->getOrderNumber());
@@ -206,6 +211,8 @@ class GameController extends AbstractController
                     $scannedQrCodes[] = sprintf('QR%d', $sequence->getOrderNumber());
                 }
             }
+
+            $teamPayload = $broadcaster->buildTeamPayload($team);
         }
 
         if ($step === 'F') {
@@ -219,6 +226,8 @@ class GameController extends AbstractController
             'progress' => $progress,
             'error' => $error,
             'scanned_qr_codes' => $scannedQrCodes,
+            'team_payload' => $teamPayload,
+            'escape_id' => $team->getEscapeGame()->getId(),
             'back'=> false
         ]);
     }
@@ -305,10 +314,6 @@ class GameController extends AbstractController
     {
         $escapeGame = $escapeGameRepository->findLatest();
 
-        if ($escapeGame !== null && $escapeGame->getStatus() === 'active') {
-            return $this->redirectToRoute('game_scoreboard');
-        }
-
         return $this->render('screen/home.html.twig', [
             'escape_game' => $escapeGame,
             'join_url' => $this->generateUrl('game_join', [], UrlGeneratorInterface::ABSOLUTE_URL),
@@ -335,6 +340,41 @@ class GameController extends AbstractController
         $escapeGame = $escapeGameRepository->findLatest();
 
         return $this->json($broadcaster->buildScoreboardPayload($escapeGame));
+    }
+
+    #[Route('/game/scoreboard/final', name: 'game_scoreboard_final', methods: ['GET'])]
+    public function scoreboardFinal(EscapeGameRepository $escapeGameRepository, GameStateBroadcaster $broadcaster): Response
+    {
+        $escapeGame = $escapeGameRepository->findLatest();
+        $scoreboard = $broadcaster->buildScoreboardPayload($escapeGame);
+        $winner = $scoreboard['winner'] ?? null;
+
+        if ($escapeGame === null || $winner === null) {
+            return $this->redirectToRoute('game_scoreboard');
+        }
+
+        return $this->render('screen/winner.html.twig', [
+            'escape_game' => $escapeGame,
+            'winner' => $winner,
+            'scoreboard' => $scoreboard,
+            'back' => false,
+        ]);
+    }
+
+    #[Route('/game/team/state', name: 'game_team_state', methods: ['GET'])]
+    public function teamState(
+        SessionInterface $session,
+        TeamRepository $teamRepository,
+        GameStateBroadcaster $broadcaster
+    ): JsonResponse {
+        $team = $this->findTeamFromSession($session, $teamRepository);
+        if ($team === null) {
+            return $this->json([
+                'status' => 'unknown',
+            ], JsonResponse::HTTP_UNAUTHORIZED);
+        }
+
+        return $this->json($broadcaster->buildTeamPayload($team));
     }
 
     #[Route('/game/scoreboard/stream', name: 'game_scoreboard_stream', methods: ['GET'])]
@@ -504,6 +544,33 @@ class GameController extends AbstractController
             'combination' => implode('', $letters),
             'cryptex_message' => $options['cryptex_message'] ?? 'Bravo !',
             'back'=> false
+        ]);
+    }
+
+    #[Route('/game/winner', name: 'game_winner', methods: ['GET'])]
+    public function winner(SessionInterface $session, TeamRepository $teamRepository): Response
+    {
+        $teamCode = $session->get(self::SESSION_TEAM_CODE);
+        if (!$teamCode) {
+            return $this->redirectToRoute('game_join');
+        }
+
+        $team = $teamRepository->findOneBy(['registrationCode' => $teamCode]);
+        if ($team === null) {
+            return $this->redirectToRoute('game_join');
+        }
+
+        $escapeGame = $team->getEscapeGame();
+        $options = $escapeGame->getOptions();
+        $winnerCode = $options['winner_team_code'] ?? null;
+        if ($winnerCode === null || $winnerCode !== $team->getRegistrationCode()) {
+            return $this->redirectToRoute('game_waiting');
+        }
+
+        return $this->render('game/winner.html.twig', [
+            'team_code' => $teamCode,
+            'winner_name' => $options['winner_team_name'] ?? $team->getName(),
+            'back' => false,
         ]);
     }
 

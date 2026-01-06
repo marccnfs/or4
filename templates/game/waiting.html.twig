@@ -23,6 +23,9 @@
         {% elseif game_status == 'offline' %}
             <div class="status closed">La partie est temporairement fermée.</div>
             <p class="hint">Patientez jusqu'à la relance par l'animateur.</p>
+        {% elseif game_status == 'finished' %}
+            <div class="status closed">La partie est terminée.</div>
+            <p class="hint">L'équipe {{ winner_name ?? 'gagnante' }} a trouvé le secret.</p>
         {% else %}
             <div class="status">La partie démarre...</div>
         {% endif %}

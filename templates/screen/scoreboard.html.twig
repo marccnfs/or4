@@ -9,7 +9,8 @@
          data-controller="scoreboard-sync"
          data-scoreboard-sync-url-value="{{ path('game_scoreboard_data') }}"
          data-scoreboard-sync-mercure-url-value="{{ mercure_public_url }}"
-         data-scoreboard-sync-topic-value="{{ escape_game ? '/escape/' ~ escape_game.id ~ '/scoreboard' : '' }}">
+         data-scoreboard-sync-topic-value="{{ escape_game ? '/escape/' ~ escape_game.id ~ '/scoreboard' : '' }}"
+         data-scoreboard-sync-winner-url-value="{{ path('game_scoreboard_final') }}">
         <div class="scoreboard-header">
             <div>
                 <h1>Tableau de progression</h1>

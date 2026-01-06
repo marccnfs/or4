@@ -146,6 +146,18 @@ class ApiGameController extends AbstractController
             ], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
+        $escapeGame = $team->getEscapeGame();
+        $options = $escapeGame->getOptions();
+        $winnerCode = $options['winner_team_code'] ?? null;
+        if ($escapeGame->getStatus() === 'finished' && $winnerCode !== $team->getRegistrationCode()) {
+            $winnerName = $options['winner_team_name'] ?? 'Une autre équipe';
+            return $this->json([
+                'valid' => false,
+                'message' => sprintf("L'équipe %s a trouvé le secret.", $winnerName),
+                'finished' => true,
+            ]);
+        }
+
         $stepEntity = $this->findStepForTeam($team, 'F', $entityManager);
         if ($stepEntity === null) {
             return $this->json([
@@ -156,12 +168,21 @@ class ApiGameController extends AbstractController
 
         $result = $validator->validateStep($team, $stepEntity, ['combination' => $combination]);
         if ($result['updated'] ?? false) {
+            if ($result['valid'] && $escapeGame->getStatus() !== 'finished' && $winnerCode === null) {
+                $options['winner_team_id'] = $team->getId();
+                $options['winner_team_name'] = $team->getName();
+                $options['winner_team_code'] = $team->getRegistrationCode();
+                $escapeGame->setOptions($options);
+                $escapeGame->setStatus('finished');
+                $escapeGame->setUpdatedAt(new \DateTimeImmutable());
+            }
             $entityManager->flush();
         }
 
         return $this->json([
             'valid' => $result['valid'],
             'message' => $result['message'],
+            'finished' => $escapeGame->getStatus() === 'finished',
         ]);
     }
 

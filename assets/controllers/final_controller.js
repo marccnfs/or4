@@ -5,6 +5,9 @@ export default class extends Controller {
     static values = {
         endpoint: String,
         step: String,
+        successRedirectUrl: String,
+        suspenseDuration: Number,
+        loseRedirectUrl: String,
     };
 
     async check(event) {
@@ -29,6 +32,14 @@ export default class extends Controller {
         const response = await this.postJson(this.endpointValue || '/api/final/check', payload);
 
         this.updateStatus(response.message || (response.valid ? 'Combinaison validée.' : 'Combinaison incorrecte.'));
+        if (response.finished && !response.valid && this.hasLoseRedirectUrlValue) {
+            window.location.href = this.loseRedirectUrlValue;
+            return;
+        }
+
+        if (response.valid && this.hasSuccessRedirectUrlValue) {
+            this.startSuccessSequence();
+        }
     }
 
     handleSolved(event) {
@@ -54,6 +65,36 @@ export default class extends Controller {
     }
     handleReveal(event) {
         this.revealSecret(event.target.closest('[data-cryptex-target="solution"]'));
+    }
+
+    startSuccessSequence() {
+        const duration = this.suspenseDurationValue || 2000;
+        document.body.classList.add('final-transition');
+        this.playSuccessSound();
+        window.setTimeout(() => {
+            window.location.href = this.successRedirectUrlValue;
+        }, duration);
+    }
+
+    playSuccessSound() {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) {
+            return;
+        }
+
+        const context = new AudioContext();
+        const oscillator = context.createOscillator();
+        const gain = context.createGain();
+        oscillator.type = 'sine';
+        oscillator.frequency.value = 620;
+        gain.gain.setValueAtTime(0.001, context.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.25, context.currentTime + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.7);
+        oscillator.connect(gain);
+        gain.connect(context.destination);
+        oscillator.start();
+        oscillator.stop(context.currentTime + 0.75);
+        oscillator.onended = () => context.close();
     }
 
     async postJson(url, payload) {

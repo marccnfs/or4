@@ -29,6 +29,9 @@
          data-controller="final"
          data-final-endpoint-value="{{ path('api_final_check') }}"
          data-final-step-value="F"
+         data-final-success-redirect-url-value="{{ path('game_winner') }}"
+         data-final-lose-redirect-url-value="{{ path('game_waiting') }}"
+         data-final-suspense-duration-value="2500"
          data-action="cryptex:solved->final#handleSolved">
         <h2>Cryptex final</h2>
         {% include 'game/exemple_cryptex/_cryptex.html.twig' with {

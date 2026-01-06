@@ -8,6 +8,7 @@ export default class extends Controller {
     static values = {
         url: String,
         redirectUrl: String,
+        finishedRedirectUrl: String,
         mercureUrl: String,
         topic: String,
         pollingInterval: Number,
@@ -15,18 +16,25 @@ export default class extends Controller {
         fallbackTimeout: Number,
         reloadOnChange: Boolean,
         currentStatus: String,
+        countdownSeconds: Number,
     };
+
+    static targets = ['countdown'];
+
 
     connect() {
         this.pollingTimer = null;
         this.reconnectTimer = null;
         this.mercureReady = false;
+        this.countdownTimer = null;
+        this.countdownStarted = false;
         this.connectMercure();
     }
 
     disconnect() {
         this.disconnectMercure();
         this.stopPolling();
+        this.stopCountdown();
     }
 
     connectMercure() {
@@ -148,12 +156,52 @@ export default class extends Controller {
         }
 
         if (payload.status === 'active' && this.redirectUrlValue) {
+            if (this.countdownStarted) {
+                return;
+            }
+
+            if (this.hasCountdownSecondsValue && this.countdownSecondsValue > 0 && this.hasCountdownTarget) {
+                this.startCountdown();
+                return;
+            }
             window.location.href = this.redirectUrlValue;
+            return;
+        }
+
+        if (payload.status === 'finished' && this.hasFinishedRedirectUrlValue) {
+            window.location.href = this.finishedRedirectUrlValue;
             return;
         }
 
         if (this.reloadOnChangeValue && this.hasCurrentStatusValue && payload.status !== this.currentStatusValue) {
             window.location.reload();
+        }
+    }
+    startCountdown() {
+        if (this.countdownStarted) {
+            return;
+        }
+
+        this.countdownStarted = true;
+        let remaining = this.countdownSecondsValue;
+        this.countdownTarget.hidden = false;
+        this.countdownTarget.textContent = remaining;
+
+        this.countdownTimer = window.setInterval(() => {
+            remaining -= 1;
+            if (remaining <= 0) {
+                this.stopCountdown();
+                window.location.href = this.redirectUrlValue;
+                return;
+            }
+            this.countdownTarget.textContent = remaining;
+        }, 1000);
+    }
+
+    stopCountdown() {
+        if (this.countdownTimer) {
+            window.clearInterval(this.countdownTimer);
+            this.countdownTimer = null;
         }
     }
 }

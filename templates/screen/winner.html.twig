@@ -1,0 +1,27 @@
+{% extends '/game/base_desk.html.twig' %}
+
+{% block title %}Fin de partie{% endblock %}
+
+{% block body %}
+    <div class="winner-screen">
+        <header class="winner-header">
+            <h1>Fin de partie</h1>
+            <p class="hint">L'équipe {{ winner.name }} a trouvé le secret.</p>
+        </header>
+
+        <div class="card stack winner-card">
+            <div class="status">Victoire</div>
+            <h2>{{ winner.name }}</h2>
+            {% if winner.code %}
+                <p class="hint">Code équipe : {{ winner.code }}</p>
+            {% endif %}
+            <p class="hint">Merci à toutes les équipes pour leur participation.</p>
+        </div>
+
+        <div class="card stack">
+            <div class="status">Progression finale</div>
+            <h2>{{ scoreboard.total_steps }} étapes</h2>
+            <p class="hint">La partie est terminée.</p>
+        </div>
+    </div>
+{% endblock %}

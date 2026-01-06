@@ -169,13 +169,25 @@ header {
 }
 .ring button {
     border: none;
-    background: #0d2c5b;
+    background: linear-gradient(180deg, #17427f, #0b2450);
     color: #fff;
     width: 36px;
     height: 32px;
     border-radius: 10px;
     font-size: 0.9rem;
     cursor: pointer;
+    box-shadow: 0 4px 0 #071c3f, 0 8px 16px rgba(3, 16, 40, 0.25);
+    transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.2s ease;
+    touch-action: manipulation;
+}
+.ring button:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #071c3f, 0 4px 10px rgba(3, 16, 40, 0.2);
+    filter: brightness(1.1);
+}
+.ring button:focus-visible {
+    outline: 2px solid #ffcc66;
+    outline-offset: 2px;
 }
 .ring-value {
     font-size: 1.4rem;
@@ -202,6 +214,13 @@ header {
     border-radius: 12px;
     font-weight: 600;
     text-align: center;
+}
+.step-page {
+    touch-action: manipulation;
+}
+body.final-transition .page {
+    opacity: 0;
+    transition: opacity 1.4s ease;
 }
 .progress {
     display: grid;
