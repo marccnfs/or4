@@ -17,6 +17,8 @@
         <span class="badge">{{ team_code }}</span>
     </header>
 
+    {% include 'screen/_overlay.html.twig' with { seconds: 3, auto_start: false, game_sync_target: 'countdownOverlay' } %}
+
     <div class="card stack">
         {% if game_status == 'waiting' %}
             <div class="status">La partie est ouverte. Préparez-vous !</div>

@@ -13,6 +13,7 @@ export default class extends Controller {
         reconnectDelay: Number,
         fallbackTimeout: Number,
         winnerUrl: String,
+        homeUrl: String,
     };
 
     static targets = ['rows', 'total', 'status', 'updated'];
@@ -146,6 +147,10 @@ export default class extends Controller {
     updateScoreboard(payload) {
         if (payload?.winner && this.hasWinnerUrlValue) {
             window.location.href = this.winnerUrlValue;
+            return;
+        }
+        if (this.hasHomeUrlValue && ['waiting', 'offline'].includes(payload?.status)) {
+            window.location.href = this.homeUrlValue;
             return;
         }
         if (this.hasStatusTarget) {

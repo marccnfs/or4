@@ -9,6 +9,7 @@ export default class extends Controller {
         url: String,
         redirectUrl: String,
         finishedRedirectUrl: String,
+        inactiveRedirectUrl: String,
         mercureUrl: String,
         topic: String,
         pollingInterval: Number,
@@ -176,6 +177,11 @@ export default class extends Controller {
 
         if (payload.status === 'finished' && this.hasFinishedRedirectUrlValue) {
             window.location.href = this.finishedRedirectUrlValue;
+            return;
+        }
+
+        if (['waiting', 'offline'].includes(payload.status) && this.hasInactiveRedirectUrlValue) {
+            window.location.href = this.inactiveRedirectUrlValue;
             return;
         }
 
