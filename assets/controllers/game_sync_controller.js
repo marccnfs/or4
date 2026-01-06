@@ -56,7 +56,7 @@ export default class extends Controller {
 
     startMercure() {
         const url = this.buildMercureUrl();
-        this.eventSource = new EventSource(url, { withCredentials: true });
+        this.eventSource = new EventSource(url, { withCredentials: false });
         this.eventSource.onmessage = (event) => {
             if (!event.data) {
                 return;
