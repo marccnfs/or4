@@ -60,6 +60,20 @@ export default class extends Controller {
         }, 1000);
     }
 
+    stop() {
+        if (!this._running) {
+            this.overlayTarget.hidden = true;
+            this.overlayTarget.classList.remove("is-out");
+            return;
+        }
+
+        this._clearTimer();
+        this._running = false;
+        this.overlayTarget.hidden = true;
+        this.overlayTarget.classList.remove("is-out");
+    }
+
+
     _finish() {
         this._clearTimer();
 

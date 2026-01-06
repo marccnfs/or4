@@ -95,6 +95,13 @@ class GamePilotController extends AbstractController
             $entityManager->remove($team);
         }
 
+        $options = $escapeGame->getOptions();
+        unset(
+            $options['winner_team_id'],
+            $options['winner_team_name'],
+            $options['winner_team_code'],
+        );
+
         $escapeGame->setStatus('waiting');
         $escapeGame->setUpdatedAt(new \DateTimeImmutable());
         $entityManager->flush();

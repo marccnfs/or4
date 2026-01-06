@@ -185,6 +185,10 @@ export default class extends Controller {
             return;
         }
 
+        if (['waiting', 'offline', 'finished'].includes(payload.status)) {
+            this.resetCountdownState();
+        }
+
         if (this.reloadOnChangeValue && this.hasCurrentStatusValue && payload.status !== this.currentStatusValue) {
             window.location.reload();
         }
@@ -250,5 +254,39 @@ export default class extends Controller {
             this.countdownOverlayTarget.removeEventListener('countdown:done', this.countdownDoneHandler);
         }
         this.countdownDoneHandler = null;
+    }
+
+    resetCountdownState() {
+        if (!this.countdownStarted) {
+            if (this.hasCountdownOverlayTarget) {
+                this.countdownOverlayTarget.hidden = true;
+                this.countdownOverlayTarget.classList.remove('is-out');
+            }
+            if (this.hasCountdownTarget) {
+                this.countdownTarget.hidden = true;
+            }
+            return;
+        }
+
+        this.stopCountdown();
+        this.clearCountdownDoneHandler();
+        this.countdownStarted = false;
+
+        if (this.hasCountdownOverlayTarget) {
+            const controller = this.application.getControllerForElementAndIdentifier(
+                this.countdownOverlayTarget,
+                'countdown',
+            );
+            if (controller && typeof controller.stop === 'function') {
+                controller.stop();
+            } else {
+                this.countdownOverlayTarget.hidden = true;
+                this.countdownOverlayTarget.classList.remove('is-out');
+            }
+        }
+
+        if (this.hasCountdownTarget) {
+            this.countdownTarget.hidden = true;
+        }
     }
 }
