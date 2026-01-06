@@ -1,0 +1,14 @@
+<section class="cryptex-wrap" data-controller="cryptex"
+         data-cryptex-solution-value="{{ cfg.solution|default('') }}"
+         data-cryptex-hash-value="{{ cfg.solutionHash|default('') }}"
+         data-cryptex-alphabet-value="{{ (cfg.alphabet|default('ABCDEFGHIJKLMNOPQRSTUVWXYZ'))|upper }}"
+         data-cryptex-scramble-value="{{ cfg.scramble|default(false)|json_encode|raw }}"
+         data-cryptex-autocheck-value="{{ cfg.autocheck|default(false)|json_encode|raw }}"
+         data-cryptex-success-message-value="{{ cfg.successMessage|default('Bravo !') }}">
+    <div data-cryptex-target="rings" class="cryptex"></div>
+    <div class="cryptex-status" data-cryptex-target="status" aria-live="polite"></div>
+    <button class="cryptex-reveal" data-cryptex-target="reveal" data-action="click->cryptex#reveal" hidden>Voir le message</button>
+    <div class="cryptex-secret" data-cryptex-target="secret" hidden>
+        <p>{{ cfg.successMessage|default('Bravo !') }}</p>
+    </div>
+</section>

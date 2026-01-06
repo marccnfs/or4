@@ -6,23 +6,22 @@
     <header>
         <div>
             <h1>Scan QR</h1>
-            {% if team_code %}
-                <p class="hint">Équipe {{ team_code }}</p>
-            {% else %}
+            {% if not team_code %}
                 <p class="hint">Session non trouvée</p>
             {% endif %}
         </div>
-        <span class="badge">QR</span>
+        <span class="badge">{{ team_code }}</span>
     </header>
 
     <div class="card stack">
+
+
+       {#  {% if result.nextHint %} #}
+        <p class="hint">Trouvez le prochain QR code dans ce lieu : </p>
         <div class="status {% if not result.valid %}closed{% endif %}">
             {{ result.message }}
         </div>
 
-        {% if result.nextHint %}
-            <p class="hint">Trouvez le prochain QR code dans ce lieu : {{ result.nextHint }}</p>
-        {% endif %}
 
         {% if result.completed %}
             <div class="status">Séquence terminée. Vous pouvez revenir à l'étape E.</div>

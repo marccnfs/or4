@@ -1,0 +1,119 @@
+{% block body %}
+    <div class="_wb" data-controller="telemetry"
+         data-telemetry-slug-value="{{ eg.shareSlug }}"
+         data-telemetry-csrf-value="{{ csrf_token('play') }}"
+         data-telemetry-step-value="{{ step }}"
+         data-telemetry-restart-value="{{ forceRestart ? 'true' : 'false' }}">
+        <div class="container_bo_member">
+            <div class="escape_content">
+                {% set step = step ?? 1 %}
+                {% set total = totalSteps|default(6) %}
+                {% set completed = progressSteps|default([]) %}
+                {% set completedCount = completedCount|default(completed|length) %}
+                {% set unlocked = unlockedStep|default(step) %}
+                {% set progressPct = total > 0 ? (completedCount / total * 100)|round(0, 'floor') : 0 %}
+                <div class="play-layout" data-controller="hud" data-hud-total-value="{{ total }}" data-hud-step-value="{{ step }}" data-hud-slug-value="{{ eg.shareSlug }}" data-hud-completed-steps-value="{{ completed|json_encode|e('html_attr') }}">
+                    {# --- Colonne INFO --- #}
+                    <aside class="play-aside">
+                        <div class="card">
+                            <header class="hud-header">
+                                <div class="hud-title">
+                                    <div class="crumbs">
+                                        <a href="{{ path('play_entry', { slug: eg.shareSlug }) }}">&larr; Accueil</a>
+                                        <span>/</span>
+                                        <span>Étape {{ step }} / {{ total }}</span>
+                                    </div>
+                                    <h1>{{ puzzle.title }}</h1>
+                                    {% if puzzle.prompt %}<p class="muted">{{ puzzle.prompt|nl2br }}</p>{% endif %}
+                                </div>
+
+                                <div class="hud-actions">
+                                    <button class="btn btn-light" data-action="click->hud#toggleHelp">❓ Aide</button>
+                                    <button class="btn btn-light" data-action="click->hud#toggleProgress">⏱️ Progression</button>
+                                </div>
+                            </header>
+
+                            <div class="hud-progress" data-hud-target="progressPanel">
+                                <div class="bar"><span class="fill" data-hud-target="progressBar" style="width: {{ progressPct }}%"></span></div>
+                                <div class="bar-caption" data-hud-target="progressCaption">
+                                    {{ completedCount }} / {{ total }} étape{{ total > 1 ? 's' : '' }} complétée{{ completedCount != 1 ? 's' : '' }}
+                                    • Étape {{ step }} en cours
+                                </div>
+                                <nav class="steps-grid">
+                                    {% for i in 1..total %}
+                                        {% set isCurrent = i == step %}
+                                        {% set isDone = i in completed and i != step %}
+                                        {% if isDone %}
+                                            <a class="step-dot is-complete"
+                                               data-step="{{ i }}"
+                                               href="{{ path('play_step', { slug: eg.shareSlug, step: i }) }}"
+                                               title="Rejouer l’étape {{ i }}">{{ i }}</a>
+                                        {% elseif isCurrent %}
+                                            <span class="step-dot is-current"
+                                                  data-step="{{ i }}"
+                                                  title="Étape {{ i }} en cours">{{ i }}</span>
+                                        {% else %}
+                                            <span class="step-dot is-locked"
+                                                  data-step="{{ i }}"
+                                                  title="Étape verrouillée">{{ i }}</span>
+                                        {% endif %}
+                                    {% endfor %}
+                                </nav>
+                            </div>
+
+                            <div class="hud-help" data-hud-target="helpPanel">
+                                {% include 'pwa/escape/play/_help_step.html.twig' with { type: puzzle.type, cfg: puzzle.config, eg: eg, step: step } %}
+                            </div>
+                        </div>
+
+                        <div class="card tips">
+                            <h3>Conseil</h3>
+                            <p class="muted">Besoin d’un indice ? Observe bien tous les détails…</p>
+                        </div>
+                    </aside>
+
+                    {# --- Colonne JEU --- #}
+                    <main class="play-main">
+                        <div class="card">
+                            {% include 'pwa/escape/puzzles/_' ~ puzzle.type ~ '.html.twig' with { cfg: puzzle.config, eg: eg, step: step, extras: extras|default({}), view: 'player' } %}
+                        </div>
+
+                        <footer class="play-footer">
+                            {% if step > 1 %}
+                                <a class="btn" href="{{ path('play_step', { slug: eg.shareSlug, step: step-1 }) }}">&larr; Étape précédente</a>
+                            {% else %}
+                                <span></span>
+                            {% endif %}
+
+                            <a class="btn btn-primary" data-hud-target="nextBtn"
+                               href="{{ step < total ? path('play_step', { slug: eg.shareSlug, step: step+1 }) : path('play_the_end', { slug: eg.shareSlug }) }}"
+                               {% if not app.request.query.get('dev_unlocked') %}hidden{% endif %}>
+                                {{ step < total ? 'Étape suivante →' : 'Terminer 🎉' }}
+                            </a>
+                        </footer>
+                    </main>
+                </div>
+
+                {# --- Modale Aide --- #}
+                <div class="modal" data-controller="modal" data-modal-target="root" hidden>
+                    <div class="modal-backdrop" data-action="click->modal#close"></div>
+                    <div class="modal-card" role="dialog" aria-modal="true" aria-label="Aide">
+                        <button class="modal-close" aria-label="Fermer" data-action="click->modal#close">×</button>
+                        <div class="modal-body">
+                            {% include 'pwa/escape/play/_help_step.html.twig'with { type: puzzle.type, cfg: puzzle.config, eg: eg, step: step } %}
+                        </div>
+                    </div>
+                </div>
+
+                {# --- Toast container --- #}
+                <div class="toast-stack" data-controller="toast"></div>
+
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% use "js/js_escape_act.html.twig" %}
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
