@@ -108,7 +108,7 @@ class GameStateBroadcaster
                 }
             }
 
-            if ($latestTeamUpdate !== null && $latestTeamUpdate > $latestUpdate) {
+            if ($latestTeamUpdate !== null && ($latestUpdate === null || $latestTeamUpdate > $latestUpdate)) {
                 $latestUpdate = $latestTeamUpdate;
             }
 
@@ -150,7 +150,7 @@ class GameStateBroadcaster
             'total_steps' => $totalSteps,
             'winner' => $winner,
             'teams' => $payloadTeams,
-            'updated_at' => $latestUpdate->format('H:i'),
+            'updated_at' => $latestUpdate?->format('H:i'),
         ];
     }
 
@@ -167,13 +167,13 @@ class GameStateBroadcaster
         $latestUpdate = $team->getEscapeGame()->getUpdatedAt();
         foreach ($team->getTeamStepProgresses() as $progress) {
             $updatedAt = $progress->getUpdatedAt();
-            if ($updatedAt > $latestUpdate) {
+            if ($latestUpdate === null || $updatedAt > $latestUpdate) {
                 $latestUpdate = $updatedAt;
             }
         }
         foreach ($team->getTeamQrSequences() as $sequence) {
             $updatedAt = $sequence->getUpdatedAt();
-            if ($updatedAt > $latestUpdate) {
+            if ($latestUpdate === null || $updatedAt > $latestUpdate) {
                 $latestUpdate = $updatedAt;
             }
         }
@@ -187,7 +187,7 @@ class GameStateBroadcaster
             'score' => $team->getScore(),
             'qr_scanned' => $qrScanned,
             'qr_total' => $qrTotal,
-            'updated_at' => $latestUpdate->format('H:i'),
+            'updated_at' => $latestUpdate?->format('H:i'),
         ];
     }
 
