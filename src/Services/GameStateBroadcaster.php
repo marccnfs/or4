@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Entity\EscapeGame;
 use App\Entity\Team;
 use App\Repository\TeamRepository;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
 
@@ -15,37 +16,28 @@ class GameStateBroadcaster
     public function __construct(
         private HubInterface $hub,
         private TeamRepository $teamRepository,
+        private LoggerInterface $logger,
     ) {
     }
 
     public function publishStatus(EscapeGame $escapeGame): void
     {
         $payload = $this->buildStatusPayload($escapeGame);
-
-        $this->hub->publish(new Update(
-            $this->getStatusTopic($escapeGame),
-            json_encode($payload),
-        ));
+        $this->publishUpdate($this->getStatusTopic($escapeGame), $payload);
     }
 
     public function publishScoreboard(EscapeGame $escapeGame): void
     {
         $payload = $this->buildScoreboardPayload($escapeGame);
 
-        $this->hub->publish(new Update(
-            $this->getScoreboardTopic($escapeGame),
-            json_encode($payload),
-        ));
+        $this->publishUpdate($this->getScoreboardTopic($escapeGame), $payload);
     }
 
     public function publishTeamState(Team $team): void
     {
         $payload = $this->buildTeamPayload($team);
 
-        $this->hub->publish(new Update(
-            $this->getTeamTopic($team),
-            json_encode($payload),
-        ));
+        $this->publishUpdate($this->getTeamTopic($team), $payload);
     }
 
     public function publishTeamProgressUpdated(Team $team): void
@@ -56,10 +48,7 @@ class GameStateBroadcaster
             'scoreboard' => $this->buildScoreboardPayload($team->getEscapeGame()),
         ];
 
-        $this->hub->publish(new Update(
-            $this->getTeamProgressTopic($team->getEscapeGame()),
-            json_encode($payload),
-        ));
+        $this->publishUpdate($this->getTeamProgressTopic($team->getEscapeGame()), $payload);
     }
 
     /**
@@ -209,6 +198,24 @@ class GameStateBroadcaster
     private function getTeamProgressTopic(EscapeGame $escapeGame): string
     {
         return sprintf('/escape/%d/team_progress', $escapeGame->getId());
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    private function publishUpdate(string $topic, array $payload): void
+    {
+        try {
+            $this->hub->publish(new Update(
+                $topic,
+                json_encode($payload, JSON_THROW_ON_ERROR),
+            ));
+        } catch (\Throwable $exception) {
+            $this->logger->warning('Mercure publish failed.', [
+                'topic' => $topic,
+                'error' => $exception->getMessage(),
+            ]);
+        }
     }
 
     /**
