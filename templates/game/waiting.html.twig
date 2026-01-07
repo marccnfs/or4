@@ -4,15 +4,15 @@
 
 {% block body %}
 
-    <header data-controller="game-sync"
-            data-game-sync-url-value="{{ path('game_status') }}"
-            data-game-sync-mercure-url-value="{{ mercure_public_url }}"
-            data-game-sync-topic-value="{{ escape_id ? '/escape/' ~ escape_id ~ '/status' : '' }}"
-            data-game-sync-redirect-url-value="{{ path('game_step', { step: current_step }) }}"
-            data-game-sync-countdown-seconds-value="3">
+<div data-controller="game-sync"
+     data-game-sync-url-value="{{ path('game_status') }}"
+     data-game-sync-mercure-url-value="{{ mercure_public_url }}"
+     data-game-sync-topic-value="{{ escape_id ? '/escape/' ~ escape_id ~ '/status' : '' }}"
+     data-game-sync-redirect-url-value="{{ path('game_step', { step: current_step }) }}"
+     data-game-sync-countdown-seconds-value="3">
+    <header>
         <div class="titre_header">
             <h1>En attente du départ</h1>
-           {#  <p class="hint">Équipe {{ team_code }}</p> #}
         </div>
         <span class="badge">{{ team_code }}</span>
     </header>
@@ -32,12 +32,8 @@
         {% else %}
             <div class="status">La partie démarre...</div>
         {% endif %}
-      {#   <a class="btn btn-outline" href="{{ path('game_step', { step: current_step }) }}">Accéder à l'étape {{ current_step }}</a> #}
+        {#   <a class="btn btn-outline" href="{{ path('game_step', { step: current_step }) }}">Accéder à l'étape {{ current_step }}</a> #}
     </div>
-{#
-    <div class="card">
-        <h2>Conseil</h2>
-        <p class="hint">Gardez ce téléphone avec vous : il affiche votre progression tout au long du jeu.</p>
-    </div>
-#}
+
+</div>
 {% endblock %}

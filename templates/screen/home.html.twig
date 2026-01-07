@@ -3,16 +3,16 @@
 {% block title %}Accueil jeu{% endblock %}
 
 {% block body %}
-    <header data-controller="game-sync"
-            data-game-sync-url-value="{{ path('game_scoreboard_data') }}"
-            data-game-sync-mercure-url-value="{{ mercure_public_url }}"
-            data-game-sync-topic-value="{{ escape_game ? '/escape/' ~ escape_game.id ~ '/status' : '' }}"
-            data-game-sync-redirect-url-value="{{ path('game_scoreboard') }}"
-            data-game-sync-countdown-seconds-value="3"
-            data-game-sync-reload-on-change-value="true"
-            data-game-sync-current-status-value="{{ escape_game ? escape_game.status : 'offline' }}">
+<div data-controller="game-sync"
+     data-game-sync-url-value="{{ path('game_scoreboard_data') }}"
+     data-game-sync-mercure-url-value="{{ mercure_public_url }}"
+     data-game-sync-topic-value="{{ escape_game ? '/escape/' ~ escape_game.id ~ '/status' : '' }}"
+     data-game-sync-redirect-url-value="{{ path('game_scoreboard') }}"
+     data-game-sync-countdown-seconds-value="3"
+     data-game-sync-reload-on-change-value="true"
+     data-game-sync-current-status-value="{{ escape_game ? escape_game.status : 'offline' }}">
+    <header>
         <div class="first_title">
-            {# <h1>{{ escape_game.name }}</h1> #}
             <h1>L'escape</h1>
             {% if escape_game %}
                 <p class="hint2">des</p>
@@ -23,23 +23,18 @@
         <span class="badge2">ça va commencer....</span>
     </header>
 
-    {% include 'screen/_overlay.html.twig' with { seconds: 3, auto_start: false, game_sync_target: 'countdownOverlay' } %}
+      {% include 'screen/_overlay.html.twig' with { seconds: 3, auto_start: false, game_sync_target: 'countdownOverlay' } %}
 
 
     <div class="card stack soli">
-        <div class="status">Rejoignez la partie via l'adresse suivante :</div>
-        {#<div class="lien_jeu">{{ join_url }}</div>
-         <a class="btn" href="{{ join_url }}" target="_blank" rel="noopener">Ouvrir la page join</a> #}
-        <div class="btn">{{ join_url }}</div>
+        <div class="info_link">
+            <div class="status">Rejoignez la partie via l'adresse suivante :</div>
+            <div class="link">{{ join_url }}</div>
+        </div>
         <div class="home-qr">
             <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data={{ join_url|url_encode }}" alt="QR code pour rejoindre le jeu">
             <p class="hint">Scannez pour rejoindre</p>
         </div>
     </div>
-{#
-    <div class="info">
-        <h2>ça va bientôt commencer...</h2>
-        <p class="hint">...</p>
-    </div>
-#}
+</div>
 {% endblock %}

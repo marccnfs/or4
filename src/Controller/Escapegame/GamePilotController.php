@@ -45,6 +45,7 @@ class GamePilotController extends AbstractController
             return $this->redirectToRoute('game_pilot');
         }
 
+        $this->clearWinnerOptions($escapeGame);
         $escapeGame->setStatus('active');
         $escapeGame->setUpdatedAt(new \DateTimeImmutable());
         $entityManager->flush();
@@ -119,13 +120,7 @@ class GamePilotController extends AbstractController
             $entityManager->remove($team);
         }
 
-        $options = $escapeGame->getOptions();
-        unset(
-            $options['winner_team_id'],
-            $options['winner_team_name'],
-            $options['winner_team_code'],
-        );
-
+        $this->clearWinnerOptions($escapeGame);
         $escapeGame->setStatus('waiting');
         $escapeGame->setUpdatedAt(new \DateTimeImmutable());
         $entityManager->flush();
@@ -239,6 +234,17 @@ class GamePilotController extends AbstractController
         $response->headers->set('X-Accel-Buffering', 'no');
 
         return $response;
+    }
+
+    private function clearWinnerOptions(EscapeGame $escapeGame): void
+    {
+        $options = $escapeGame->getOptions();
+        unset(
+            $options['winner_team_id'],
+            $options['winner_team_name'],
+            $options['winner_team_code'],
+        );
+        $escapeGame->setOptions($options);
     }
 
 

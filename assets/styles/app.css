@@ -271,10 +271,10 @@ header {
     bottom: 0;
     left: 0;
     padding: 10px;
-    width: 436px;
+    width: 509px;
     right: 0;
     top: 239px;
-    height: 150px;
+    height: 174px;
 }
 .info{
     padding: 20px;
@@ -289,7 +289,6 @@ header {
 }
 .stack {
     display: flex;
-    flex-direction: column;
     gap: 16px;
     margin: auto;
 }
@@ -341,6 +340,21 @@ header {
 .status.closed {
     background: #ffe8e8;
     color: #a32424;
+}
+.info_link{
+    display: flex;
+    flex-direction: column;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    background: #e9efff;
+    color: #1d3a8a;
+}
+.link{
+    color:#0d2c5b;
+    justify-content: center;
+    margin: auto;
 }
 .scoreboard-winner {
     background: #fff7d6;
@@ -712,12 +726,11 @@ footer {
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    margin-top: 16px;
 }
 
 .home-qr img {
-    width: 220px;
-    height: 220px;
+    width: 150px;
+    height: 150px;
     border-radius: 16px;
     background: #fff;
     padding: 12px;

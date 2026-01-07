@@ -122,7 +122,7 @@ class GameStateBroadcaster
 
         $options = $escapeGame->getOptions();
         $winner = null;
-        if (!empty($options['winner_team_name'])) {
+        if ($escapeGame->getStatus() === 'finished' && !empty($options['winner_team_name'])) {
             $winner = [
                 'name' => $options['winner_team_name'],
                 'code' => $options['winner_team_code'] ?? null,

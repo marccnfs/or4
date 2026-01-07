@@ -145,7 +145,7 @@ export default class extends Controller {
     }
 
     updateScoreboard(payload) {
-        if (payload?.winner && this.hasWinnerUrlValue) {
+        if (payload?.winner && payload?.status === 'finished' && this.hasWinnerUrlValue) {
             window.location.href = this.winnerUrlValue;
             return;
         }
