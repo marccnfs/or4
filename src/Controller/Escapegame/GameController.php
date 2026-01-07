@@ -286,12 +286,17 @@ class GameController extends AbstractController
     ): Response {
         $teamCode = strtoupper(trim((string) $request->request->get('team_code')));
         $code = trim((string) $request->request->get('qr_payload'));
+        $expectsJson = $request->isXmlHttpRequest()
+            || str_contains((string) $request->headers->get('Accept'), 'application/json');
         $payload = [
             'valid' => false,
             'message' => 'Code QR manquant.',
             'nextHint' => null,
             'completed' => false,
+            'sequence' => null,
         ];
+
+        $statusCode = JsonResponse::HTTP_UNPROCESSABLE_ENTITY;
 
         if ($teamCode === '') {
             $payload['message'] = 'Code équipe manquant.';
@@ -311,6 +316,7 @@ class GameController extends AbstractController
                     $payload['message'] = $result['message'] ?? $payload['message'];
                     $payload['nextHint'] = $result['nextHint'] ?? null;
                     $payload['completed'] = $result['completed'] ?? false;
+                    $payload['sequence'] = $result['sequence'] ?? null;
                     $scanRecorded = false;
                     if (($result['valid'] ?? false) && ($result['sequence'] ?? null) instanceof TeamQrSequence) {
                         $scan = new TeamQrScan();
@@ -332,11 +338,34 @@ class GameController extends AbstractController
             }
         }
 
-        return $this->render('game/qr_scan.html.twig', [
-            'team_code' => $teamCode,
+        if ($payload['valid']) {
+            $statusCode = JsonResponse::HTTP_OK;
+        }
+
+        if ($expectsJson) {
+            $qrNumber = null;
+            if ($payload['sequence'] instanceof TeamQrSequence) {
+                $qrNumber = $payload['sequence']->getOrderNumber();
+            }
+
+            return $this->json([
+                'ok' => $payload['valid'],
+                'message' => $payload['valid'] ? $payload['message'] : null,
+                'error' => $payload['valid'] ? null : $payload['message'],
+                'qrNumber' => $qrNumber,
+                'isFinal' => (bool) $payload['completed'],
+            ], $statusCode);
+        }
+
+        if ($payload['valid']) {
+            $this->addFlash('success', $payload['message']);
+        } else {
+            $this->addFlash('error', $payload['message']);
+        }
+
+        return $this->redirectToRoute('game_qr_scan', [
             'code' => $code,
-            'result' => $payload,
-            'back'=> false
+            'team' => $teamCode,
         ]);
     }
 
