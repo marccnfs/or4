@@ -3,6 +3,7 @@
 namespace App\Controller\Escapegame;
 
 use App\Entity\EscapeGame;
+use App\Entity\TeamQrScan;
 use App\Repository\EscapeGameRepository;
 use App\Repository\TeamRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -116,7 +117,14 @@ class GamePilotController extends AbstractController
             return $this->redirectToRoute('game_pilot');
         }
 
-        foreach ($escapeGame->getTeams() as $team) {
+        $teams = $escapeGame->getTeams();
+        if ($teams->count() > 0) {
+            $entityManager->createQuery(
+                'DELETE FROM ' . TeamQrScan::class . ' scan WHERE scan.team IN (:teams)'
+            )->setParameter('teams', $teams)->execute();
+        }
+
+        foreach ($teams as $team) {
             $entityManager->remove($team);
         }
 
