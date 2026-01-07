@@ -20,6 +20,12 @@ export default class extends Controller {
 
         if (this.autoStartValue) {
             this.start();
+            return;
+        }
+
+        if (this.hasOverlayTarget) {
+            this.overlayTarget.hidden = true;
+            this.overlayTarget.classList.remove("is-out");
         }
     }
 

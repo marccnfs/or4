@@ -760,6 +760,9 @@ footer {
     background: rgba(0,0,0,0.25);
     backdrop-filter: blur(2px);
 }
+.countdownOverlay[hidden] {
+    display: none;
+}
 
 .countdownCard {
     position: relative;
