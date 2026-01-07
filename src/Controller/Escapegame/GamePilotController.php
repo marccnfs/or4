@@ -68,11 +68,35 @@ class GamePilotController extends AbstractController
             return $this->redirectToRoute('game_pilot');
         }
 
+        $escapeGame->setStatus('waiting');
+        $escapeGame->setUpdatedAt(new \DateTimeImmutable());
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Le jeu est en attente.');
+
+        return $this->redirectToRoute('game_pilot');
+    }
+
+    #[Route('/game/pilot/offline', name: 'game_pilot_offline', methods: ['POST'])]
+    public function offline(Request $request, EscapeGameRepository $escapeGameRepository, EntityManagerInterface $entityManager): Response
+    {
+        $escapeGame = $this->resolveEscapeGame($request, $escapeGameRepository);
+        if ($escapeGame === null) {
+            $this->addFlash('error', 'Escape introuvable.');
+            return $this->redirectToRoute('game_pilot');
+        }
+
+        if (!$this->isCsrfTokenValid('game_pilot_' . $escapeGame->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Jeton de sécurité invalide.');
+            return $this->redirectToRoute('game_pilot');
+        }
+
+
         $escapeGame->setStatus('offline');
         $escapeGame->setUpdatedAt(new \DateTimeImmutable());
         $entityManager->flush();
 
-        $this->addFlash('success', 'Le jeu est arrêté.');
+        $this->addFlash('success', 'L\'escape est hors ligne.');
 
         return $this->redirectToRoute('game_pilot');
     }

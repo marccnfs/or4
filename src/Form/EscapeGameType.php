@@ -6,7 +6,6 @@ namespace App\Form;
 
 use App\Entity\EscapeGame;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -64,14 +63,6 @@ class EscapeGameType extends AbstractType
         $builder
             ->add('name', TextType::class, [
                 'label' => 'Nom',
-            ])
-            ->add('status', ChoiceType::class, [
-                'label' => 'Statut',
-                'choices' => [
-                    'Hors ligne' => 'offline',
-                    'En attente' => 'waiting',
-                    'Actif' => 'active',
-                ],
             ])
             ->add('team1Code', TextType::class, [
                 'label' => 'Code équipe 1',
