@@ -48,6 +48,20 @@ class GameStateBroadcaster
         ));
     }
 
+    public function publishTeamProgressUpdated(Team $team): void
+    {
+        $payload = [
+            'event' => 'team_progress_updated',
+            'team' => $this->buildTeamPayload($team),
+            'scoreboard' => $this->buildScoreboardPayload($team->getEscapeGame()),
+        ];
+
+        $this->hub->publish(new Update(
+            $this->getTeamProgressTopic($team->getEscapeGame()),
+            json_encode($payload),
+        ));
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -190,6 +204,11 @@ class GameStateBroadcaster
     private function getTeamTopic(Team $team): string
     {
         return sprintf('/escape/%d/team/%d/state', $team->getEscapeGame()->getId(), $team->getId());
+    }
+
+    private function getTeamProgressTopic(EscapeGame $escapeGame): string
+    {
+        return sprintf('/escape/%d/team_progress', $escapeGame->getId());
     }
 
     /**

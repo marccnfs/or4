@@ -114,6 +114,7 @@ class GameValidationService
                 'message' => 'Ce QR code ne correspond pas à votre équipe.',
                 'completed' => false,
                 'updated' => false,
+                'sequence' => null,
             ];
         }
 
@@ -127,6 +128,7 @@ class GameValidationService
                 'nextHint' => $completed ? null : $this->getNextQrHintFromList($sequences),
                 'completed' => $completed,
                 'updated' => false,
+                'sequence' => $matchingSequence,
             ];
         }
 
@@ -143,6 +145,7 @@ class GameValidationService
                 'nextHint' => $nextSequence->getHint(),
                 'completed' => false,
                 'updated' => false,
+                'sequence' => $matchingSequence,
             ];
         }
 
@@ -168,6 +171,7 @@ class GameValidationService
             'nextHint' => $completed ? null : $this->getNextQrHintFromList($sequences),
             'completed' => $completed,
             'updated' => true,
+            'sequence' => $matchingSequence,
         ];
     }
 

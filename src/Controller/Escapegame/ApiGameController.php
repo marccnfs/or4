@@ -4,8 +4,12 @@ namespace App\Controller\Escapegame;
 
 use App\Entity\Step;
 use App\Entity\Team;
+use App\Repository\EscapeGameRepository;
 use App\Repository\TeamRepository;
+use App\Services\GameStateBroadcaster;
 use App\Services\GameValidationService;
+use App\Entity\TeamQrScan;
+use App\Entity\TeamQrSequence;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -74,14 +78,23 @@ class ApiGameController extends AbstractController
     #[Route('/api/qr/scan', name: 'api_qr_scan', methods: ['POST'])]
     public function scanQr(
         Request $request,
-        SessionInterface $session,
         TeamRepository $teamRepository,
+        EscapeGameRepository $escapeGameRepository,
         EntityManagerInterface $entityManager,
-        GameValidationService $validator
+        GameValidationService $validator,
+        GameStateBroadcaster $broadcaster
     ): JsonResponse
     {
         $payload = $this->decodeJson($request);
-        $code = trim((string) ($payload['code'] ?? ''));
+        $teamCode = strtoupper(trim((string) ($payload['team_code'] ?? '')));
+        $code = trim((string) ($payload['qr_payload'] ?? $payload['code'] ?? ''));
+
+        if ($teamCode === '') {
+            return $this->json([
+                'valid' => false,
+                'message' => 'Code équipe manquant.',
+            ], JsonResponse::HTTP_BAD_REQUEST);
+        }
 
         if ($code === '') {
             return $this->json([
@@ -90,7 +103,7 @@ class ApiGameController extends AbstractController
             ], JsonResponse::HTTP_BAD_REQUEST);
         }
 
-        $team = $this->findTeamFromSession($session, $teamRepository);
+        $team = $this->resolveTeamFromCode($teamCode, $teamRepository, $escapeGameRepository, $entityManager);
         if ($team === null) {
             return $this->json([
                 'valid' => false,
@@ -107,8 +120,22 @@ class ApiGameController extends AbstractController
         }
 
         $result = $validator->validateStep($team, $stepEntity, ['code' => $code]);
-        if ($result['updated'] ?? false) {
+        $scanRecorded = false;
+        if (($result['valid'] ?? false) && ($result['sequence'] ?? null) instanceof TeamQrSequence) {
+            $scan = new TeamQrScan();
+            $scan->setTeam($team);
+            $scan->setQrSequence($result['sequence']);
+            $scan->setScannedByUserAgent($this->truncateUserAgent($request->headers->get('User-Agent')));
+            $entityManager->persist($scan);
+            $scanRecorded = true;
+        }
+
+        if (($result['updated'] ?? false) || $scanRecorded) {
             $entityManager->flush();
+        }
+
+        if ($result['valid'] ?? false) {
+            $broadcaster->publishTeamProgressUpdated($team);
         }
 
         return $this->json([
@@ -201,6 +228,51 @@ class ApiGameController extends AbstractController
         }
 
         return $teamRepository->findOneBy(['registrationCode' => $teamCode]);
+    }
+
+    private function resolveTeamFromCode(
+        string $teamCode,
+        TeamRepository $teamRepository,
+        EscapeGameRepository $escapeGameRepository,
+        EntityManagerInterface $entityManager
+    ): ?Team {
+        $team = $teamRepository->findOneBy(['registrationCode' => $teamCode]);
+        if ($team !== null) {
+            return $team;
+        }
+
+        $escapeGame = $escapeGameRepository->findLatest();
+        if ($escapeGame === null) {
+            return null;
+        }
+
+        $allowedCodes = $escapeGame->getOptions()['team_codes'] ?? [];
+        foreach ($allowedCodes as $index => $code) {
+            if (strtoupper(trim((string) $code)) === $teamCode) {
+                $team = new Team();
+                $team->setEscapeGame($escapeGame);
+                $team->setName(sprintf('Équipe %d', (int) $index));
+                $team->setRegistrationCode($teamCode);
+                $team->setQrToken(bin2hex(random_bytes(8)));
+                $team->setState('waiting');
+                $team->setScore(0);
+                $team->setLetterOrder([]);
+                $entityManager->persist($team);
+                $entityManager->flush();
+                return $team;
+            }
+        }
+
+        return null;
+    }
+
+    private function truncateUserAgent(?string $userAgent): ?string
+    {
+        if ($userAgent === null) {
+            return null;
+        }
+
+        return substr($userAgent, 0, 255);
     }
 
     private function findStepForTeam(Team $team, string $type, EntityManagerInterface $entityManager): ?Step

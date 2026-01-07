@@ -5,6 +5,7 @@ namespace App\Controller\Escapegame;
 use App\Entity\EscapeGame;
 use App\Entity\Step;
 use App\Entity\Team;
+use App\Entity\TeamQrScan;
 use App\Entity\TeamQrSequence;
 use App\Repository\EscapeGameRepository;
 use App\Repository\TeamRepository;
@@ -257,13 +258,34 @@ class GameController extends AbstractController
     #[Route('/game/qr/{code}', name: 'game_qr_scan', requirements: ['code' => '[^/]+'], methods: ['GET'])]
     public function qrScan(
         string $code,
+        Request $request
+    ): Response {
+        $code = trim($code);
+
+        return $this->render('game/qr_scan.html.twig', [
+            'team_code' => strtoupper(trim((string) $request->query->get('team'))),
+            'code' => $code,
+            'result' => [
+                'valid' => false,
+                'message' => $code === '' ? 'Code QR manquant.' : 'Renseignez le code équipe pour valider ce QR.',
+                'nextHint' => null,
+                'completed' => false,
+            ],
+            'back'=> false
+        ]);
+    }
+
+    #[Route('/game/qr/validate', name: 'game_qr_validate', methods: ['POST'])]
+    public function qrValidate(
         Request $request,
-        SessionInterface $session,
         TeamRepository $teamRepository,
         EscapeGameRepository $escapeGameRepository,
         EntityManagerInterface $entityManager,
-        GameValidationService $validator
+        GameValidationService $validator,
+        GameStateBroadcaster $broadcaster
     ): Response {
+        $teamCode = strtoupper(trim((string) $request->request->get('team_code')));
+        $code = trim((string) $request->request->get('qr_payload'));
         $payload = [
             'valid' => false,
             'message' => 'Code QR manquant.',
@@ -271,38 +293,47 @@ class GameController extends AbstractController
             'completed' => false,
         ];
 
-        $code = trim($code);
-        $resolvedTeamCode = $session->get(self::SESSION_TEAM_CODE);
-        if ($code !== '') {
-            $team = $this->resolveTeamForQrScan(
-                $session,
-                $request,
-                $teamRepository,
-                $escapeGameRepository,
-                $entityManager
-            );
+        if ($teamCode === '') {
+            $payload['message'] = 'Code équipe manquant.';
+        } elseif ($code === '') {
+            $payload['message'] = 'Code QR manquant.';
+        } else {
+            $team = $this->resolveTeamForQrValidation($teamCode, $teamRepository, $escapeGameRepository, $entityManager);
             if ($team === null) {
-                $payload['message'] = 'Équipe introuvable. Merci de rejoindre le jeu.';
+                $payload['message'] = 'Équipe introuvable.';
             } else {
-                $resolvedTeamCode = $team->getRegistrationCode();
                 $step = $this->findStepForTeam($team, 'E', $entityManager);
                 if ($step === null) {
                     $payload['message'] = 'Étape inconnue.';
                 } else {
                     $result = $validator->validateStep($team, $step, ['code' => $code]);
-                    if ($result['updated'] ?? false) {
-                        $entityManager->flush();
-                    }
                     $payload['valid'] = $result['valid'];
                     $payload['message'] = $result['message'] ?? $payload['message'];
                     $payload['nextHint'] = $result['nextHint'] ?? null;
                     $payload['completed'] = $result['completed'] ?? false;
+                    $scanRecorded = false;
+                    if (($result['valid'] ?? false) && ($result['sequence'] ?? null) instanceof TeamQrSequence) {
+                        $scan = new TeamQrScan();
+                        $scan->setTeam($team);
+                        $scan->setQrSequence($result['sequence']);
+                        $scan->setScannedByUserAgent($this->truncateUserAgent($request->headers->get('User-Agent')));
+                        $entityManager->persist($scan);
+                        $scanRecorded = true;
+                    }
+
+                    if (($result['updated'] ?? false) || $scanRecorded) {
+                        $entityManager->flush();
+                    }
+
+                    if ($result['valid'] ?? false) {
+                        $broadcaster->publishTeamProgressUpdated($team);
+                    }
                 }
             }
         }
 
         return $this->render('game/qr_scan.html.twig', [
-            'team_code' => $resolvedTeamCode,
+            'team_code' => $teamCode,
             'code' => $code,
             'result' => $payload,
             'back'=> false
@@ -642,43 +673,6 @@ class GameController extends AbstractController
         return $teamRepository->findOneBy(['registrationCode' => $teamCode]);
     }
 
-    private function resolveTeamForQrScan(
-        SessionInterface $session,
-        Request $request,
-        TeamRepository $teamRepository,
-        EscapeGameRepository $escapeGameRepository,
-        EntityManagerInterface $entityManager
-    ): ?Team {
-        $team = $this->findTeamFromSession($session, $teamRepository);
-        if ($team !== null) {
-            return $team;
-        }
-
-        $sessionCode = strtoupper(trim((string) $session->get(self::SESSION_TEAM_CODE)));
-        $queryCode = strtoupper(trim((string) $request->query->get('team')));
-        $teamCode = $sessionCode !== '' ? $sessionCode : $queryCode;
-        if ($teamCode === '') {
-            return null;
-        }
-
-        $team = $teamRepository->findOneBy(['registrationCode' => $teamCode]);
-        if ($team !== null) {
-            $session->set(self::SESSION_TEAM_CODE, $teamCode);
-            return $team;
-        }
-
-        $escapeGame = $escapeGameRepository->findLatest();
-        if ($escapeGame === null || !$this->isTeamCodeAllowed($escapeGame, $teamCode)) {
-            return null;
-        }
-
-        $team = $this->registerTeam($escapeGame, $teamCode, $entityManager);
-        $entityManager->flush();
-        $session->set(self::SESSION_TEAM_CODE, $teamCode);
-
-        return $team;
-    }
-
     private function resolveTeamFromRequest(Request $request, TeamRepository $teamRepository): ?Team
     {
         $teamCode = strtoupper(trim((string) $request->query->get('team')));
@@ -689,12 +683,43 @@ class GameController extends AbstractController
             }
         }
 
+
         $token = trim((string) $request->query->get('token'));
         if ($token !== '') {
-            return $teamRepository->findOneBy(['qrToken' => $token]);
+        return $teamRepository->findOneBy(['qrToken' => $token]);
+        }
+        return null;
+    }
+
+    private function resolveTeamForQrValidation(
+        string $teamCode,
+        TeamRepository $teamRepository,
+        EscapeGameRepository $escapeGameRepository,
+        EntityManagerInterface $entityManager
+    ): ?Team {
+        $team = $teamRepository->findOneBy(['registrationCode' => $teamCode]);
+        if ($team !== null) {
+            return $team;
         }
 
-        return null;
+        $escapeGame = $escapeGameRepository->findLatest();
+        if ($escapeGame === null || !$this->isTeamCodeAllowed($escapeGame, $teamCode)) {
+            return null;
+        }
+
+        $team = $this->registerTeam($escapeGame, $teamCode, $entityManager);
+        $entityManager->flush();
+
+        return $team;
+    }
+
+    private function truncateUserAgent(?string $userAgent): ?string
+    {
+        if ($userAgent === null) {
+            return null;
+        }
+
+        return substr($userAgent, 0, 255);
     }
 
 

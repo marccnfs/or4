@@ -7,16 +7,23 @@
         <div>
             <h1>Scan QR</h1>
             {% if not team_code %}
-                <p class="hint">Session non trouvée</p>
+                <p class="hint">Saisissez votre code équipe pour valider ce QR.</p>
             {% endif %}
         </div>
-        <span class="badge">{{ team_code }}</span>
+        <span class="badge">{{ team_code ?: '—' }}</span>
     </header>
 
     <div class="card stack">
 
+        <form method="post" action="{{ path('game_qr_validate') }}" class="stack">
+            <label class="stack">
+                <span class="hint">Code équipe</span>
+                <input type="text" name="team_code" value="{{ team_code }}" required autocomplete="off" />
+            </label>
+            <input type="hidden" name="qr_payload" value="{{ code }}" />
+            <button type="submit" class="btn">Valider le QR</button>
+        </form>
 
-       {#  {% if result.nextHint %} #}
         {% if result.nextHint %}
             <p class="hint">Trouvez le prochain QR code dans ce lieu :</p>
             <div class="status">{{ result.nextHint }}</div>
