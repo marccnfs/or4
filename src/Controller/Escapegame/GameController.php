@@ -11,6 +11,7 @@ use App\Repository\EscapeGameRepository;
 use App\Repository\TeamRepository;
 use App\Services\GameStateBroadcaster;
 use App\Services\GameValidationService;
+use App\Services\TeamPinService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -282,9 +283,11 @@ class GameController extends AbstractController
         EscapeGameRepository $escapeGameRepository,
         EntityManagerInterface $entityManager,
         GameValidationService $validator,
+        TeamPinService $teamPinService,
         GameStateBroadcaster $broadcaster
     ): Response {
         $teamCode = strtoupper(trim((string) $request->request->get('team_code')));
+        $pin = trim((string) $request->request->get('pin'));
         $code = trim((string) $request->request->get('qr_payload'));
         $expectsJson = $request->isXmlHttpRequest()
             || str_contains((string) $request->headers->get('Accept'), 'application/json');
@@ -300,12 +303,16 @@ class GameController extends AbstractController
 
         if ($teamCode === '') {
             $payload['message'] = 'Code équipe manquant.';
+        } elseif ($pin === '') {
+            $payload['message'] = 'PIN manquant.';
         } elseif ($code === '') {
             $payload['message'] = 'Code QR manquant.';
         } else {
             $team = $this->resolveTeamForQrValidation($teamCode, $teamRepository, $escapeGameRepository, $entityManager);
             if ($team === null) {
                 $payload['message'] = 'Équipe introuvable.';
+            } elseif (!$teamPinService->isPinValid($team, $pin)) {
+                $payload['message'] = 'PIN incorrect.';
             } else {
                 $step = $this->findStepForTeam($team, 'E', $entityManager);
                 if ($step === null) {

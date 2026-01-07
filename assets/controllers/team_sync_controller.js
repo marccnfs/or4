@@ -3,8 +3,10 @@ import { Controller } from '@hotwired/stimulus';
 const DEFAULT_POLLING_INTERVAL = 4000;
 const DEFAULT_RECONNECT_DELAY = 5000;
 const DEFAULT_FALLBACK_TIMEOUT = 5000;
+const DEFAULT_PIN_REFRESH_INTERVAL = 60000;
 
 export default class extends Controller {
+    static targets = ['pin'];
     static values = {
         url: String,
         mercureUrl: String,
@@ -13,18 +15,22 @@ export default class extends Controller {
         reconnectDelay: Number,
         fallbackTimeout: Number,
         currentUpdated: String,
+        pinRefreshInterval: Number,
     };
 
     connect() {
         this.pollingTimer = null;
         this.reconnectTimer = null;
+        this.pinRefreshTimer = null;
         this.mercureReady = false;
         this.connectMercure();
+        this.startPinRefresh();
     }
 
     disconnect() {
         this.disconnectMercure();
         this.stopPolling();
+        this.stopPinRefresh();
     }
 
     connectMercure() {
@@ -118,6 +124,27 @@ export default class extends Controller {
         }
     }
 
+    startPinRefresh() {
+        if (this.pinRefreshTimer || !this.urlValue) {
+            return;
+        }
+
+        const interval = this.pinRefreshIntervalValue || DEFAULT_PIN_REFRESH_INTERVAL;
+        this.pinRefreshTimer = window.setInterval(() => {
+            if (!this.pollingTimer) {
+                this.fetchState();
+            }
+        }, interval);
+    }
+
+    stopPinRefresh() {
+        if (this.pinRefreshTimer) {
+            window.clearInterval(this.pinRefreshTimer);
+            this.pinRefreshTimer = null;
+        }
+    }
+
+
     async fetchState() {
         if (!this.urlValue) {
             return;
@@ -143,6 +170,11 @@ export default class extends Controller {
         if (!payload) {
             return;
         }
+
+        if (this.hasPinTarget && payload.pin) {
+            this.pinTarget.textContent = payload.pin;
+        }
+
 
         const updatedAt = payload.updated_at || '';
         if (this.hasCurrentUpdatedValue && updatedAt && updatedAt !== this.currentUpdatedValue) {

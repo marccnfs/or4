@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Entity\EscapeGame;
 use App\Entity\Team;
 use App\Repository\TeamRepository;
+use App\Services\TeamPinService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
@@ -16,6 +17,7 @@ class GameStateBroadcaster
     public function __construct(
         private HubInterface $hub,
         private TeamRepository $teamRepository,
+        private TeamPinService $teamPinService,
         private LoggerInterface $logger,
     ) {
     }
@@ -152,7 +154,7 @@ class GameStateBroadcaster
     public function buildTeamPayload(Team $team): array
     {
         [$qrScanned, $qrTotal] = $this->getQrCounts($team);
-
+        $pinPayload = $this->teamPinService->getCurrentPinPayload($team);
         $latestUpdate = $team->getEscapeGame()->getUpdatedAt();
         foreach ($team->getTeamStepProgresses() as $progress) {
             $updatedAt = $progress->getUpdatedAt();
@@ -176,6 +178,8 @@ class GameStateBroadcaster
             'score' => $team->getScore(),
             'qr_scanned' => $qrScanned,
             'qr_total' => $qrTotal,
+            'pin' => $pinPayload['pin'],
+            'pin_expires_at' => $pinPayload['expires_at'],
             'updated_at' => $latestUpdate?->format('H:i'),
         ];
     }

@@ -6,22 +6,23 @@
     <div class="winner-screen">
         <header class="winner-header">
             <h1>Fin de partie</h1>
-            <p class="hint">L'équipe {{ winner.name }} a trouvé le secret.</p>
+            <p class="hint">L'équipe {{ winner.code }} a trouvé le secret.</p>
         </header>
 
-        <div class="card stack winner-card">
-            <div class="status">Victoire</div>
-            <h2>{{ winner.name }}</h2>
+        <div class="winner-card">
+            <div class="status">Stop</div>
+            <h2>de l'equipe {{ winner.code }} à trouver le code de la malle</h2>
             {% if winner.code %}
-                <p class="hint">Code équipe : {{ winner.code }}</p>
+                <p class="hint">Il ne lui reste plus qu'a trouver le coffre et enfin la clef de l'office.</p>
             {% endif %}
-            <p class="hint">Merci à toutes les équipes pour leur participation.</p>
+            <p class="hint">Merci à toutes les équipes pour leur participation, et passons au buffet pour fêter cela !</p>
         </div>
-
+{#
         <div class="card stack">
             <div class="status">Progression finale</div>
             <h2>{{ scoreboard.total_steps }} étapes</h2>
             <p class="hint">La partie est terminée.</p>
         </div>
+#}
     </div>
 {% endblock %}

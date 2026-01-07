@@ -13,7 +13,7 @@ export default class extends Controller {
         const letter = this.hasInputTarget ? this.inputTarget.value : event.params.letter;
 
         if (!step || !letter) {
-            this.updateStatus("Merci de saisir l'étape et la lettre.");
+            this.updateStatus("Merci de saisir l'étape et la lettre.", true);
             return;
         }
 
@@ -22,7 +22,10 @@ export default class extends Controller {
             letter,
         });
 
-        this.updateStatus(response.message || (response.valid ? 'Lettre validée.' : 'Lettre incorrecte.'));
+        this.updateStatus(
+            response.message || (response.valid ? 'Lettre validée.' : 'Lettre incorrecte.'),
+            !response.valid,
+        );
 
         if (response.valid) {
             if (this.hasFormTarget && this.hasStepTarget) {
@@ -53,10 +56,12 @@ export default class extends Controller {
         return data;
     }
 
-    updateStatus(message) {
-        if (this.hasStatusTarget) {
-            this.statusTarget.textContent = message;
+    updateStatus(message, isError = false) {
+        if (!this.hasStatusTarget) {
+            return;
         }
+        this.statusTarget.textContent = message;
+        this.statusTarget.classList.toggle('closed', isError);
     }
 
 }

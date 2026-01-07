@@ -337,6 +337,9 @@ header {
     background: #e9efff;
     color: #1d3a8a;
 }
+.status:empty {
+    display: none;
+}
 .status.closed {
     background: #ffe8e8;
     color: #a32424;
@@ -745,6 +748,18 @@ footer {
 
 .winner-header {
     text-align: center;
+}
+.winner-card{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 24px;
+    border-radius: 16px;
+    background: #4ba7fc;
+    box-shadow: 0 12px 28px rgba(16, 30, 74, 0.08);
+    margin: auto;
+    width: 500px;
 }
 
 .winner-card h2 {

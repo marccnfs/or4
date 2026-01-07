@@ -121,6 +121,9 @@ header {
     background: rgb(12 84 146);
     color: #ffffff;
 }
+.status:empty {
+    display: none;
+}
 .status.closed {
     background: #ffe8e8;
     color: #a32424;

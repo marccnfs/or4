@@ -19,6 +19,10 @@
                 <span class="hint">Code équipe</span>
                 <input type="text" name="team_code" value="{{ team_code }}" required autocomplete="off" data-qr-scan-target="teamCode" />
             </label>
+            <label class="stack">
+                <span class="hint">PIN éphémère</span>
+                <input type="text" name="pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required autocomplete="off" />
+            </label>
             <input type="hidden" name="qr_payload" value="{{ code }}" />
             <button type="submit" class="btn">Valider le QR</button>
         </form>

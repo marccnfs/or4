@@ -20,7 +20,7 @@ export default class extends Controller {
             : (event?.detail?.solution || event?.params?.combination);
 
         if (!combination) {
-            this.updateStatus('Merci de saisir la combinaison finale.');
+            this.updateStatus('Merci de saisir la combinaison finale.', true);
             return;
         }
 
@@ -31,7 +31,10 @@ export default class extends Controller {
 
         const response = await this.postJson(this.endpointValue || '/api/final/check', payload);
 
-        this.updateStatus(response.message || (response.valid ? 'Combinaison validée.' : 'Combinaison incorrecte.'));
+        this.updateStatus(
+            response.message || (response.valid ? 'Combinaison validée.' : 'Combinaison incorrecte.'),
+            !response.valid,
+        );
         if (response.finished && !response.valid && this.hasLoseRedirectUrlValue) {
             window.location.href = this.loseRedirectUrlValue;
             return;
@@ -117,9 +120,11 @@ export default class extends Controller {
         return data;
     }
 
-    updateStatus(message) {
-        if (this.hasStatusTarget) {
-            this.statusTarget.textContent = message;
+    updateStatus(message, isError = false) {
+        if (!this.hasStatusTarget) {
+            return;
         }
+        this.statusTarget.textContent = message;
+        this.statusTarget.classList.toggle('closed', isError);
     }
 }

@@ -41,6 +41,12 @@
                 inscrire  inscrire. Note : suivez les QR code dans l'ordre, et uniquement ceux qui portent le code :
                 "{{ team_code }}".
             </div>
+            {% if team_payload %}
+                <div class="status">
+                    PIN éphémère :
+                    <strong data-team-sync-target="pin">{{ team_payload.pin }}</strong>
+                </div>
+            {% endif %}
             <div class="status">
                 QR déjà scannés :
                 {{ scanned_qr_codes is not empty ? scanned_qr_codes|join(', ') : 'Aucun pour le moment.' }}

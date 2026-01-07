@@ -8,6 +8,7 @@ use App\Repository\EscapeGameRepository;
 use App\Repository\TeamRepository;
 use App\Services\GameStateBroadcaster;
 use App\Services\GameValidationService;
+use App\Services\TeamPinService;
 use App\Entity\TeamQrScan;
 use App\Entity\TeamQrSequence;
 use Doctrine\ORM\EntityManagerInterface;
@@ -82,17 +83,26 @@ class ApiGameController extends AbstractController
         EscapeGameRepository $escapeGameRepository,
         EntityManagerInterface $entityManager,
         GameValidationService $validator,
+        TeamPinService $teamPinService,
         GameStateBroadcaster $broadcaster
     ): JsonResponse
     {
         $payload = $this->decodeJson($request);
         $teamCode = strtoupper(trim((string) ($payload['team_code'] ?? '')));
+        $pin = trim((string) ($payload['pin'] ?? ''));
         $code = trim((string) ($payload['qr_payload'] ?? $payload['code'] ?? ''));
 
         if ($teamCode === '') {
             return $this->json([
                 'valid' => false,
                 'message' => 'Code équipe manquant.',
+            ], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        if ($pin === '') {
+            return $this->json([
+                'valid' => false,
+                'message' => 'PIN manquant.',
             ], JsonResponse::HTTP_BAD_REQUEST);
         }
 
@@ -110,6 +120,14 @@ class ApiGameController extends AbstractController
                 'message' => 'Équipe introuvable.',
             ], JsonResponse::HTTP_UNAUTHORIZED);
         }
+
+        if (!$teamPinService->isPinValid($team, $pin)) {
+            return $this->json([
+                'valid' => false,
+                'message' => 'PIN incorrect.',
+            ], JsonResponse::HTTP_UNAUTHORIZED);
+        }
+
 
         $stepEntity = $this->findStepForTeam($team, 'E', $entityManager);
         if ($stepEntity === null) {
