@@ -644,6 +644,7 @@ class GameController extends AbstractController
         return $this->render('game/winner.html.twig', [
             'team_code' => $teamCode,
             'winner_name' => $options['winner_team_name'] ?? $team->getName(),
+            'message_winner' => $options['cryptex_message'] ?? 'Bravo !',
             'back' => false,
         ]);
     }

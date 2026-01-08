@@ -141,7 +141,7 @@ class GameStateBroadcaster
             'total_steps' => $totalSteps,
             'winner' => $winner,
             'teams' => $payloadTeams,
-            'updated_at' => $latestUpdate?->format('H:i'),
+            'updated_at' => $latestUpdate?->format('H:i:s'),
         ];
     }
 
@@ -180,7 +180,7 @@ class GameStateBroadcaster
             'qr_total' => $qrTotal,
             'pin' => $pinPayload['pin'],
             'pin_expires_at' => $pinPayload['expires_at'],
-            'updated_at' => $latestUpdate?->format('H:i'),
+            'updated_at' => $latestUpdate?->format('H:i:s'),
         ];
     }
 
