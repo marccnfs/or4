@@ -198,6 +198,9 @@ export default class extends Controller {
             return false;
         }
 
+        this.countdownOverlayTarget.hidden = false;
+        this.countdownOverlayTarget.classList.remove('is-out');
+
         const controller = this.application.getControllerForElementAndIdentifier(
             this.countdownOverlayTarget,
             'countdown',
