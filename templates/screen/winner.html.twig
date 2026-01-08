@@ -11,11 +11,12 @@
 
         <div class="winner-card">
             <div class="status">Stop</div>
-            <h2>de l'equipe {{ winner.code }} à trouver le code de la malle</h2>
+            <h2>🎉 L’équipe {{ winner.code }} a découvert le code de la malle !</h2>
             {% if winner.code %}
-                <p class="hint">Il ne lui reste plus qu'a trouver le coffre et enfin la clef de l'office.</p>
+                <p class="hint">Il ne lui reste plus qu’à trouver le coffre… et la clé de l’office.</p>
             {% endif %}
-            <p class="hint">Merci à toutes les équipes pour leur participation, et passons au buffet pour fêter cela !</p>
+            <p class="hint">Merci à toutes les équipes pour leur participation.
+                Place maintenant au buffet pour célébrer cette victoire collective !</p>
         </div>
 {#
         <div class="card stack">

@@ -27,8 +27,11 @@
         data-team-sync-topic-value="/escape/{{ team_payload.escape_id }}/team/{{ team_payload.id }}/state"
         data-team-sync-current-updated-value="{{ team_payload.updated_at }}"
             {% endif %}>
-        <div class="status">Suivez les instructions de l'animateur pour cette étape.</div>
-        <p class="hint">Lorsque vous avez trouvé la lettre, validez pour passer à l'étape suivante.</p>
+
+        {% if step in ['A', 'B', 'C', 'D'] %}
+        <div class="status">Entrez la lettre trouvée et validez pour passer à l'étape suivante.</div>
+       {# <p class="hint">Lorsque vous avez trouvé la lettre, validez pour passer à l'étape suivante.</p>  #}
+        {% endif %}
 
         {% if error %}
             <div class="status closed" data-game-target="status">{{ error }}</div>
@@ -36,10 +39,10 @@
 
         {% if step == 'E' %}
             <div class="status">
-                Pour trouver la dernière lettre suivez maintenant la piste des QR code. Commencez par scanner le premier
-                qui est sur votre table, et suivez ainsi la piste jusqu'au dernier QR code qui vous révèlera la lettre à
-                inscrire  inscrire. Note : suivez les QR code dans l'ordre, et uniquement ceux qui portent le code :
-                "{{ team_code }}".
+                Pour découvrir la dernière lettre, suivez la piste des QR codes.
+                Commencez par scanner celui posé sur votre table, puis enchaînez les suivants dans l’ordre, jusqu’au dernier.
+                ⚠️ Ne scannez que les QR codes portant le code de votre équipe :"{{ team_code }}". Les QR codes doivent être scannés dans l’ordre.
+                Un QR trop tôt… et la piste restera muette.
             </div>
             {% if team_payload %}
                 <div class="status">
@@ -60,10 +63,10 @@
                 {% endif %}
             </div>
             {% if progress['E'] is defined and progress['E'].completed %}
-                <div class="status">Séquence terminée. Vous pouvez passer à l'étape F.</div>
+                <div class="status">Séquence terminée. Cap sur l’étape F.</div>
                 <a class="btn" href="{{ path('game_final') }}">Accéder à l'étape finale</a>
-            {% else %}
-                <div class="hint">Scannez chaque QR code pour faire avancer la séquence.</div>
+           {#  {% else %}
+                <div class="hint">Scannez chaque QR code pour faire avancer la séquence.</div>#}
             {% endif %}
         {% endif %}
 
@@ -82,7 +85,7 @@
         {% endif %}
     </div>
 
-         <div class="card">
+         <div class="card_progress">
             <h2>Progression</h2>
 
             <ol class="stepper" aria-label="Progression">

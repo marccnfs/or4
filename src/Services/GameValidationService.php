@@ -16,8 +16,8 @@ class GameValidationService
     private const STATE_PENDING = 'pending';
     private const STATE_IN_PROGRESS = 'in_progress';
     private const STATE_VALIDATED = 'validated';
-    private const QR_VALIDATED_MESSAGE = 'Qr Validé avec succès. Retournez à la table de jeu pour découvrir le prochain indice pour trouver le prochain QR code';
-    private const QR_FINAL_MESSAGE = 'Bravo, voici la dernière Lettre du jeu : %s, maintenant révélé avec votre équipe l\'endroit où se trouve la clef de l\'office, bonne chance';
+    private const QR_VALIDATED_MESSAGE = 'QR code validé. Retournez à votre table : un nouvel indice vous attend pour trouver le prochain QR.';
+    private const QR_FINAL_MESSAGE = 'Félicitations ! Vous avez découvert la dernière lettre : %s . À présent, mettez vos indices en commun pour localiser la clé de l\’office. Bonne chance !';
 
     public function __construct(private EntityManagerInterface $entityManager)
     {

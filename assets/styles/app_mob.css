@@ -61,6 +61,14 @@ header {
     box-shadow: inset -1px 1px 6px 7px rgba(16, 30, 74, 0.08);
     width: 100%;
 }
+.card_progress{
+    border-radius: 18px;
+    box-shadow: inset -1px 1px 6px 7px rgba(16, 30, 74, .08);
+    padding: 20px;
+    margin-top: 15px;
+    background: #ffffffcc;
+    width: 100%;
+}
 .card_help {
     background: rgb(12 84 146);
     color: #fff;
@@ -88,7 +96,7 @@ header {
     align-items: center;
     justify-content: center;
     width: 100%;
-    max-width: 280px;
+    max-width: 220px;
     padding: 14px 18px;
     border-radius: 14px;
     border: none;
@@ -129,6 +137,7 @@ header {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    margin: 15px;
 }
 .stack input:not([type="hidden"]) {
     width: 100%;
@@ -417,4 +426,16 @@ footer {
     .stepper__dot {
         font-size: 0.9rem;
     }
+}
+.win_play{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    font-size: 1.2rem;
+    color: #670606;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 10px;
 }
