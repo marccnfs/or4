@@ -5,11 +5,19 @@
 * {
     box-sizing: border-box;
 }
+html {
+    height: 100%;
+}
 body {
     margin: 0;
     font-family: "Inter", "Segoe UI", sans-serif;
     background: #a6d9fe;
     color: #797ed9;
+    min-height: 100dvh;
+    -webkit-text-size-adjust: 100%;
+    overscroll-behavior: none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
 }
 .page {
     min-height: 100vh;
@@ -51,6 +59,7 @@ header {
     border-radius: 18px;
     padding: 20px;
     box-shadow: inset -1px 1px 6px 7px rgba(16, 30, 74, 0.08);
+    width: 100%;
 }
 .card_help {
     background: rgb(12 84 146);
@@ -78,7 +87,8 @@ header {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 160px;
+    width: 100%;
+    max-width: 280px;
     padding: 14px 18px;
     border-radius: 14px;
     border: none;
@@ -89,6 +99,9 @@ header {
     text-decoration: none;
     cursor: pointer;
     margin: auto;
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
 }
 .btn-outline {
     background: transparent;
@@ -101,13 +114,29 @@ header {
     justify-content: center;
     align-items: center;
 }
-.input {
+.input,
+.stack input:not([type="hidden"]),
+.form_step input:not([type="hidden"]) {
     width: 160px;
     padding: 14px 16px;
     border-radius: 12px;
     border: 1px solid #d3d8e6;
     font-size: 1rem;
     margin: 20px;
+    touch-action: manipulation;
+}
+.stack label {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.stack input:not([type="hidden"]) {
+    width: 100%;
+    margin: 0;
+}
+.form_step input:not([type="hidden"]) {
+    width: 100%;
+    max-width: 240px;
 }
 .hint {
     font-size: 0.9rem;
