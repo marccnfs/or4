@@ -8,13 +8,13 @@
             <h1>Bravo {{ team_code }} !</h1>
             <p class="hint">Vous avez trouvé le secret.</p>
         </div>
-        <span class="badge"> {{ message_winner }}</span>
+        <span class="win_play"> {{ message_winner }}</span>
     </header>
 
     <div class="card stack">
-        <div class="status">Victoire</div>
-        <h2>L'équipe {{ winner_name }} remporte la partie !</h2>
-        <p class="hint">Merci d'avoir participé. Prévenez l'animateur pour la suite.</p>
-        <a class="btn btn-outline" href="{{ path('game_join') }}">Rejouer</a>
+        <div class="status">Bravo</div>
+        <h2>L'équipe {{ winner_name }} vous êtes trop fort !!</h2>
+        <p class="hint">Maintenant que vous savez où se trouve le coffre, courez vite l'ouvrir en utilisant le code secret...</p>
+       {#  <a class="btn btn-outline" href="{{ path('game_join') }}">Rejouer</a> #}
     </div>
 {% endblock %}

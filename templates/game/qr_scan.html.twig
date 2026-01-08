@@ -3,46 +3,57 @@
 {% block title %}Scan QR{% endblock %}
 
 {% block body %}
-    <header>
-        <div>
-            <h1>Scan QR</h1>
-            {% if not team_code %}
-                <p class="hint">Saisissez votre code équipe pour valider ce QR.</p>
-            {% endif %}
-        </div>
-        <span class="badge">{{ team_code ?: '—' }}</span>
-    </header>
+    {% set success_messages = app.flashes('success') %}
+    {% set error_messages = app.flashes('error') %}
+    {% set has_success = success_messages|length > 0 %}
+
+    {% if not has_success %}
+        <header>
+            <div>
+                <h1>Scan QR</h1>
+                {% if not team_code %}
+                    <p class="hint">Saisissez votre code équipe pour valider ce QR.</p>
+                {% endif %}
+            </div>
+            <span class="badge">{{ team_code ?: '—' }}</span>
+        </header>
+    {% endif %}
 
     <div class="card stack" data-controller="qr-scan">
-        <form method="post" action="{{ path('game_qr_validate') }}" class="stack" data-qr-scan-target="form" data-action="submit->qr-scan#submit">
-            <label class="stack">
-                <span class="hint">Code équipe</span>
-                <input type="text" name="team_code" value="{{ team_code }}" required autocomplete="off" data-qr-scan-target="teamCode" />
-            </label>
-            <label class="stack">
-                <span class="hint">PIN éphémère</span>
-                <input type="text" name="pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required autocomplete="off" />
-            </label>
-            <input type="hidden" name="qr_payload" value="{{ code }}" />
-            <button type="submit" class="btn">Valider le QR</button>
-        </form>
+        {% if not has_success %}
+            <form method="post" action="{{ path('game_qr_validate') }}" class="stack" data-qr-scan-target="form" data-action="submit->qr-scan#submit">
+                <label class="stack">
+                    <span class="hint">Code équipe</span>
+                    <input type="text" name="team_code" value="{{ team_code }}" required autocomplete="off" data-qr-scan-target="teamCode" />
+                </label>
+                <label class="stack">
+                    <span class="hint">PIN éphémère</span>
+                    <input type="text" name="pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required autocomplete="off" />
+                </label>
+                <input type="hidden" name="qr_payload" value="{{ code }}" />
+                <button type="submit" class="btn">Valider le QR</button>
+            </form>
+        {% endif %}
 
-        {% for message in app.flashes('error') %}
+        {% for message in error_messages %}
             <div class="status closed">{{ message }}</div>
         {% endfor %}
-        {% for message in app.flashes('success') %}
+        {% for message in success_messages %}
             <div class="status">{{ message }}</div>
         {% endfor %}
+
+
         <div id="qr-feedback" class="status {% if not result.valid %}closed{% endif %}" data-qr-scan-target="feedback">
             {{ result.message }}
         </div>
 
-{#
+
+        {#
         {% if result.completed %}
             <div class="status">Séquence terminée. Vous pouvez revenir à l'étape E.</div>
         {% endif %}
 
-#}
+        #}
         {% if team_code %}
             <a class="btn btn-outline" href="{{ path('game_step', { step: 'E', team: team_code }) }}">Retour à l'étape E</a>
         {% else %}
@@ -50,8 +61,10 @@
         {% endif %}
     </div>
 
-    <div class="card stack">
-        <p class="hint">Code scanné :</p>
-        <strong>{{ code ?: '—' }}</strong>
-    </div>
+    {% if has_success %}
+        <div class="card stack">
+            <p class="hint">Code scanné :</p>
+            <strong>{{ code ?: '—' }}</strong>
+        </div>
+    {% endif %}
 {% endblock %}
