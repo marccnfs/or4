@@ -204,13 +204,19 @@ class GameController extends AbstractController
         }
 
         $scannedQrCodes = [];
+        $scannedQrDetails = [];
         $teamPayload = null;
         if ($step === 'E') {
             $qrSequences = $team->getTeamQrSequences()->toArray();
             usort($qrSequences, static fn (TeamQrSequence $left, TeamQrSequence $right): int => $left->getOrderNumber() <=> $right->getOrderNumber());
             foreach ($qrSequences as $sequence) {
                 if ($sequence->isValidated()) {
-                    $scannedQrCodes[] = sprintf('QR%d', $sequence->getOrderNumber());
+                    $codeLabel = sprintf('QR%d', $sequence->getOrderNumber());
+                    $scannedQrCodes[] = $codeLabel;
+                    $scannedQrDetails[] = [
+                        'code' => $codeLabel,
+                        'message' => $sequence->getHint(),
+                    ];
                 }
             }
 
@@ -228,6 +234,7 @@ class GameController extends AbstractController
             'progress' => $progress,
             'error' => $error,
             'scanned_qr_codes' => $scannedQrCodes,
+            'scanned_qr_details' => $scannedQrDetails,
             'team_payload' => $teamPayload,
             'escape_id' => $team->getEscapeGame()->getId(),
             'back'=> false

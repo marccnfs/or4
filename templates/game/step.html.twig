@@ -49,7 +49,15 @@
             {% endif %}
             <div class="status">
                 QR déjà scannés :
-                {{ scanned_qr_codes is not empty ? scanned_qr_codes|join(', ') : 'Aucun pour le moment.' }}
+                {% if scanned_qr_details is not empty %}
+                    <ul>
+                        {% for item in scanned_qr_details %}
+                            <li><strong>{{ item.code }}</strong> — {{ item.message ?: 'Indice non renseigné.' }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    Aucun pour le moment.
+                {% endif %}
             </div>
             {% if progress['E'] is defined and progress['E'].completed %}
                 <div class="status">Séquence terminée. Vous pouvez passer à l'étape F.</div>

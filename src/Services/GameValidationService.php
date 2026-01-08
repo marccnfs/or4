@@ -16,6 +16,8 @@ class GameValidationService
     private const STATE_PENDING = 'pending';
     private const STATE_IN_PROGRESS = 'in_progress';
     private const STATE_VALIDATED = 'validated';
+    private const QR_VALIDATED_MESSAGE = 'Qr Validé avec succès. Retournez à la table de jeu pour découvrir le prochain indice pour trouver le prochain QR code';
+    private const QR_FINAL_MESSAGE = 'Bravo, voici la dernière Lettre du jeu : %s, maintenant révélé avec votre équipe l\'endroit où se trouve la clef de l\'office, bonne chance';
 
     public function __construct(private EntityManagerInterface $entityManager)
     {
@@ -119,9 +121,10 @@ class GameValidationService
         }
 
         if ($matchingSequence->isValidated()) {
-            $nextHint = $matchingSequence->getHint();
-            $message = $this->buildAlreadyScannedMessage($matchingSequence, $nextHint);
             $completed = $this->areQrSequencesCompleted($sequences);
+            $message = $completed
+                ? $this->buildFinalQrMessage($step)
+                : self::QR_VALIDATED_MESSAGE;
             return [
                 'valid' => true,
                 'message' => $message,
@@ -162,8 +165,8 @@ class GameValidationService
 
         $this->incrementScore($team, true);
         $responseMessage = $completed
-            ? strtoupper($step->getLetter())
-            : ($matchingSequence->getHint() ?? 'QR validé.');
+            ? $this->buildFinalQrMessage($step)
+            : self::QR_VALIDATED_MESSAGE;
 
         return [
             'valid' => true,
@@ -175,20 +178,9 @@ class GameValidationService
         ];
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    private function buildAlreadyScannedMessage(TeamQrSequence $sequence, ?string $hint): string
+    private function buildFinalQrMessage(Step $step): string
     {
-        if ($hint !== null && $hint !== '') {
-            return sprintf(
-                'Vous avez déjà scanné ce QR code, trouvez maintenant le suivant dans "%s".',
-                $hint
-            );
-        }
-        return $sequence->getOrderNumber() === 5
-            ? 'Séquence terminée.'
-            : 'Vous avez déjà scanné ce QR code.';
+        return sprintf(self::QR_FINAL_MESSAGE, strtoupper($step->getLetter()));
 
     }
 
