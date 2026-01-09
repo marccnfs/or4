@@ -1,32 +1,85 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion</title>
-    {{ encore_entry_link_tags('app') }}
-</head>
-<body>
-<main class="pilot page">
-    <h1>Connexion</h1>
+{% extends 'public.html.twig' %}
 
-    {% if error %}
-        <div class="alert alert-danger">
-            {{ error.messageKey|trans(error.messageData, 'security') }}
-        </div>
-    {% endif %}
+{% block title %}Connexion · sjdb.space{% endblock %}
 
-    <form method="post">
-        <label for="inputEmail">Email</label>
-        <input type="email" value="{{ last_username }}" name="email" id="inputEmail" autocomplete="email" required autofocus>
+{% block body %}
+    <div class="sjdb-home">
+        <div class="sjdb-bg"></div>
 
-        <label for="inputPassword">Mot de passe</label>
-        <input type="password" name="password" id="inputPassword" autocomplete="current-password" required>
+        <main class="sjdb-card sjdb-card--auth" role="main" aria-label="Connexion sjdb.space">
+            <header class="sjdb-header">
+                <img
+                        class="sjdb-logo"
+                        src="{{ asset('images/logo_sjdb_lite.png') }}"
+                        alt="Logo sjdb"
+                        width="160"
+                        height="160"
+                        loading="eager"
+                />
 
-        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                <div class="sjdb-brand">
+                    <div class="sjdb-domain">sjdb.space</div>
+                    <div class="sjdb-tagline">Advanced experiences for communities</div>
+                </div>
+            </header>
 
-        <button type="submit">Se connecter</button>
-    </form>
-</main>
-</body>
-</html>
+            <section class="sjdb-auth">
+                <div class="sjdb-auth-head">
+                    <h1 class="sjdb-auth-title">Connexion</h1>
+                    <p class="sjdb-auth-subtitle">Accès réservé aux agents / comptes autorisés.</p>
+                </div>
+
+                {% if error %}
+                    <div class="sjdb-alert" role="alert">
+                        <strong>Connexion impossible.</strong>
+                        <div class="sjdb-alert-text">
+                            {{ error.messageKey|trans(error.messageData, 'security') }}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <form method="post" class="sjdb-form" novalidate>
+                    <div class="sjdb-field">
+                        <label class="sjdb-label" for="inputEmail">Email</label>
+                        <input
+                                class="sjdb-input"
+                                type="email"
+                                value="{{ last_username }}"
+                                name="email"
+                                id="inputEmail"
+                                autocomplete="email"
+                                required
+                                autofocus
+                                placeholder="prenom.nom@domaine.fr"
+                        >
+                    </div>
+
+                    <div class="sjdb-field">
+                        <label class="sjdb-label" for="inputPassword">Mot de passe</label>
+                        <input
+                                class="sjdb-input"
+                                type="password"
+                                name="password"
+                                id="inputPassword"
+                                autocomplete="current-password"
+                                required
+                                placeholder="••••••••••"
+                        >
+                    </div>
+
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                    <div class="sjdb-actions">
+                        <button class="sjdb-btn sjdb-btn--full" type="submit">
+                            Se connecter <span class="sjdb-btn-arrow" aria-hidden="true">→</span>
+                        </button>
+                    </div>
+                </form>
+
+                <div class="sjdb-auth-foot">
+                    <span class="sjdb-foot-note">Besoin d’un accès ? Vois avec l’administrateur du site.</span>
+                </div>
+            </section>
+        </main>
+    </div>
+{% endblock %}

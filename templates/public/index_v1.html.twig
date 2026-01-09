@@ -1,0 +1,38 @@
+{% extends 'basepublic.html.twig' %}
+
+{% block title %}sjbd space{% endblock %}
+
+{% block body %}
+    <div class="pilot-page" >
+
+        <div class="pilot-header">
+            <h1>Bienvenue sur Sjbd Space</h1>
+            <div class="pilot-actions">
+                <a href="{{ path('app_login') }}" class="btn btn--primary">Se connecter</a>
+            </div>
+            {#
+            <div class="pilot-summary">
+                <div><strong>Escape :</strong>expérience</div>
+                <div><strong>Statut :</strong>jeu</div>
+            </div>
+            #}
+        </div>
+
+        <div class="pilot-layout">
+            <div class="pilot-teams">
+                <header>
+                    <div>
+                        <h2>what is this ?</h2>
+                    </div>
+                </header>
+                <ul class="team-list" data-pilot-team-list>
+                            <li>
+                                <span class="team-list__code">advanced experiences for communities</span>
+                                <span class="team-list__state">with codex</span>
+                            </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

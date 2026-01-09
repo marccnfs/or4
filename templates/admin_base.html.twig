@@ -13,7 +13,7 @@
     {% block javascripts %}
         {{ encore_entry_script_tags('app') }}
     {% endblock %}
-    {% set bodyclass =(edit is defined ?"black_sjbd_edit":"black_sjbd") %}
+    {% set bodyclass =(scroll is defined ?"black_sjbd_edit":"black_sjbd") %}
     {% block content %}
         <div class="o_blk_1">
             <h1>SJBD SPACE</h1>

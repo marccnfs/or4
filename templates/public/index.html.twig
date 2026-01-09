@@ -1,38 +1,56 @@
-{% extends 'basepublic.html.twig' %}
+{% extends 'public.html.twig' %}
 
-{% block title %}sjbd space{% endblock %}
+{% block title %}sjdb.space{% endblock %}
 
 {% block body %}
-    <div class="pilot-page" >
+    <div class="sjdb-home">
+    <div class="sjdb-bg"></div>
 
-        <div class="pilot-header">
-            <h1>Bienvenue sur Sjbd Space</h1>
-            <div class="pilot-actions">
-                <a href="{{ path('app_login') }}" class="btn btn--primary">Se connecter</a>
-            </div>
-            {#
-            <div class="pilot-summary">
-                <div><strong>Escape :</strong>expérience</div>
-                <div><strong>Statut :</strong>jeu</div>
-            </div>
-            #}
+    <main class="sjdb-card" role="main" aria-label="Accueil sjdb.space">
+    <header class="sjdb-header">
+        <img
+                class="sjdb-logo"
+                src="{{ asset('images/logo_sjdb_lite.png') }}"
+                alt="Logo sjdb.space"
+                width="160"
+                height="160"
+                loading="eager"
+        />
+
+        <div class="sjdb-brand">
+            <div class="sjdb-domain">sjdb.space</div>
+            <div class="sjdb-tagline">What is this ?</div>
         </div>
+    </header>
 
-        <div class="pilot-layout">
-            <div class="pilot-teams">
-                <header>
-                    <div>
-                        <h2>what is this ?</h2>
-                    </div>
-                </header>
-                <ul class="team-list" data-pilot-team-list>
-                            <li>
-                                <span class="team-list__code">advanced experiences for communities</span>
-                                <span class="team-list__state">with codex</span>
-                            </li>
+    <section class="sjdb-content">
+                <h1 class="sjdb-title">Advanced experiences for communities <span class="sjdb-muted">(with codex)</span></h1>
+
+                <p class="sjdb-lead">
+                    Un laboratoire (encore discret) pour créer et partager des expériences IA pensées pour les collectivités territoriales.
+                </p>
+
+                <ul class="sjdb-bullets">
+                    <li>🧠 Agents IA et assistants métier</li>
+                    <li>🧩 Approches ludiques</li>
+                    <li>🛠️ Sécurité et usage de l'IA</li>
+                    <li>📚 Info “terrain”</li>
                 </ul>
-            </div>
-        </div>
+            </section>
+
+            <footer class="sjdb-footer">
+                <a class="sjdb-btn" href="{{ path('app_login') }}">
+                    Se connecter
+                    <span class="sjdb-btn-arrow" aria-hidden="true">→</span>
+                </a>
+
+                <div class="sjdb-meta">
+                    <span class="sjdb-pill">Chatbot de 7 lieux</span>
+                    <span class="sjdb-pill">parlons-en</span>
+                    <span class="sjdb-pill">liens</span>
+                </div>
+            </footer>
+        </main>
     </div>
 
 {% endblock %}

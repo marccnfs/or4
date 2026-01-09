@@ -28,12 +28,11 @@
 
     <div class="card stack soli">
         <div class="info_link">
-            <div class="status">Rejoignez la partie via l'adresse suivante :</div>
+            <div class="status">Rejoignez la partie à l'adresse suivante :</div>
             <div class="link">{{ join_url }}</div>
         </div>
         <div class="home-qr">
             <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data={{ join_url|url_encode }}" alt="QR code pour rejoindre le jeu">
-            <p class="hint">Scannez pour rejoindre</p>
         </div>
     </div>
 </div>

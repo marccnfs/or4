@@ -51,11 +51,12 @@
                 </div>
             {% endif %}
             <div class="status">
-                QR déjà scannés :
+                Sur la piste des qr code (le premier est sur votre table, ensuite... :
                 {% if scanned_qr_details is not empty %}
                     <ul>
                         {% for item in scanned_qr_details %}
-                            <li><strong>{{ item.code }}</strong> — {{ item.message ?: 'Indice non renseigné.' }}</li>
+                          {#   <li><strong>{{ item.code }}</strong> — {{ item.message ?: 'Indice non renseigné.' }}</li> #}
+                            <li><strong> {{ item.message ?: 'parcours terminé.' }}</li>
                         {% endfor %}
                     </ul>
                 {% else %}

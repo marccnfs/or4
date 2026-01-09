@@ -1,39 +1,66 @@
-{% extends 'admin_base.html.twig' %}
+{% extends 'public.html.twig' %}
 
 {% block title %}Liste des escapes{% endblock %}
 
 {% block body %}
-    <div class="pilot-page">
-    <h1>Liste des escapes</h1>
+    <div class="sjdb-home">
+        <div class="sjdb-bg"></div>
 
-    <p><a href="{{ path('admin_escape_new') }}">Créer un escape</a></p>
+        <main class="sjdb-card" role="main" aria-label="Accueil sjdb.space">
+            <header class="sjdb-header">
+                <img
+                        class="sjdb-logo"
+                        src="{{ asset('images/logo_sjdb_lite.png') }}"
+                        alt="Logo sjdb.space"
+                        width="160"
+                        height="160"
+                        loading="eager"
+                />
 
-    {% if escapes is empty %}
-        <p>Aucun escape disponible.</p>
-    {% else %}
-        <table>
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nom</th>
-                <th>Statut</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for escape in escapes %}
-                <tr>
-                    <td>{{ escape.id }}</td>
-                    <td>{{ escape.name }}</td>
-                    <td>{{ escape.status }}</td>
-                    <td>
-                        <a href="{{ path('admin_escape_show', { id: escape.id }) }}">Voir</a>
-                        <a href="{{ path('admin_escape_edit', { id: escape.id }) }}">Éditer</a>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
+                <div class="sjdb-brand">
+                    <div class="sjdb-domain">sjdb.space</div>
+                    <div class="sjdb-tagline">What is this ?</div>
+                </div>
+            </header>
+
+            <section class="sjdb-content">
+                <h1 class="sjdb-title">Liste des escapes</h1>
+                <p class="sjdb-lead">
+                    <a class="sjdb-btn" href="{{ path('admin_escape_new') }}">Créer un escape</a>
+                </p>
+                {% if escapes is empty %}
+                <p>Aucun escape disponible.</p>
+                {% else %}
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for escape in escapes %}
+                            <tr>
+                                <td>{{ escape.id }}</td>
+                                <td>{{ escape.name }}</td>
+                                <td>{{ escape.status }}</td>
+                                <td>
+                                    <a class="sjdb-pill" href="{{ path('admin_escape_show', { id: escape.id }) }}">Voir</a>
+                                    <a class="sjdb-pill" href="{{ path('admin_escape_edit', { id: escape.id }) }}">Éditer</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </section>
+
+            <footer class="sjdb-footer">
+                <a class="sjdb-btn" href="{{ path('index_admin') }}">retour board<span class="sjdb-btn-arrow" aria-hidden="true">→</span></a>
+            </footer>
+        </main>
     </div>
+
 {% endblock %}

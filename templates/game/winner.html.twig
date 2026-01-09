@@ -6,16 +6,17 @@
     <header>
         <div>
             <h1>Bravo {{ team_code }} !</h1>
-            <p class="hint">Vous avez trouvé le secret.</p>
+           {# <p class="hint">Vous avez trouvé le secret.</p> #}
         </div>
-        <span class="win_play"> {{ message_winner }}</span>
+        {#  <span class="win_play"> {{ message_winner }}</span> #}
     </header>
 
     <div class="card stack">
-        <div class="status">Bravo</div>
-        <h2>L'équipe {{ winner_name }} vous êtes trop fort !!</h2>
-        <p class="hint">Vous savez désormais où se trouve le coffre.
+        <div class="status">Voici le dernier indice : {{ message_winner }}</div>
+        <h2>Vous savez désormais où se trouve le coffre.
+            Dépêchez-vous de l’ouvrir à l’aide du code secret… le temps presse !</h2>
+        {# <p class="hint">Vous savez désormais où se trouve le coffre.
             Dépêchez-vous de l’ouvrir à l’aide du code secret… le temps presse !</p>
-       {#  <a class="btn btn-outline" href="{{ path('game_join') }}">Rejouer</a> #}
+         <a class="btn btn-outline" href="{{ path('game_join') }}">Rejouer</a> #}
     </div>
 {% endblock %}

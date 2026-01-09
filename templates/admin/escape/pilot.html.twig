@@ -25,10 +25,9 @@
             <div class="alert alert-danger">{{ message }}</div>
         {% endfor %}
 
-        {% if escape_game %}
-            <p><strong>Page join :</strong> {{ join_url }}</p>
-        {% else %}
+        {% if not escape_game %}
             <p>Aucun escape enregistré.</p>
+            {#  {% else %}  <p><strong>Page join :</strong> {{ join_url }}</p> #}
         {% endif %}
         <div class="pilot-layout">
             <div class="pilot-teams">

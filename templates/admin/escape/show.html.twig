@@ -1,10 +1,30 @@
-{% extends 'admin_base.html.twig' %}
+{% extends 'public.html.twig' %}
 
 {% block title %}Pilotage escape{% endblock %}
 
 {% block body %}
-    <div class="pilot-page">
-    <h1>Pilotage de l'escape {{ escape.name }}</h1>
+    <div class="sjdb-home">
+    <div class="sjdb-bg"></div>
+
+    <main class="sjdb-card" role="main" aria-label="Accueil sjdb.space">
+    <header class="sjdb-header">
+        <img
+                class="sjdb-logo"
+                src="{{ asset('images/logo_sjdb_lite.png') }}"
+                alt="Logo sjdb.space"
+                width="160"
+                height="160"
+                loading="eager"
+        />
+
+        <div class="sjdb-brand">
+            <div class="sjdb-domain">sjdb.space</div>
+            <div class="sjdb-tagline">What is this ?</div>
+        </div>
+    </header>
+
+    <section class="sjdb-content">
+                <h1 class="sjdb-title">Pilotage de l'escape {{ escape.name }}</h1>
 
     <dl>
         <dt>ID</dt>
@@ -18,14 +38,20 @@
     </dl>
 
     <p>
-        <a href="{{ path('admin_escape_edit', { id: escape.id }) }}">Éditer</a>
-        <a href="{{ path('game_pilot', { escape_id: escape.id }) }}">Piloter cet escape</a>
-        <a href="{{ path('admin_escape_list') }}">Retour à la liste</a>
+        <a class="sjdb-pill" href="{{ path('admin_escape_edit', { id: escape.id }) }}">Éditer</a>
+        <a class="sjdb-pill" href="{{ path('game_pilot', { escape_id: escape.id }) }}">Piloter cet escape</a>
+        <a class="sjdb-pill" href="{{ path('admin_escape_list') }}">Retour à la liste</a>
     </p>
 
     <form method="post" action="{{ path('admin_escape_delete', { id: escape.id }) }}" onsubmit="return confirm('Confirmer la suppression ?');">
         <input type="hidden" name="_token" value="{{ csrf_token('delete_escape_' ~ escape.id) }}">
         <button type="submit">Supprimer</button>
     </form>
+    </section>
+        <footer class="sjdb-footer">
+            <a class="sjdb-btn" href="{{ path('index_admin') }}">retour board<span class="sjdb-btn-arrow" aria-hidden="true">→</span></a>
+        </footer>
+    </main>
     </div>
+
 {% endblock %}

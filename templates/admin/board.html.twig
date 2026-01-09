@@ -1,37 +1,45 @@
-{% extends 'basepublic.html.twig' %}
+{% extends 'public.html.twig' %}
 
-{% block title %}sjbd space{% endblock %}
+{% block title %}sjdb.space{% endblock %}
 
 {% block body %}
-    <div class="pilot-page" >
+    <div class="sjdb-home">
+        <div class="sjdb-bg"></div>
 
-        <div class="pilot-header">
-            <h1>Board Sjbd Space</h1>
-            <div class="pilot-actions">
-                <a href="{{ path('app_logout') }}" class="btn btn--primary">Se déconnecter</a>
-            </div>
-            {#
-            <div class="pilot-summary">
-                <div><strong>Escape :</strong>expérience</div>
-                <div><strong>Statut :</strong>jeu</div>
-            </div>
-            #}
-        </div>
+        <main class="sjdb-card" role="main" aria-label="Accueil sjdb.space">
+            <header class="sjdb-header">
+                <img
+                        class="sjdb-logo"
+                        src="{{ asset('images/logo_sjdb_lite.png') }}"
+                        alt="Logo sjdb.space"
+                        width="160"
+                        height="160"
+                        loading="eager"
+                />
 
-        <div class="pilot-layout">
-            <div class="pilot-teams">
-                <header>
-                    <div>
-                        <h2>actions</h2>
-                    </div>
-                </header>
-                <ul class="team-list" data-pilot-team-list>
+                <div class="sjdb-brand">
+                    <div class="sjdb-domain">sjdb.space</div>
+                    <div class="sjdb-tagline">What is this ?</div>
+                </div>
+            </header>
+
+            <section class="sjdb-content">
+
+            <h1 class="sjdb-title">Board Sjbd Space</h1>
+
+                <ul class="sjdb-bullets" data-pilot-team-list>
                     <li>
-                        <a href="{{ path('admin_escape_list') }}" target="_blank">liste escape</a>
+                        <a class="sjdb-pill" href="{{ path('admin_escape_list') }}" target="_blank">liste escape</a>
                     </li>
                 </ul>
-            </div>
-        </div>
+            </section>
+            <footer class="sjdb-footer">
+                <a class="sjdb-btn" href="{{ path('app_logout') }}">
+                    Se déconnecter
+                    <span class="sjdb-btn-arrow" aria-hidden="true">→</span>
+                </a>
+            </footer>
+        </main>
     </div>
 
 {% endblock %}
