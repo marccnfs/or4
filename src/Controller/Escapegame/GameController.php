@@ -637,7 +637,9 @@ class GameController extends AbstractController
         $escapeGame = $team->getEscapeGame();
         $options = $escapeGame->getOptions();
         $winnerCode = $options['winner_team_code'] ?? null;
-        if ($winnerCode === null || $winnerCode !== $team->getRegistrationCode()) {
+        $progress = $this->buildTeamProgress($team);
+        $hasCompletedFinal = (bool) ($progress['F']['completed'] ?? false);
+        if (($winnerCode === null || $winnerCode !== $team->getRegistrationCode()) && !$hasCompletedFinal) {
             return $this->redirectToRoute('game_waiting');
         }
 
