@@ -100,8 +100,18 @@ export default class extends Controller {
         teams.forEach((team) => {
             const row = document.createElement('tr');
 
+            const isFinished = totalSteps > 0 && team.validated_steps >= totalSteps;
+
             const name = document.createElement('td');
             name.textContent = team.name;
+
+            if (isFinished) {
+                const finishedBadge = document.createElement('span');
+                finishedBadge.classList.add('scoreboard-finished');
+                finishedBadge.setAttribute('aria-label', 'Équipe terminée');
+                finishedBadge.textContent = '🏁 Terminé';
+                name.append(' ', finishedBadge);
+            }
 
             const code = document.createElement('td');
             code.textContent = team.code;

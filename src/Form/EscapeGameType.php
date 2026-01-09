@@ -17,15 +17,14 @@ use Symfony\Component\Validator\Constraints\Regex;
 class EscapeGameType extends AbstractType
 {
     private const QR_MESSAGE_CHOICES = [
-        'WC Hommes' => 'WC Hommes',
-        'Bar' => 'Bar',
-        'Patio' => 'Patio',
-        'Salle danse' => 'Salle danse',
-        'Salle théâtre' => 'Salle théâtre',
-        'Salle musique' => 'Salle musique',
-        'Loges' => 'Loges',
-        'Vestiaires' => 'Vestiaires',
-        'Grande salle/pendrillons' => 'Grande salle/pendrillons',
+        'WC Hommes' => 'Une envie pressante ?',
+        'Bar' => 'Une petite mousse ?',
+        'Patio' => 'Dans la boule du sapin !',
+        'Salle danse' => 'Du hip hop au tango !',
+        'Salle théâtre' => 'On peut en jouer debout',
+        'Salle musique' => 'Elle adoucit les moeurs',
+        'Loges' => 'Miroir, mon beau miroir...',
+        'Vestiaires' => 'Une petite douche',
     ];
 
     private const TOTAL_TEAMS = 8;
@@ -66,55 +65,55 @@ class EscapeGameType extends AbstractType
                 'label' => 'Nom',
             ])
             ->add('team1Code', TextType::class, [
-                'label' => 'Code équipe 1',
+                'label' => 'Nom équipe 1',
                 'mapped' => false,
                 'data' => $getOption($storedOptions, ['team_codes', 1], ''),
                 'constraints' => [new NotBlank()],
             ])
             ->add('team2Code', TextType::class, [
-                'label' => 'Code équipe 2',
+                'label' => 'Nom équipe 2',
                 'mapped' => false,
                 'data' => $getOption($storedOptions, ['team_codes', 2], ''),
                 'constraints' => [new NotBlank()],
             ])
             ->add('team3Code', TextType::class, [
-                'label' => 'Code équipe 3',
+                'label' => 'Nom équipe 3',
                 'mapped' => false,
                 'data' => $getOption($storedOptions, ['team_codes', 3], ''),
                 'constraints' => [new NotBlank()],
             ])
             ->add('team4Code', TextType::class, [
-                'label' => 'Code équipe 4',
+                'label' => 'Nom équipe 4',
                 'mapped' => false,
                 'data' => $getOption($storedOptions, ['team_codes', 4], ''),
                 'constraints' => [new NotBlank()],
             ])
             ->add('team5Code', TextType::class, [
-                'label' => 'Code équipe 5',
+                'label' => 'Nom équipe 5',
                 'mapped' => false,
                 'data' => $getOption($storedOptions, ['team_codes', 5], ''),
                 'constraints' => [new NotBlank()],
             ])
             ->add('team6Code', TextType::class, [
-                'label' => 'Code équipe 6',
+                'label' => 'Nom équipe 6',
                 'mapped' => false,
                 'data' => $getOption($storedOptions, ['team_codes', 6], ''),
                 'constraints' => [new NotBlank()],
             ])
             ->add('team7Code', TextType::class, [
-                'label' => 'Code équipe 7',
+                'label' => 'Nom équipe 7',
                 'mapped' => false,
                 'data' => $getOption($storedOptions, ['team_codes', 7], ''),
                 'constraints' => [new NotBlank()],
             ])
             ->add('team8Code', TextType::class, [
-                'label' => 'Code équipe 8',
+                'label' => 'Nom équipe 8',
                 'mapped' => false,
                 'data' => $getOption($storedOptions, ['team_codes', 8], ''),
                 'constraints' => [new NotBlank()],
             ])
             ->add('step1Letter', TextType::class, [
-                'label' => 'Étape 1 - Lettre attendue',
+                'label' => 'Étape A - Lettre attendue : ',
                 'mapped' => false,
                 'data' => $getOption(
                     $storedOptions,
@@ -127,7 +126,7 @@ class EscapeGameType extends AbstractType
                 ],
             ])
             ->add('step2Letter', TextType::class, [
-                'label' => 'Étape 2 - Lettre attendue',
+                'label' => 'Étape B - Lettre attendue : ',
                 'mapped' => false,
                 'data' => $getOption(
                     $storedOptions,
@@ -140,7 +139,7 @@ class EscapeGameType extends AbstractType
                 ],
             ])
             ->add('step3Letter', TextType::class, [
-                'label' => 'Étape 3 - Lettre attendue',
+                'label' => 'Étape C - Lettre attendue : ',
                 'mapped' => false,
                 'data' => $getOption(
                     $storedOptions,
@@ -153,7 +152,7 @@ class EscapeGameType extends AbstractType
                 ],
             ])
             ->add('step4Letter', TextType::class, [
-                'label' => 'Étape 4 - Lettre attendue',
+                'label' => 'Étape D - Lettre attendue : ',
                 'mapped' => false,
                 'data' => $getOption(
                     $storedOptions,
@@ -166,7 +165,7 @@ class EscapeGameType extends AbstractType
                 ],
             ])
             ->add('step5Letter', TextType::class, [
-                'label' => 'Étape 5 - Lettre finale QR',
+                'label' => 'Étape E - Lettre dernier QR',
                 'mapped' => false,
                 'data' => $getOption(
                     $storedOptions,
@@ -179,7 +178,7 @@ class EscapeGameType extends AbstractType
                 ],
             ])
             ->add('cryptexMessage', TextareaType::class, [
-                'label' => 'Étape 6 - Message à révéler (cryptex)',
+                'label' => 'Étape F - Message à révéler (cryptex)',
                 'mapped' => false,
                 'data' => $getOption($storedOptions, ['cryptex_message'], ''),
                 'constraints' => [new NotBlank()],

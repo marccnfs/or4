@@ -103,6 +103,29 @@ class GamePilotController extends AbstractController
         return $this->redirectToRoute('game_pilot');
     }
 
+    #[Route('/game/pilot/finish', name: 'game_pilot_finish', methods: ['POST'])]
+    public function finish(Request $request, EscapeGameRepository $escapeGameRepository, EntityManagerInterface $entityManager): Response
+    {
+        $escapeGame = $this->resolveEscapeGame($request, $escapeGameRepository);
+        if ($escapeGame === null) {
+            $this->addFlash('error', 'Escape introuvable.');
+            return $this->redirectToRoute('game_pilot');
+        }
+
+        if (!$this->isCsrfTokenValid('game_pilot_' . $escapeGame->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Jeton de sécurité invalide.');
+            return $this->redirectToRoute('game_pilot');
+        }
+
+        $escapeGame->setStatus('finished');
+        $escapeGame->setUpdatedAt(new \DateTimeImmutable());
+        $entityManager->flush();
+
+        $this->addFlash('success', 'La partie est terminée.');
+
+        return $this->redirectToRoute('game_pilot');
+    }
+
     #[Route('/game/pilot/reset', name: 'game_pilot_reset', methods: ['POST'])]
     public function reset(Request $request, EscapeGameRepository $escapeGameRepository, EntityManagerInterface $entityManager): Response
     {

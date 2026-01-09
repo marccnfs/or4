@@ -76,6 +76,13 @@
                     <button type="submit">Mettre hors ligne</button>
                 </form>
 
+                <form method="post" action="{{ path('game_pilot_finish') }}" onsubmit="return confirm('Clôturer la partie en cours ?');">
+                    <input type="hidden" name="escape_id" value="{{ escape_game ? escape_game.id : '' }}">
+                    <input type="hidden" name="_token" value="{{ escape_game ? csrf_token('game_pilot_' ~ escape_game.id) : '' }}">
+                    <button type="submit">Fin de partie</button>
+                </form>
+
+
                 <form method="post" action="{{ path('game_pilot_reset') }}" onsubmit="return confirm('Supprimer toutes les équipes inscrites ?');">
                     <input type="hidden" name="escape_id" value="{{ escape_game ? escape_game.id : '' }}">
                     <input type="hidden" name="_token" value="{{ escape_game ? csrf_token('game_pilot_' ~ escape_game.id) : '' }}">

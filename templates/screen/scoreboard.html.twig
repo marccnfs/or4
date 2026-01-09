@@ -43,7 +43,12 @@
                     {% set percent = scoreboard.total_steps > 0 ? (team.validated_steps / scoreboard.total_steps * 100) : 0 %}
                     {% set isWinner = scoreboard.total_steps > 0 and team.validated_steps >= scoreboard.total_steps %}
                     <tr class="{{ isWinner ? 'scoreboard-winner' : '' }}">
-                        <td>{{ team.name }}</td>
+                        <td>
+                            {{ team.name }}
+                            {% if isWinner %}
+                                <span class="scoreboard-finished" aria-label="Équipe terminée">🏁 Terminé</span>
+                            {% endif %}
+                        </td>
                         <td>{{ team.code }}</td>
                         <td>
                             <div class="scoreboard-progress">

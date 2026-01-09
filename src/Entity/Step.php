@@ -32,7 +32,7 @@ class Step
     #[ORM\Column(name: 'order_number')]
     private int $orderNumber;
 
-    #[ORM\OneToMany(mappedBy: 'step', targetEntity: TeamStepProgress::class, orphanRemoval: true, cascade: ['persist'])]
+    #[ORM\OneToMany(targetEntity: TeamStepProgress::class, mappedBy: 'step', cascade: ['persist'], orphanRemoval: true)]
     private Collection $teamStepProgresses;
 
     public function __construct()

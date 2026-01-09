@@ -191,6 +191,14 @@ export default class extends Controller {
             const name = document.createElement('td');
             name.textContent = team.name;
 
+            if (isWinner) {
+                const finishedBadge = document.createElement('span');
+                finishedBadge.classList.add('scoreboard-finished');
+                finishedBadge.setAttribute('aria-label', 'Équipe terminée');
+                finishedBadge.textContent = '🏁 Terminé';
+                name.append(' ', finishedBadge);
+            }
+
             const code = document.createElement('td');
             code.textContent = team.code;
 

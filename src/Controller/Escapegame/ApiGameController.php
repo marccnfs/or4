@@ -213,12 +213,11 @@ class ApiGameController extends AbstractController
 
         $result = $validator->validateStep($team, $stepEntity, ['combination' => $combination]);
         if ($result['updated'] ?? false) {
-            if ($result['valid'] && $escapeGame->getStatus() !== 'finished' && $winnerCode === null) {
+            if ($result['valid'] && $winnerCode === null) {
                 $options['winner_team_id'] = $team->getId();
                 $options['winner_team_name'] = $team->getName();
                 $options['winner_team_code'] = $team->getRegistrationCode();
                 $escapeGame->setOptions($options);
-                $escapeGame->setStatus('finished');
                 $escapeGame->setUpdatedAt(new \DateTimeImmutable());
             }
             $entityManager->flush();
