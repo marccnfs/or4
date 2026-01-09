@@ -6,7 +6,7 @@
     <div class="pilot-page">
     <h1>Créer un escape</h1>
 
-    {{ form_start(form) }}
+    {{ form_start(form, { attr: { class: 'admin-form' } }) }}
     {{ form_row(form.name) }}
     <h2>Codes d'équipe</h2>
     {{ form_row(form.team1Code) }}
@@ -38,9 +38,11 @@
     <h2>Étape 6 - Cryptex</h2>
     {{ form_row(form.cryptexMessage) }}
 
-    <button type="submit">Créer</button>
+        <button class="sjdb-btn" type="submit">Créer</button>
     {{ form_end(form) }}
 
-    <p><a href="{{ path('admin_escape_list') }}">Retour à la liste</a></p>
+    <div class="sjdb-actions">
+        <a class="sjdb-pill" href="{{ path('admin_escape_list') }}">Retour à la liste</a>
+    </div>
     </div>
 {% endblock %}

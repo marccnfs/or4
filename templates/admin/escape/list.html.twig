@@ -6,7 +6,7 @@
     <div class="sjdb-home">
         <div class="sjdb-bg"></div>
 
-        <main class="sjdb-card" role="main" aria-label="Accueil sjdb.space">
+        <main class="sjdb-card sjdb-card--wide" role="main" aria-label="Accueil sjdb.space">
             <header class="sjdb-header">
                 <img
                         class="sjdb-logo"
@@ -31,14 +31,15 @@
                 {% if escapes is empty %}
                 <p>Aucun escape disponible.</p>
                 {% else %}
-                    <table>
+                <div class="sjdb-table-wrap" role="region" aria-label="Tableau des escapes">
+                    <table class="sjdb-table">
                         <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nom</th>
-                            <th>Statut</th>
-                            <th>Actions</th>
-                        </tr>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nom</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
                         </thead>
                         <tbody>
                         {% for escape in escapes %}
@@ -47,13 +48,16 @@
                                 <td>{{ escape.name }}</td>
                                 <td>{{ escape.status }}</td>
                                 <td>
-                                    <a class="sjdb-pill" href="{{ path('admin_escape_show', { id: escape.id }) }}">Voir</a>
-                                    <a class="sjdb-pill" href="{{ path('admin_escape_edit', { id: escape.id }) }}">Éditer</a>
+                                    <div class="sjdb-actions">
+                                        <a class="sjdb-pill" href="{{ path('admin_escape_show', { id: escape.id }) }}">Voir</a>
+                                        <a class="sjdb-pill" href="{{ path('admin_escape_edit', { id: escape.id }) }}">Éditer</a>
+                                    </div>
                                 </td>
                             </tr>
                         {% endfor %}
                         </tbody>
                     </table>
+                </div>
                 {% endif %}
             </section>
 

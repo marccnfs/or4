@@ -4,50 +4,50 @@
 
 {% block body %}
     <div class="pilot-page">
-    <h1>Éditer l'escape {{ escape.name }}</h1>
+        <h1>Éditer l'escape {{ escape.name }}</h1>
 
-    {{ form_start(form) }}
-    {{ form_row(form.name) }}
-    <h2>Codes d'équipe</h2>
-    {{ form_row(form.team1Code) }}
-    {{ form_row(form.team2Code) }}
-    {{ form_row(form.team3Code) }}
-    {{ form_row(form.team4Code) }}
-    {{ form_row(form.team5Code) }}
-    {{ form_row(form.team6Code) }}
-    {{ form_row(form.team7Code) }}
-    {{ form_row(form.team8Code) }}
-    <h2>Étapes 1 à 4</h2>
-    {{ form_row(form.step1Letter) }}
-    {{ form_row(form.step2Letter) }}
-    {{ form_row(form.step3Letter) }}
-    {{ form_row(form.step4Letter) }}
+        {{ form_start(form, { attr: { class: 'admin-form' } }) }}
+        {{ form_row(form.name) }}
+        <h2>Codes d'équipe</h2>
+        {{ form_row(form.team1Code) }}
+        {{ form_row(form.team2Code) }}
+        {{ form_row(form.team3Code) }}
+        {{ form_row(form.team4Code) }}
+        {{ form_row(form.team5Code) }}
+        {{ form_row(form.team6Code) }}
+        {{ form_row(form.team7Code) }}
+        {{ form_row(form.team8Code) }}
+        <h2>Étapes 1 à 4</h2>
+        {{ form_row(form.step1Letter) }}
+        {{ form_row(form.step2Letter) }}
+        {{ form_row(form.step3Letter) }}
+        {{ form_row(form.step4Letter) }}
 
-    <h2>Étape 5 - QR codes</h2>
-    {{ form_row(form.step5Letter) }}
-    {% for team in 1..8 %}
-        <h3>Équipe {{ team }}</h3>
-        {% for index in 1..5 %}
-            {{ form_row(attribute(form, 'team' ~ team ~ '_qr' ~ index ~ '_code')) }}
-            {% if index < 5 %}
-                {{ form_row(attribute(form, 'team' ~ team ~ '_qr' ~ index ~ '_message')) }}
-            {% endif %}
+        <h2>Étape 5 - QR codes</h2>
+        {{ form_row(form.step5Letter) }}
+        {% for team in 1..8 %}
+            <h3>Équipe {{ team }}</h3>
+            {% for index in 1..5 %}
+                {{ form_row(attribute(form, 'team' ~ team ~ '_qr' ~ index ~ '_code')) }}
+                {% if index < 5 %}
+                    {{ form_row(attribute(form, 'team' ~ team ~ '_qr' ~ index ~ '_message')) }}
+                {% endif %}
+            {% endfor %}
+            <p>
+                <a href="{{ path('admin_escape_qr_preview', { id: escape.id, team: team }) }}">Générer les QR codes</a>
+                <a href="{{ path('admin_escape_qr_print', { id: escape.id, team: team }) }}" target="_blank" rel="noopener">Imprimer</a>
+            </p>
         {% endfor %}
-        <p>
-            <a href="{{ path('admin_escape_qr_preview', { id: escape.id, team: team }) }}">Générer les QR codes</a>
-            <a href="{{ path('admin_escape_qr_print', { id: escape.id, team: team }) }}" target="_blank" rel="noopener">Imprimer</a>
-        </p>
-    {% endfor %}
 
-    <h2>Étape 6 - Cryptex</h2>
-    {{ form_row(form.cryptexMessage) }}
+        <h2>Étape 6 - Cryptex</h2>
+        {{ form_row(form.cryptexMessage) }}
 
-    <button type="submit">Enregistrer</button>
-    {{ form_end(form) }}
+            <button class="sjdb-btn" type="submit">Enregistrer</button>
+        {{ form_end(form) }}
 
-    <p>
-        <a href="{{ path('admin_escape_show', { id: escape.id }) }}">Retour</a>
-        <a href="{{ path('admin_escape_list') }}">Liste des escapes</a>
-    </p>
+        <div class="sjdb-actions">
+            <a class="sjdb-pill" href="{{ path('admin_escape_show', { id: escape.id }) }}">Retour</a>
+            <a class="sjdb-pill" href="{{ path('admin_escape_list') }}">Liste des escapes</a>
+        </div>
     </div>
 {% endblock %}

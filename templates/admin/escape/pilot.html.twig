@@ -1,35 +1,55 @@
-{% extends 'admin_base.html.twig' %}
+{% extends 'public.html.twig' %}
+
 
 {% block title %}Pilotage du jeu{% endblock %}
 
 {% block body %}
-    <div class="pilot-page"
+    <div class="sjdb-home"
          data-controller="pilot-teams-sync"
          data-pilot-teams-sync-url-value="{{ path('game_pilot_teams') }}"
          data-pilot-teams-sync-mercure-url-value="{{ mercure_public_url }}"
          data-pilot-teams-sync-topic-value="{{ escape_game ? '/escape/' ~ escape_game.id ~ '/scoreboard' : '' }}">
-        <div class="pilot-header">
-            <h1>Pilotage du jeu</h1>
-            {% if escape_game %}
-                <div class="pilot-summary">
-                    <div><strong>Escape :</strong> {{ escape_game.name }}</div>
-                    <div><strong>Statut :</strong> {{ escape_game.status }}</div>
+        <div class="sjdb-bg"></div>
+
+        <main class="sjdb-card sjdb-card--wide" role="main" aria-label="Accueil sjdb.space">
+            <header class="sjdb-header">
+                <img
+                        class="sjdb-logo"
+                        src="{{ asset('images/logo_sjdb_lite.png') }}"
+                        alt="Logo sjdb.space"
+                        width="160"
+                        height="160"
+                        loading="eager"
+                />
+
+                <div class="sjdb-brand"></div>
+            </header>
+
+            <section class="sjdb-content">
+                <h1 class="sjdb-title">Pilotage du jeu</h1>
+                <div class="pilot-header">
+
+                    {% if escape_game %}
+                        <div class="pilot-summary">
+                            <div><strong>Escape :</strong> {{ escape_game.name }}</div>
+                            <div><strong>Statut :</strong> {{ escape_game.status }}</div>
+                        </div>
+                    {% endif %}
                 </div>
-            {% endif %}
-        </div>
 
-        {% for message in app.flashes('success') %}
-            <div class="alert alert-success">{{ message }}</div>
-        {% endfor %}
-        {% for message in app.flashes('error') %}
-            <div class="alert alert-danger">{{ message }}</div>
-        {% endfor %}
+                {% for message in app.flashes('success') %}
+                    <div class="alert alert-success">{{ message }}</div>
+                {% endfor %}
+                {% for message in app.flashes('error') %}
+                    <div class="alert alert-danger">{{ message }}</div>
+                {% endfor %}
 
-        {% if not escape_game %}
-            <p>Aucun escape enregistré.</p>
-            {#  {% else %}  <p><strong>Page join :</strong> {{ join_url }}</p> #}
-        {% endif %}
-        <div class="pilot-layout">
+                {% if not escape_game %}
+                    <p>Aucun escape enregistré.</p>
+                    {#  {% else %}  <p><strong>Page join :</strong> {{ join_url }}</p> #}
+                {% endif %}
+
+                <div class="pilot-layout">
             <div class="pilot-teams">
                 <header>
                     <div>
@@ -89,10 +109,11 @@
                     <button type="submit">Réinitialiser les équipes</button>
                 </form>
 
-                <a href="{{ home_url }}" target="_blank" rel="noopener">Ouvrir la page d'accueil (grand écran)</a>
+                <a style="width: auto" href="{{ home_url }}" target="_blank" rel="noopener">page d'accueil</a>
             </div>
 
         </div>
+            </section>
+        </main>
     </div>
-
 {% endblock %}

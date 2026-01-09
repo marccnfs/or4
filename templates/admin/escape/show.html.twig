@@ -6,7 +6,7 @@
     <div class="sjdb-home">
     <div class="sjdb-bg"></div>
 
-    <main class="sjdb-card" role="main" aria-label="Accueil sjdb.space">
+    <main class="sjdb-card sjdb-card--wide" role="main" aria-label="Accueil sjdb.space">
     <header class="sjdb-header">
         <img
                 class="sjdb-logo"
@@ -26,7 +26,7 @@
     <section class="sjdb-content">
                 <h1 class="sjdb-title">Pilotage de l'escape {{ escape.name }}</h1>
 
-    <dl>
+    <dl class="sjdb-dl">
         <dt>ID</dt>
         <dd>{{ escape.id }}</dd>
         <dt>Statut</dt>
@@ -37,15 +37,15 @@
         <dd>{{ escape.updatedAt|date('d/m/Y H:i') }}</dd>
     </dl>
 
-    <p>
+    <div class="sjdb-actions">
         <a class="sjdb-pill" href="{{ path('admin_escape_edit', { id: escape.id }) }}">Éditer</a>
         <a class="sjdb-pill" href="{{ path('game_pilot', { escape_id: escape.id }) }}">Piloter cet escape</a>
         <a class="sjdb-pill" href="{{ path('admin_escape_list') }}">Retour à la liste</a>
-    </p>
+    </div>>
 
     <form method="post" action="{{ path('admin_escape_delete', { id: escape.id }) }}" onsubmit="return confirm('Confirmer la suppression ?');">
         <input type="hidden" name="_token" value="{{ csrf_token('delete_escape_' ~ escape.id) }}">
-        <button type="submit">Supprimer</button>
+        <button class="sjdb-btn sjdb-btn--danger" type="submit">Supprimer</button>
     </form>
     </section>
         <footer class="sjdb-footer">
