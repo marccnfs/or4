@@ -603,11 +603,17 @@ class GameController extends AbstractController
             return $this->redirectToRoute('game_join');
         }
 
+        $progress = $this->buildTeamProgress($team);
+        $hasCompletedFinal = (bool) ($progress['F']['completed'] ?? false);
+        if ($hasCompletedFinal) {
+            return $this->redirectToRoute('game_winner');
+        }
+
+
         if ($team->getEscapeGame()->getStatus() !== 'active') {
             return $this->redirectToRoute('game_waiting');
         }
 
-        $progress = $this->buildTeamProgress($team);
         $currentStep = $this->resolveCurrentStep($progress);
         if ($currentStep !== 'F') {
             return $this->redirectToRoute('game_step', ['step' => $currentStep]);
