@@ -5,8 +5,6 @@ namespace App\Services;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 class SpacyService
 {
@@ -58,7 +56,6 @@ class SpacyService
             ]);
 
             $glossary = json_decode($response->getBody()->getContents(), true);
-            dump($glossary);
             if (isset($glossary['definition'])) {
                 return $glossary; // Retourne le tableau contenant 'term' et 'definition'
             }
@@ -113,7 +110,7 @@ class SpacyService
             // Récupération et décodage de la réponse
             $body = $response->getBody()->getContents(); // Contenu brut
             $botResponse = json_decode($body, true); // Convertit le JSON en tableau associatif
-            dump($botResponse);
+
             // Vérifie que la réponse est bien un tableau
             if (!is_array($botResponse)) {
                 throw new \RuntimeException("La réponse de spaCy n'est pas au format attendu.");

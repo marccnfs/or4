@@ -1,0 +1,47 @@
+{% extends 'public.html.twig' %}
+
+{% block title %}jeu inactif{% endblock %}
+
+{% block body %}
+    <div class="sjdb-home">
+    <div class="sjdb-bg"></div>
+
+    <main class="sjdb-card" role="main" aria-label="Accueil sjdb.space">
+    <header class="sjdb-header">
+        <img
+                class="sjdb-logo"
+                src="{{ asset('images/logo_sjdb_lite.png') }}"
+                alt="Logo sjdb.space"
+                width="160"
+                height="160"
+                loading="eager"
+        />
+
+        <div class="sjdb-brand">
+            <div class="sjdb-domain">Aucun escape en cours</div>
+            <div class="sjdb-tagline">La partie n’est pas encore lancée. Revenez dès que l’animateur démarre le jeu.</div>
+        </div>
+    </header>
+
+        <section class="sjdb-content">
+            <div class="sjdb-bullets">
+                <p class="sjdb-lead">Vous pouvez patienter ou retourner à l’écran de connexion.</p>
+                <a class="sjdb-btn" href="{{ path('game_join') }}">Retour à l’accueil
+                    <span class="sjdb-btn-arrow" aria-hidden="true">→</span>
+                </a>
+            </div>
+        </section>
+
+        <footer class="sjdb-footer">
+            <div class="sjdb-actions">
+                <a class="sjdb-btn" href="{{ path('app_login') }}">
+                    Se connecter
+                    <span class="sjdb-btn-arrow" aria-hidden="true">→</span>
+                </a>
+            </div>
+
+        </footer>
+    </main>
+    </div>
+
+{% endblock %}

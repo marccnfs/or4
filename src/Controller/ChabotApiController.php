@@ -80,10 +80,8 @@ class ChabotApiController extends AbstractController
                 'keywords' => $keywords,
                 'relationships' => $relationships,
                 'response' => $responseText,
-                'form_html' => $this->renderView('response_form.html.twig', ['question' => $question
-                ], Response::HTTP_OK,
-                    ['Content-Type' => 'application/json; charset=utf-8'])
-            ]);
+                'form_html' => $this->renderView('response_form.html.twig', ['question' => $question]),
+            ], Response::HTTP_OK, ['Content-Type' => 'application/json; charset=utf-8']);
         } catch (\Exception $e) {
             return new JsonResponse([
                 'error' => 'Erreur lors de l’analyse de la question : ' . $e->getMessage()
@@ -114,8 +112,7 @@ class ChabotApiController extends AbstractController
         return new JsonResponse([
             'term' => $term,
             'definition' => $glossary['definition']
-        ],  Response::HTTP_OK,
-            ['Content-Type' => 'application/json; charset=utf-8'],200);
+        ], Response::HTTP_OK, ['Content-Type' => 'application/json; charset=utf-8']);
     }
 
     #[Route('/api/analyze_context', name: 'analyze_context', methods: ['POST'])]
@@ -145,9 +142,8 @@ class ChabotApiController extends AbstractController
                 'entities' => $entities,
                 'response' => $response,
                 'intent' => $detectedIntent,
-                'context' => $context, Response::HTTP_OK,
-                ['Content-Type' => 'application/json; charset=utf-8']
-            ]);
+                'context' => $context,
+            ], Response::HTTP_OK, ['Content-Type' => 'application/json; charset=utf-8']);
         } catch (\Exception $e) {
             return new JsonResponse([
                 'error' => 'Erreur lors de l’analyse de la question : ' . $e->getMessage()
@@ -201,7 +197,7 @@ class ChabotApiController extends AbstractController
         }
 
         // 2. Reformuler pour OpenAI
-        $simplifiedQuestion = preg_replace('/[^a-zA-Z0-9\s]/', '', strtolower($localResponse));
+        $simplifiedQuestion = preg_replace('/[^a-zA-Z0-9\s]/', '', strtolower($userInput));
 
         // 2. If no local match, query OpenAI API
         $apiKey = $_ENV['OPENAI_API_KEY'];
@@ -311,9 +307,8 @@ class ChabotApiController extends AbstractController
         ], $relatedKeywords);
 
         return new JsonResponse([
-            'keywords' => $keywordsForD3, Response::HTTP_OK,
-            ['Content-Type' => 'application/json; charset=utf-8']
-        ]);
+            'keywords' => $keywordsForD3
+        ], Response::HTTP_OK, ['Content-Type' => 'application/json; charset=utf-8']);
     }
 
 

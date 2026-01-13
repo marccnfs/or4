@@ -266,9 +266,17 @@ class GameController extends AbstractController
     #[Route('/game/qr/{code}', name: 'game_qr_scan', requirements: ['code' => '[^/]+'], methods: ['GET'])]
     public function qrScan(
         string $code,
-        Request $request
+        Request $request,
+        EscapeGameRepository $escapeGameRepository
     ): Response {
         $code = trim($code);
+        $escapeGame = $escapeGameRepository->findLatestByStatuses(['active']);
+
+        if ($escapeGame === null) {
+            return $this->render('game/no_escape.html.twig', [
+                'back' => false,
+            ]);
+        }
 
         return $this->render('game/qr_scan.html.twig', [
             'team_code' => strtoupper(trim((string) $request->query->get('team'))),
