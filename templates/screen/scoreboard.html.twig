@@ -13,6 +13,9 @@
          data-scoreboard-sync-winner-url-value="{{ path('game_scoreboard_final') }}"
          data-scoreboard-sync-home-url-value="{{ path('game_home') }}">
         <div class="scoreboard-header">
+            <button class="fullscreen-toggle" type="button" data-action="fullscreen#toggle" data-fullscreen-target="button">
+                []
+            </button>
             <div>
                 <h1>Tableau de progression</h1>
             {#    <p class="hint">{{ scoreboard.escape_name ? 'Escape : ' ~ scoreboard.escape_name : 'Aucun escape en cours.' }}  #}
