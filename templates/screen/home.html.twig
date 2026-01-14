@@ -21,6 +21,9 @@
             {% endif %}
         </div>
         <span class="badge2">ça va commencer....</span>
+        <button class="fullscreen-toggle" type="button" data-action="fullscreen#toggle" data-fullscreen-target="button">
+            Plein écran
+        </button>
     </header>
 
       {% include 'screen/_overlay.html.twig' with { seconds: 3, auto_start: false, game_sync_target: 'countdownOverlay' } %}

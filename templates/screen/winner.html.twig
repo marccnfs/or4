@@ -6,14 +6,14 @@
     <div class="winner-screen">
         <header class="winner-header">
             <h1>Fin de partie</h1>
-            <p class="hint">L'équipe {{ winner.code }} a trouvé le secret.</p>
+            {#  <p class="hint">L'équipe {{ winner.code }} a trouvé le secret.</p> #}
         </header>
 
         <div class="winner-card">
-            <div class="status">Fin de la partie !</div>
-            <h2 >🎉<br>L’équipe {{ winner.code }} a découvert le code de la malle !</h2>
+            <div class="status">Bravo aux {{ winner.code }}s !</div>
+            <h2 >🎉<br>Ils ont découvert le code et le coffre en premier !</h2>
             {% if winner.code %}
-                <p class="hint_win">Il ne lui reste plus qu’à trouver le coffre… et la clé de l’office.</p>
+                <p class="hint_win">Ils ne leur reste plus qu’à ouvrir l’office...</p>
             {% endif %}
             <p class="hint_win">Merci à toutes les équipes pour leur participation.
                 Place maintenant au buffet pour célébrer cette victoire collective !</p>

@@ -104,7 +104,12 @@ class GamePilotController extends AbstractController
     }
 
     #[Route('/game/pilot/finish', name: 'game_pilot_finish', methods: ['POST'])]
-    public function finish(Request $request, EscapeGameRepository $escapeGameRepository, EntityManagerInterface $entityManager): Response
+    public function finish(
+        Request $request,
+        EscapeGameRepository $escapeGameRepository,
+        TeamRepository $teamRepository,
+        EntityManagerInterface $entityManager
+    ): Response
     {
         $escapeGame = $this->resolveEscapeGame($request, $escapeGameRepository);
         if ($escapeGame === null) {
@@ -115,6 +120,18 @@ class GamePilotController extends AbstractController
         if (!$this->isCsrfTokenValid('game_pilot_' . $escapeGame->getId(), (string) $request->request->get('_token'))) {
             $this->addFlash('error', 'Jeton de sécurité invalide.');
             return $this->redirectToRoute('game_pilot');
+        }
+
+        $winnerTeamId = $request->request->getInt('winner_team_id');
+        if ($winnerTeamId > 0) {
+            $winnerTeam = $teamRepository->find($winnerTeamId);
+            if ($winnerTeam !== null && $winnerTeam->getEscapeGame()->getId() === $escapeGame->getId()) {
+                $options = $escapeGame->getOptions();
+                $options['winner_team_id'] = $winnerTeam->getId();
+                $options['winner_team_name'] = $winnerTeam->getName();
+                $options['winner_team_code'] = $winnerTeam->getRegistrationCode();
+                $escapeGame->setOptions($options);
+            }
         }
 
         $escapeGame->setStatus('finished');

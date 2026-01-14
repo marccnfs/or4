@@ -96,10 +96,41 @@
                     <button type="submit">Mettre hors ligne</button>
                 </form>
 
-                <form method="post" action="{{ path('game_pilot_finish') }}" onsubmit="return confirm('Clôturer la partie en cours ?');">
+                {% set has_teams = escape_game and escape_game.teams|length > 0 %}
+                <form method="post"
+                      action="{{ path('game_pilot_finish') }}"
+                      data-controller="pilot-finish"
+                      data-pilot-finish-target="form">
                     <input type="hidden" name="escape_id" value="{{ escape_game ? escape_game.id : '' }}">
                     <input type="hidden" name="_token" value="{{ escape_game ? csrf_token('game_pilot_' ~ escape_game.id) : '' }}">
-                    <button type="submit">Fin de partie</button>
+                    <input type="hidden" name="winner_team_id" data-pilot-finish-target="winnerInput">
+                    <button type="button" data-action="pilot-finish#open">Fin de partie</button>
+
+                    <dialog class="pilot-finish-dialog" data-pilot-finish-target="dialog" aria-labelledby="pilot-finish-title">
+                        <div class="pilot-finish-dialog__content">
+                            <h2 id="pilot-finish-title">Sélectionner l'équipe gagnante</h2>
+                            <p class="hint">La sélection sera affichée sur l'écran final.</p>
+
+                            <label class="pilot-finish-dialog__label">
+                                Équipe gagnante
+                                <select data-pilot-finish-target="select" {{ has_teams ? 'required' : 'disabled' }}>
+                                    <option value="" disabled selected>Choisir une équipe</option>
+                                    {% if escape_game %}
+                                        {% for team in escape_game.teams %}
+                                            <option value="{{ team.id }}">{{ team.name }} ({{ team.registrationCode }})</option>
+                                        {% endfor %}
+                                    {% endif %}
+                                </select>
+                            </label>
+
+                            <div class="pilot-finish-dialog__actions">
+                                <button type="button" data-action="pilot-finish#confirm" {{ has_teams ? '' : 'disabled' }}>
+                                    Valider la fin de partie
+                                </button>
+                                <button type="button" data-action="pilot-finish#close">Annuler</button>
+                            </div>
+                        </div>
+                    </dialog>
                 </form>
 
 
