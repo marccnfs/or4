@@ -39,36 +39,45 @@ class GameController extends AbstractController
     {
         $escapeGame = $escapeGameRepository->findLatest();
         $gameOpen = $this->isGameOpen($escapeGame);
+        $allowRejoin = $escapeGame !== null && $escapeGame->getStatus() === 'active';
         $error = null;
         $team = null;
+        $submittedCode = null;
 
         if ($request->isMethod('POST')) {
-            if (!$gameOpen) {
-                $error = 'Les inscriptions sont actuellement fermées.';
+            $teamCode = strtoupper(trim((string) $request->request->get('team_code')));
+            $submittedCode = $teamCode;
+            if ($teamCode === '') {
+                $error = 'Merci de saisir un code d\'équipe.';
+            } elseif ($escapeGame === null) {
+                $error = 'Aucun jeu actif pour le moment.';
+            } elseif (!$this->isTeamCodeAllowed($escapeGame, $teamCode)) {
+                $error = 'Code d\'équipe invalide.';
             } else {
-                $teamCode = strtoupper(trim((string) $request->request->get('team_code')));
-                if ($teamCode === '') {
-                    $error = 'Merci de saisir un code d\'équipe.';
-                } elseif ($escapeGame === null) {
-                    $error = 'Aucun jeu actif pour le moment.';
-                } elseif (!$this->isTeamCodeAllowed($escapeGame, $teamCode)) {
-                    $error = 'Code d\'équipe invalide.';
+                $existingTeam = $teamRepository->findOneBy(['registrationCode' => $teamCode]);
+                if ($existingTeam !== null) {
+                    if ($existingTeam->getEscapeGame()->getId() !== $escapeGame->getId()) {
+                        $error = 'Ce code ne correspond pas au jeu en cours.';
+                    } else {
+                        $team = $existingTeam;
+                    }
                 } else {
-                    $existingTeam = $teamRepository->findOneBy(['registrationCode' => $teamCode]);
-                    if ($existingTeam !== null) {
-                        if ($existingTeam->getEscapeGame()->getId() !== $escapeGame->getId()) {
-                            $error = 'Ce code ne correspond pas au jeu en cours.';
-                        }
+                    if (!$gameOpen) {
+                        $error = $allowRejoin
+                            ? 'Ce code n\'est pas reconnu. Les inscriptions sont fermées, merci d\'utiliser un code déjà enregistré.'
+                            : 'Les inscriptions sont actuellement fermées.';
                     } else {
                         $team = $this->registerTeam($escapeGame, $teamCode, $entityManager);
                         $entityManager->flush();
                     }
+                }
 
                     if ($error !== null) {
                         return $this->render('game/join.html.twig', [
                             'game_open' => $gameOpen,
+                            'allow_rejoin' => $allowRejoin,
                             'error' => $error,
-                            'team_code' => $session->get(self::SESSION_TEAM_CODE),
+                            'team_code' => $submittedCode ?: $session->get(self::SESSION_TEAM_CODE),
                             'escape_game' => $escapeGame,
                         ]);
                     }
@@ -78,14 +87,14 @@ class GameController extends AbstractController
                     $session->set(self::SESSION_CURRENT_STEP, $this->resolveCurrentStep($progress));
 
                     return $this->redirectToRoute('game_waiting');
-                }
             }
         }
 
         return $this->render('game/join.html.twig', [
             'game_open' => $gameOpen,
             'error' => $error,
-            'team_code' => $session->get(self::SESSION_TEAM_CODE),
+            'allow_rejoin' => $allowRejoin,
+            'team_code' => $submittedCode ?: $session->get(self::SESSION_TEAM_CODE),
             'escape_game' => $escapeGame,
             'back'=> false
         ]);

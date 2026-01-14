@@ -11,7 +11,7 @@
             data-game-sync-reload-on-change-value="true"
             data-game-sync-current-status-value="{{ escape_game ? escape_game.status : 'offline' }}">
             <div class="titre_header">
-                <h1>Rejoindre la mission</h1>
+                <h1>Rejoindre le jeu</h1>
                 {#  <p class="hint">Entrez votre nom d'équipe.</p> #}
             </div>
             <span class="badge">Join</span>
@@ -19,8 +19,10 @@
 
 
     <div class="card stack">
-        {% if not game_open %}
+        {% if not game_open and not allow_rejoin %}
             <div class="status closed">Les inscriptions sont fermées pour le moment.</div>
+        {% elseif allow_rejoin and not game_open %}
+            <div class="status">Partie en cours : entrez votre code d’équipe pour retrouver votre étape.</div>
         {% else %}
             <div class="status">Les inscriptions sont ouvertes.</div>
         {% endif %}
@@ -34,13 +36,13 @@
                 <span class="hint">Nom d'équipe</span>
                 <input class="input" type="text" name="team_code" placeholder="Ex: cactus" value="{{ team_code }}" required>
             </label>
-            <button class="btn" type="submit" {% if not game_open %}disabled{% endif %}>Confirmer</button>
+            <button class="btn" type="submit" {% if not game_open and not allow_rejoin %}disabled{% endif %}>Confirmer</button>
         </form>
     </div>
 
     <div class="card_help">
         <h2>Info</h2>
         <p class="hint">Le nom de votre équipe est indiqué sur votre table de jeu.
-            Saisissez-le pour entrer dans la salle d’attente et rejoindre l’aventure.</p>
+            Saisissez-le pour entrer dans la salle d’attente ou reprendre votre aventure en cours.</p>
     </div>
 {% endblock %}
