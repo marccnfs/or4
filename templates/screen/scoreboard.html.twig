@@ -18,16 +18,15 @@
             </button>
             <div>
                 <h1>Tableau de progression</h1>
-            {#    <p class="hint">{{ scoreboard.escape_name ? 'Escape : ' ~ scoreboard.escape_name : 'Aucun escape en cours.' }}  #}
-                <p class="hint">{{ scoreboard.escape_name ? '' : 'Aucun escape en cours.' }}
-                </p>
+              {#   <p class="hint">{{ scoreboard.escape_name ? '' : 'Aucun escape en cours.' }} </p> #}
             </div>
             <div class="scoreboard-meta">
                 <span class="scoreboard-status" data-scoreboard-sync-target="status">{{ scoreboard.status }}</span>
-                <span><strong>Étapes :</strong> <span data-scoreboard-sync-target="total">{{ scoreboard.total_steps }}</span></span>
+               {#  <span><strong>Étapes :</strong> <span data-scoreboard-sync-target="total">{{ scoreboard.total_steps }}</span></span>
                 <span data-scoreboard-sync-target="updated">
                     {{ scoreboard.updated_at ? 'Mis à jour à ' ~ scoreboard.updated_at : '' }}
                 </span>
+               #}
             </div>
         </div>
 

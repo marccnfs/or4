@@ -12,7 +12,7 @@
 {% block javascripts %}
     {{ encore_entry_script_tags('app') }}
 {% endblock %}
-<body data-controller="fullscreen">
+<body data-controller="fullscreen" style="overflow: hidden;">
     <div class="back_head_desk" style="background-image: url({{ imgback }})">
     <div class="page_fix">
         {% block body %}{% endblock %}

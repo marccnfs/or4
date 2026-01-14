@@ -53,18 +53,20 @@
             <div class="status">Séquence terminée. Vous pouvez revenir à l'étape E.</div>
         {% endif %}
 
-        #}
+
         {% if team_code %}
             <a class="btn btn-outline" href="{{ path('game_step', { step: 'E', team: team_code }) }}">Retour à l'étape E</a>
         {% else %}
             <a class="btn" href="{{ path('game_join') }}">Rejoindre une équipe</a>
         {% endif %}
+        #}
     </div>
 
     {% if has_success %}
         <div class="card stack">
             <p class="hint">Code scanné :</p>
             <strong>{{ code ?: '—' }}</strong>
+
         </div>
     {% endif %}
 {% endblock %}
