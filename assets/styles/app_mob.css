@@ -90,6 +90,11 @@ header {
     display: flex;
     flex-direction: column;
     gap: 16px;
+    justify-content: center;
+    align-items: center;
+}
+.final_step{
+    margin: 15px;
 }
 .btn {
     display: inline-flex;

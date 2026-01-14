@@ -65,7 +65,7 @@
             </div>
             {% if progress['E'] is defined and progress['E'].completed %}
                 <div class="status">Séquence terminée. Cap sur l’étape F.</div>
-                <a class="btn" href="{{ path('game_final') }}">Accéder à l'étape finale</a>
+                <a class="btn final_step" href="{{ path('game_final') }}">Accéder à l'étape finale</a>
            {#  {% else %}
                 <div class="hint">Scannez chaque QR code pour faire avancer la séquence.</div>#}
             {% endif %}
