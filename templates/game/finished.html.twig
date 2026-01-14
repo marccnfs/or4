@@ -1,0 +1,17 @@
+{% extends 'game/base.html.twig' %}
+
+{% block title %}Fin de la partie{% endblock %}
+
+{% block body %}
+    <header>
+        <div>
+            <h1>Fin de la partie</h1>
+        </div>
+        <span class="badge">{{ team_code }}</span>
+    </header>
+
+    <div class="card stack">
+        <div class="status closed">Vous ferez mieux une prochaine fois.</div>
+        <p class="hint">Merci d'avoir joué et à très vite pour une nouvelle mission !</p>
+    </div>
+{% endblock %}

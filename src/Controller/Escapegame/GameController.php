@@ -609,8 +609,13 @@ class GameController extends AbstractController
             return $this->redirectToRoute('game_winner');
         }
 
+        $escapeGame = $team->getEscapeGame();
+        if ($escapeGame->getStatus() === 'finished') {
+            return $this->redirectToRoute('game_finished');
+        }
 
-        if ($team->getEscapeGame()->getStatus() !== 'active') {
+
+        if ($escapeGame->getStatus() !== 'active') {
             return $this->redirectToRoute('game_waiting');
         }
 
@@ -623,7 +628,7 @@ class GameController extends AbstractController
         $scrambled = $letters;
         shuffle($scrambled);
 
-        $options = $team->getEscapeGame()->getOptions();
+        $options = $escapeGame->getOptions();
 
         return $this->render('game/final.html.twig', [
             'team_code' => $teamCode,
@@ -631,9 +636,42 @@ class GameController extends AbstractController
             'scrambled_letters' => $scrambled,
             'combination' => implode('', $letters),
             'cryptex_message' => $options['cryptex_message'] ?? 'Bravo !',
+            'escape_id' => $escapeGame->getId(),
             'back'=> false
         ]);
     }
+
+    #[Route('/game/finished', name: 'game_finished', methods: ['GET'])]
+    public function finished(SessionInterface $session, TeamRepository $teamRepository): Response
+    {
+        $teamCode = $session->get(self::SESSION_TEAM_CODE);
+        if (!$teamCode) {
+            return $this->redirectToRoute('game_join');
+        }
+
+        $team = $teamRepository->findOneBy(['registrationCode' => $teamCode]);
+        if ($team === null) {
+            return $this->redirectToRoute('game_join');
+        }
+
+        $escapeGame = $team->getEscapeGame();
+        if ($escapeGame->getStatus() !== 'finished') {
+            return $this->redirectToRoute('game_final');
+        }
+
+        $options = $escapeGame->getOptions();
+        $winnerCode = $options['winner_team_code'] ?? null;
+        if ($winnerCode !== null && $winnerCode === $team->getRegistrationCode()) {
+            return $this->redirectToRoute('game_winner');
+        }
+
+        return $this->render('game/finished.html.twig', [
+            'team_code' => $teamCode,
+            'winner_name' => $options['winner_team_name'] ?? null,
+            'back' => false,
+        ]);
+    }
+
 
     #[Route('/game/winner', name: 'game_winner', methods: ['GET'])]
     public function winner(SessionInterface $session, TeamRepository $teamRepository): Response

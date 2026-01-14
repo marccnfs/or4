@@ -3,6 +3,11 @@
 {% block title %}Étape F{% endblock %}
 
 {% block body %}
+<div data-controller="game-sync"
+     data-game-sync-url-value="{{ path('game_status') }}"
+     data-game-sync-mercure-url-value="{{ mercure_public_url }}"
+     data-game-sync-topic-value="{{ escape_id ? '/escape/' ~ escape_id ~ '/status' : '' }}"
+     data-game-sync-finished-redirect-url-value="{{ path('game_finished') }}">
     <header>
         <div>
             <h1>Étape F</h1>
@@ -23,14 +28,15 @@
             {% endfor %}
         </div>
         <p class="hint">Remettez ces lettres dans l'ordre des étapes A à E pour former la combinaison.</p>
-    </div>
+        </div>
+
 
     <div class="card stack"
          data-controller="final"
          data-final-endpoint-value="{{ path('api_final_check') }}"
          data-final-step-value="F"
          data-final-success-redirect-url-value="{{ path('game_winner') }}"
-         data-final-lose-redirect-url-value="{{ path('game_waiting') }}"
+         data-final-lose-redirect-url-value="{{ path('game_finished') }}"
          data-final-suspense-duration-value="2500"
          data-action="cryptex:solved->final#handleSolved">
         <h2>Cryptex final</h2>
@@ -45,4 +51,5 @@
         } %}
         <div class="status closed" data-final-target="status"></div>
     </div>
+</div>
 {% endblock %}

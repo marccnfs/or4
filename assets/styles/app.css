@@ -600,7 +600,6 @@ header {
     border-radius: 999px;
     font-size: 0.85rem;
     position: absolute;
-    right: 95px;
 }
 .card {
     background: #fff;
@@ -613,15 +612,16 @@ header {
     text-align: center;
 }
 .soli{
-    bottom: 0;
+    background-color: #085da2;
     height: 174px;
     left: 0;
     padding: 10px;
-    position: fixed;
+    position: absolute;
     right: 0;
-    top: 275px;
+    bottom: 97px;
     width: 509px;
-    background-color: #085da2;
+    justify-content: center;
+    align-items: center;
 }
 .info{
     padding: 20px;
