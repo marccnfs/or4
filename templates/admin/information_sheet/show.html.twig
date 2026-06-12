@@ -1,0 +1,35 @@
+{% extends 'public.html.twig' %}
+
+{% block title %}{{ sheet.title }}{% endblock %}
+
+{% block body %}
+    <div class="sjdb-home">
+        <div class="sjdb-bg"></div>
+        <main class="sjdb-card sjdb-card--wide" role="main" aria-label="Fiche {{ sheet.title }}">
+            <header class="sjdb-header">
+                <div class="sjdb-brand">
+                    <div class="sjdb-domain">{{ sheet.title }}</div>
+                    <div class="sjdb-tagline">{{ sheet.categoryLabel }} · {{ sheet.thematic }} · {{ sheet.createdAt|date('d/m/Y') }}</div>
+                </div>
+            </header>
+
+            <section class="sjdb-content sheet-detail">
+                {% if sheet.subtitle %}<p class="sjdb-lead">{{ sheet.subtitle }}</p>{% endif %}
+                {% if sheet.imagePath %}<img class="sheet-hero" src="{{ asset(sheet.imagePath) }}" alt="{{ sheet.imageAlt ?? sheet.title }}">{% endif %}
+                <article class="sheet-markdown">{{ sheet.contentMarkdown|markdown_to_html }}</article>
+            </section>
+
+            <footer class="sjdb-footer">
+                <div class="sjdb-actions">
+                    <a class="sjdb-btn" href="{{ path('admin_information_sheet_edit', { id: sheet.id }) }}">Éditer</a>
+                    <a class="sjdb-btn" href="{{ path('admin_information_sheet_list') }}">Retour liste</a>
+                    <a class="sjdb-pill" href="{{ path('information_sheet_show', { slug: sheet.slug }) }}" target="_blank" rel="noopener">Voir public</a>
+                </div>
+                <form method="post" action="{{ path('admin_information_sheet_delete', { id: sheet.id }) }}" onsubmit="return confirm('Supprimer cette fiche ?');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete_information_sheet_' ~ sheet.id) }}">
+                    <button class="sjdb-btn sjdb-btn--danger" type="submit">Supprimer</button>
+                </form>
+            </footer>
+        </main>
+    </div>
+{% endblock %}

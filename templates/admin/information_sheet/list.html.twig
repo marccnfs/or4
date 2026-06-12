@@ -1,0 +1,76 @@
+{% extends 'public.html.twig' %}
+
+{% block title %}Fiches d'information{% endblock %}
+
+{% block body %}
+    <div class="sjdb-home">
+        <div class="sjdb-bg"></div>
+
+        <main class="sjdb-card sjdb-card--wide" role="main" aria-label="Backoffice des fiches d'information">
+            <header class="sjdb-header">
+                <img class="sjdb-logo" src="{{ asset('images/logo_sjdb_lite.png') }}" alt="Logo sjdb.space" width="160" height="160" loading="eager">
+                <div class="sjdb-brand">
+                    <div class="sjdb-domain">Fiches d'information</div>
+                    <div class="sjdb-tagline">Création, rubriques, thématiques et recherche plein texte</div>
+                </div>
+            </header>
+
+            <section class="sjdb-content">
+                <div class="sheet-toolbar">
+                    <a class="sjdb-btn" href="{{ path('admin_information_sheet_new') }}">Créer une fiche <span class="sjdb-btn-arrow" aria-hidden="true">→</span></a>
+                    <a class="sjdb-pill" href="{{ path('information_sheet_index') }}" target="_blank" rel="noopener">Voir le public</a>
+                </div>
+
+                <form class="sheet-search" method="get" action="{{ path('admin_information_sheet_list') }}">
+                    <input type="search" name="q" value="{{ query }}" placeholder="Rechercher dans les fiches">
+                    <select name="category">
+                        <option value="">Toutes les rubriques</option>
+                        {% for key, label in categories %}
+                            <option value="{{ key }}" {% if currentCategory == key %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <button class="sjdb-btn" type="submit">Rechercher</button>
+                </form>
+
+                {% if sheets is empty %}
+                    <p class="sjdb-lead">Aucune fiche ne correspond à votre recherche.</p>
+                {% else %}
+                    <div class="sjdb-table-wrap" role="region" aria-label="Tableau des fiches">
+                        <table class="sjdb-table">
+                            <thead>
+                            <tr>
+                                <th>Titre</th>
+                                <th>Rubrique</th>
+                                <th>Thématique</th>
+                                <th>Créée le</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for sheet in sheets %}
+                                <tr>
+                                    <td>{{ sheet.title }}</td>
+                                    <td>{{ sheet.categoryLabel }}</td>
+                                    <td>{{ sheet.thematic }}</td>
+                                    <td>{{ sheet.createdAt|date('d/m/Y') }}</td>
+                                    <td>
+                                        <div class="sjdb-actions">
+                                            <a class="sjdb-pill" href="{{ path('admin_information_sheet_show', { id: sheet.id }) }}">Voir</a>
+                                            <a class="sjdb-pill" href="{{ path('admin_information_sheet_edit', { id: sheet.id }) }}">Éditer</a>
+                                            <a class="sjdb-pill" href="{{ path('information_sheet_show', { slug: sheet.slug }) }}" target="_blank" rel="noopener">Public</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </section>
+
+            <footer class="sjdb-footer">
+                <a class="sjdb-btn" href="{{ path('index_admin') }}">Retour board<span class="sjdb-btn-arrow" aria-hidden="true">→</span></a>
+            </footer>
+        </main>
+    </div>
+{% endblock %}

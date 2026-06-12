@@ -1,0 +1,14 @@
+{% extends 'admin_base.html.twig' %}
+
+{% block title %}Créer une fiche{% endblock %}
+
+{% block body %}
+    <div class="pilot-page">
+        <h1>Créer une fiche d'information</h1>
+        <p class="sjdb-lead">Renseignez une rubrique, une thématique, un contenu Markdown et une image optionnelle.</p>
+        {% include 'admin/information_sheet/_form.html.twig' with { form: form, button_label: 'Créer' } %}
+        <div class="sjdb-actions">
+            <a class="sjdb-pill" href="{{ path('admin_information_sheet_list') }}">Retour à la liste</a>
+        </div>
+    </div>
+{% endblock %}

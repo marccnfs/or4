@@ -19,15 +19,23 @@
 
         <div class="sjdb-brand">
             <div class="sjdb-domain">sjdb.space</div>
-            <div class="sjdb-tagline">What is this ?</div>
+            <div class="sjdb-tagline">by RSI</div>
         </div>
     </header>
 
     <section class="sjdb-content">
-                <h1 class="sjdb-title">Le Guide Numérique de Saint-Jean-de-Boiseau<span class="sjdb-muted">(with codex)</span></h1>
+                <h1 class="sjdb-title">Le Guide Numérique de Saint-Jean-de-Boiseau<span class="sjdb-muted"></span></h1>
 
                 <p class="sjdb-lead">
                     Un espace simple pour comprendre, utiliser et mieux vivre les outils numériques de la collectivité
+                </p>
+
+                <nav class="sheet-home-menu" aria-label="Rubriques des fiches d'information">
+                    <a class="sheet-home-link" href="{{ path('information_sheet_index', { category: 'comprendre' }) }}">Comprendre</a>
+                    <a class="sheet-home-link" href="{{ path('information_sheet_index', { category: 'je-veux' }) }}">Je veux...</a>
+                    <a class="sheet-home-link" href="{{ path('information_sheet_index', { category: 'bonnes-pratiques' }) }}">Bonnes pratiques</a>
+                    <a class="sheet-home-link" href="{{ path('information_sheet_index', { category: 'faq' }) }}">FAQ</a>
+                </nav>
 
                 <ul class="sjdb-bullets">
                     <li>🧠 Agents IA et assistants métier</li>
@@ -35,6 +43,7 @@
                     <li>🛠️ Sécurité et usage de l'IA</li>
                     <li>📚 Info “terrain”</li>
                 </ul>
+
             </section>
 
             <footer class="sjdb-footer">
@@ -43,16 +52,22 @@
                         Se connecter
                         <span class="sjdb-btn-arrow" aria-hidden="true">→</span>
                     </a>
+                    <a class="sjdb-btn" href="{{ path('information_sheet_index') }}">
+                        Consulter les fiches
+                        <span class="sjdb-btn-arrow" aria-hidden="true">→</span>
+                    </a>
+                    {#
                     <a class="sjdb-btn" href="/ia/chat">
                         Lancer le chatbot & animations
                         <span class="sjdb-btn-arrow" aria-hidden="true">→</span>
                     </a>
+                    #}
                 </div>
 
                 <div class="sjdb-meta">
-                    <span class="sjdb-pill">Chatbot de 7 lieux</span>
-                    <span class="sjdb-pill">parlons-en</span>
-                    <span class="sjdb-pill">liens</span>
+                    <span class="sjdb-pill">Travail collaboratif mode d'emploi</span>
+                    <span class="sjdb-pill">pour qui ?</span>
+                    <span class="sjdb-pill">à suivre</span>
                 </div>
             </footer>
         </main>

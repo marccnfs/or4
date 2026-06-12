@@ -1,0 +1,60 @@
+{% extends 'public.html.twig' %}
+
+{% block title %}Fiches d'information sjdb.space{% endblock %}
+
+{% block body %}
+    <div class="sjdb-home sheet-page">
+        <div class="sjdb-bg"></div>
+        <main class="sjdb-card sjdb-card--wide" role="main" aria-label="Fiches d'information publiques">
+            <header class="sjdb-header">
+                <img class="sjdb-logo" src="{{ asset('images/logo_sjdb_lite.png') }}" alt="Logo sjdb.space" width="160" height="160" loading="eager">
+                <div class="sjdb-brand">
+                    <div class="sjdb-domain">Fiches d'information</div>
+                    <div class="sjdb-tagline">Comprendre, agir, appliquer les bonnes pratiques et trouver des réponses</div>
+                </div>
+            </header>
+
+            <section class="sjdb-content">
+                <h1 class="sjdb-title">Le guide numérique en fiches pratiques</h1>
+                <p class="sjdb-lead">Recherchez en plein texte dans les titres, sous-titres, thématiques et contenus Markdown.</p>
+
+                <nav class="sheet-categories" aria-label="Rubriques des fiches">
+                    <a class="sjdb-pill {% if currentCategory == '' %}is-active{% endif %}" href="{{ path('information_sheet_index', query ? { q: query } : {}) }}">Toutes</a>
+                    {% for key, label in categories %}
+                        <a class="sjdb-pill {% if currentCategory == key %}is-active{% endif %}" href="{{ path('information_sheet_index', { category: key, q: query }) }}">{{ label }} <span>{{ counts[key] ?? 0 }}</span></a>
+                    {% endfor %}
+                </nav>
+
+                <form class="sheet-search" method="get" action="{{ path('information_sheet_index') }}">
+                    {% if currentCategory %}<input type="hidden" name="category" value="{{ currentCategory }}">{% endif %}
+                    <input type="search" name="q" value="{{ query }}" placeholder="Que recherchez-vous ?">
+                    <button class="sjdb-btn" type="submit">Rechercher</button>
+                </form>
+
+                <div class="sheet-grid">
+                    {% for sheet in sheets %}
+                        <article class="sheet-card">
+                            {% if sheet.imagePath %}<img src="{{ asset(sheet.imagePath) }}" alt="{{ sheet.imageAlt ?? sheet.title }}">{% endif %}
+                            <div>
+                                <span class="sjdb-pill">{{ sheet.categoryLabel }}</span>
+                                <span class="sjdb-pill">{{ sheet.thematic }}</span>
+                            </div>
+                            <h2>{{ sheet.title }}</h2>
+                            {% if sheet.subtitle %}<p>{{ sheet.subtitle }}</p>{% endif %}
+                            <div class="sheet-card-footer">
+                                <time datetime="{{ sheet.createdAt|date('Y-m-d') }}">{{ sheet.createdAt|date('d/m/Y') }}</time>
+                                <a class="sjdb-btn" href="{{ path('information_sheet_show', { slug: sheet.slug }) }}">Lire <span class="sjdb-btn-arrow" aria-hidden="true">→</span></a>
+                            </div>
+                        </article>
+                    {% else %}
+                        <p class="sjdb-lead">Aucune fiche disponible pour cette recherche.</p>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <footer class="sjdb-footer">
+                <a class="sjdb-btn" href="{{ path('index_public') }}">Retour accueil<span class="sjdb-btn-arrow" aria-hidden="true">→</span></a>
+            </footer>
+        </main>
+    </div>
+{% endblock %}

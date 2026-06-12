@@ -1,0 +1,41 @@
+{% extends 'public.html.twig' %}
+
+{% block title %}{{ sheet.title }}{% endblock %}
+
+{% block body %}
+    <div class="sjdb-home sheet-page">
+        <div class="sjdb-bg"></div>
+        <main class="sjdb-card sjdb-card--wide" role="main" aria-label="{{ sheet.title }}">
+            <header class="sjdb-header sheet-detail-header">
+                <div class="sjdb-brand">
+                    <div class="sjdb-domain">{{ sheet.title }}</div>
+                    <div class="sjdb-tagline">{{ sheet.categoryLabel }} · {{ sheet.thematic }} · publié le {{ sheet.createdAt|date('d/m/Y') }}</div>
+                </div>
+            </header>
+
+            <article class="sjdb-content sheet-detail">
+                {% if sheet.subtitle %}<p class="sjdb-lead">{{ sheet.subtitle }}</p>{% endif %}
+                {% if sheet.imagePath %}<img class="sheet-hero" src="{{ asset(sheet.imagePath) }}" alt="{{ sheet.imageAlt ?? sheet.title }}">{% endif %}
+                <div class="sheet-markdown">{{ sheet.contentMarkdown|markdown_to_html }}</div>
+            </article>
+
+            <aside class="sheet-related" aria-label="Fiches liées">
+                <h2>Dans la même rubrique</h2>
+                <div class="sjdb-actions">
+                    {% for related in relatedSheets|slice(0, 4) %}
+                        <a class="sjdb-pill" href="{{ path('information_sheet_show', { slug: related.slug }) }}">{{ related.title }}</a>
+                    {% else %}
+                        <span class="sjdb-pill">Aucune autre fiche pour le moment</span>
+                    {% endfor %}
+                </div>
+            </aside>
+
+            <footer class="sjdb-footer">
+                <div class="sjdb-actions">
+                    <a class="sjdb-btn" href="{{ path('information_sheet_index', { category: sheet.category }) }}">Rubrique {{ sheet.categoryLabel }}</a>
+                    <a class="sjdb-btn" href="{{ path('information_sheet_index') }}">Toutes les fiches</a>
+                </div>
+            </footer>
+        </main>
+    </div>
+{% endblock %}

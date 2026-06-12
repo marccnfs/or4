@@ -1,0 +1,22 @@
+{% extends 'public.html.twig' %}
+
+{% block title %}{{ sheet.title }}{% endblock %}
+
+{% block body %}
+    <div class="sjdb-home sheet-page sheet-page--mobile">
+        <div class="sjdb-bg"></div>
+        <main class="sjdb-card" role="main" aria-label="{{ sheet.title }}">
+            <article class="sjdb-content sheet-detail sheet-detail--mobile">
+                <a class="sjdb-pill" href="{{ path('information_sheet_index', { category: sheet.category }) }}">{{ sheet.categoryLabel }}</a>
+                <h1 class="sjdb-title">{{ sheet.title }}</h1>
+                {% if sheet.subtitle %}<p class="sjdb-lead">{{ sheet.subtitle }}</p>{% endif %}
+                {% if sheet.imagePath %}<img class="sheet-hero" src="{{ asset(sheet.imagePath) }}" alt="{{ sheet.imageAlt ?? sheet.title }}">{% endif %}
+                <div class="sheet-markdown">{{ sheet.contentMarkdown|markdown_to_html }}</div>
+            </article>
+
+            <footer class="sjdb-footer">
+                <a class="sjdb-btn" href="{{ path('information_sheet_index') }}">Retour aux fiches</a>
+            </footer>
+        </main>
+    </div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{{ form_start(form, { attr: { class: 'admin-form' } }) }}
+    {{ form_row(form.title) }}
+    {{ form_row(form.subtitle) }}
+    {{ form_row(form.category) }}
+    {{ form_row(form.thematic) }}
+    {{ form_row(form.contentMarkdown) }}
+    {% if sheet is defined and sheet.imagePath %}
+        <div class="sheet-image-preview">
+            <p>Image actuelle</p>
+            <img src="{{ asset(sheet.imagePath) }}" alt="{{ sheet.imageAlt ?? sheet.title }}">
+        </div>
+    {% endif %}
+    {{ form_row(form.imageFile) }}
+    {{ form_row(form.imageAlt) }}
+
+<button class="sjdb-btn" type="submit">{{ button_label|default('Enregistrer') }}</button>
+{{ form_end(form) }}

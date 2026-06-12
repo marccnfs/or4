@@ -1,0 +1,48 @@
+{% extends 'public.html.twig' %}
+
+{% block title %}Fiches d'information{% endblock %}
+
+{% block body %}
+    <div class="sjdb-home sheet-page sheet-page--mobile">
+        <div class="sjdb-bg"></div>
+        <main class="sjdb-card" role="main" aria-label="Fiches d'information mobiles">
+            <header class="sjdb-header">
+                <div class="sjdb-brand">
+                    <div class="sjdb-domain">Fiches</div>
+                    <div class="sjdb-tagline">Recherche rapide et rubriques</div>
+                </div>
+            </header>
+
+            <section class="sjdb-content">
+                <form class="sheet-search sheet-search--mobile" method="get" action="{{ path('information_sheet_index') }}">
+                    {% if currentCategory %}<input type="hidden" name="category" value="{{ currentCategory }}">{% endif %}
+                    <input type="search" name="q" value="{{ query }}" placeholder="Rechercher une fiche">
+                    <button class="sjdb-btn" type="submit">OK</button>
+                </form>
+
+                <nav class="sheet-categories" aria-label="Rubriques">
+                    <a class="sjdb-pill {% if currentCategory == '' %}is-active{% endif %}" href="{{ path('information_sheet_index') }}">Toutes</a>
+                    {% for key, label in categories %}
+                        <a class="sjdb-pill {% if currentCategory == key %}is-active{% endif %}" href="{{ path('information_sheet_index', { category: key, q: query }) }}">{{ label }}</a>
+                    {% endfor %}
+                </nav>
+
+                <div class="sheet-list-mobile">
+                    {% for sheet in sheets %}
+                        <a class="sheet-row" href="{{ path('information_sheet_show', { slug: sheet.slug }) }}">
+                            <strong>{{ sheet.title }}</strong>
+                            <span>{{ sheet.categoryLabel }} · {{ sheet.thematic }}</span>
+                            {% if sheet.subtitle %}<small>{{ sheet.subtitle }}</small>{% endif %}
+                        </a>
+                    {% else %}
+                        <p class="sjdb-lead">Aucune fiche trouvée.</p>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <footer class="sjdb-footer">
+                <a class="sjdb-btn" href="{{ path('index_public') }}">Accueil</a>
+            </footer>
+        </main>
+    </div>
+{% endblock %}
