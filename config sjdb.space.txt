@@ -1,0 +1,77 @@
+PARAMETRES D'ACCES:
+L'adresse IPv4 du VPS est : 152.228.174.165   port    = 7824
+Le nom du VPS est : vps-3141fd2a.vps.ovh.net
+
+
+user : sjdb
+mot de passe : mdpSjdb44!
+
+sudo -u postgres psql
+Dans psql : créer le rôle + la base
+Remplace les noms / mot de passe.
+
+sql
+Copier le code
+CREATE ROLE sjdb_mdj WITH LOGIN PASSWORD 'mdpDataSiteSjdb44!msqlescape_team';
+CREATE DATABASE sjdb_db OWNER sjdb_mdj ENCODING 'UTF8';
+GRANT ALL PRIVILEGES ON DATABASE sjdb_db TO sjdb_mdj;
+\q
+
+
+
+pool fpm : sjdb@vps-3141fd2a:/etc/php/8.2/fpm/pool.d/sjdb.conf
+sjdb 
+user = sjdb 
+group = sjdb 
+ 
+listen = /run/php/php8.2-fpm-sjdb.sock 
+listen.owner = www-data 
+listen.group = www-data 
+listen.mode = 0660 
+ 
+pm = dynamic 
+pm.max_children = 10 
+pm.start_servers = 2 
+pm.min_spare_servers = 1 
+pm.max_spare_servers = 3 
+ 
+php_admin_value[upload_tmp_dir] = /var/www/sjdb/tmp 
+php_admin_value[session.save_path] = /var/www/sjdb/sessions
+
+
+Créer les dossiers :
+
+mkdir -p /var/www/site3/tmp /var/www/sjdb/sessions
+chown -R site3:site3 /var/www/site3/tmp /var/www/site3/sessions
+chmod 700 /var/www/site3/tmp /var/www/site3/sessions
+
+
+certbot --apache -d sjdb.space -d www.sjdb.space
+
+
+installation base via Symfony :
+composer require symfony/orm-pack
+composer require --dev symfony/maker-bundle
+
+env : 
+
+
+mercure :
+
+Fichier docker-compose.yml
+version: "3.8"
+
+services:
+  mercure:
+    image: dunglas/mercure
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:80"
+    environment:
+      SERVER_NAME: ":80"
+      MERCURE_PUBLISHER_JWT_KEY: "24210e07cd4cc6a40c82e18ba2c2efaaf5d18a6c6a52774bb0ee90968f74c71c"
+      MERCURE_SUBSCRIBER_JWT_KEY: "8ac871f66d7e942a590ca6c852f1258217c89b1124eb624b73cac07c69fd7524"
+      MERCURE_EXTRA_DIRECTIVES: |
+        cors_origins *
+        anonymous
+
