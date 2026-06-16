@@ -1,0 +1,84 @@
+{% extends 'public.html.twig' %}
+
+{% block title %}{{ workspace.title }}{% endblock %}
+
+{% block body %}
+    <div class="sjdb-home sheet-page">
+        <div class="sjdb-bg"></div>
+        <main class="sjdb-card sjdb-card--wide" role="main" aria-label="Dossier de travail">
+            <header class="sjdb-header sheet-detail-header">
+                <div class="sjdb-brand">
+                    <div class="sjdb-domain">{{ workspace.title }}</div>
+                    <div class="sjdb-tagline">{{ workspace.sheet.categoryLabel }} · {{ workspace.thematicSnapshot }} · agent : {{ workspace.agent.publicName }}</div>
+                </div>
+            </header>
+
+            {% for label, messages in app.flashes %}{% for message in messages %}<div class="sjdb-alert sjdb-alert--{{ label }}" role="status">{{ message }}</div>{% endfor %}{% endfor %}
+
+            <div class="workspace-layout">
+                <section class="sjdb-content sheet-detail">
+                    <h2>Fiche source conservée</h2>
+                    <p class="sjdb-lead">{{ workspace.sheet.title }}</p>
+                    {% if workspace.sheet.subtitle %}<p>{{ workspace.sheet.subtitle }}</p>{% endif %}
+                    <div class="sheet-markdown">{{ workspace.sheet.contentMarkdown|markdown_to_html }}</div>
+                </section>
+
+                <section class="sjdb-content workspace-panel">
+                    <h2>Votre travail</h2>
+                    {{ form_start(workspaceForm, { attr: { class: 'sjdb-form' } }) }}
+                    {% for field in workspaceForm %}
+                        <div class="sjdb-field">
+                            {{ form_label(field, null, { label_attr: { class: 'sjdb-label' } }) }}
+                            {{ form_widget(field, { attr: { class: field.vars.block_prefixes[1] == 'file' ? 'sjdb-input-file' : 'sjdb-input' } }) }}
+                            {{ form_errors(field) }}
+                        </div>
+                    {% endfor %}
+                    <button class="sjdb-btn" type="submit">Enregistrer le dossier</button>
+                    {{ form_end(workspaceForm) }}
+
+                    <h3>Images téléversées</h3>
+                    <div class="workspace-attachments">
+                        {% for attachment in attachments %}
+                            <a href="{{ asset(attachment.path) }}" target="_blank" rel="noopener">
+                                <img src="{{ asset(attachment.path) }}" alt="{{ attachment.originalName }}">
+                                <span>{{ attachment.originalName }}</span>
+                            </a>
+                        {% else %}
+                            <p>Aucune image ajoutée.</p>
+                        {% endfor %}
+                    </div>
+                </section>
+            </div>
+
+            <section class="sjdb-content workspace-section">
+                <h2>Conversation avec le modérateur / professeur</h2>
+                <div class="workspace-messages">
+                    {% for message in messages %}
+                        <article class="workspace-message {% if 'ROLE_ADMIN' in message.author.roles %}is-admin{% endif %}">
+                            <strong>{{ message.author.publicName }}{% if 'ROLE_ADMIN' in message.author.roles %} · modérateur{% endif %}</strong>
+                            <time datetime="{{ message.createdAt|date('c') }}">{{ message.createdAt|date('d/m/Y H:i') }}</time>
+                            <p>{{ message.content|nl2br }}</p>
+                        </article>
+                    {% else %}
+                        <p>Aucun message pour le moment.</p>
+                    {% endfor %}
+                </div>
+                {{ form_start(messageForm, { attr: { class: 'sjdb-form workspace-message-form' } }) }}
+                <div class="sjdb-field">
+                    {{ form_label(messageForm.content, null, { label_attr: { class: 'sjdb-label' } }) }}
+                    {{ form_widget(messageForm.content, { attr: { class: 'sjdb-input' } }) }}
+                    {{ form_errors(messageForm.content) }}
+                </div>
+                <button class="sjdb-btn" type="submit">Envoyer</button>
+                {{ form_end(messageForm) }}
+            </section>
+
+            <footer class="sjdb-footer">
+                <div class="sjdb-actions">
+                    <a class="sjdb-btn" href="{{ path('information_sheet_workspace_index') }}">Mon espace</a>
+                    <a class="sjdb-btn" href="{{ path('information_sheet_show', { slug: workspace.sheet.slug }) }}">Revoir la fiche</a>
+                </div>
+            </footer>
+        </main>
+    </div>
+{% endblock %}

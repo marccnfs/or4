@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace App\Controller\Public;
 
 use App\Entity\InformationSheet;
+use App\Entity\InformationSheetRead;
+use App\Entity\User;
 use App\Repository\InformationSheetRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,9 +33,14 @@ class InformationSheetPublicController extends AbstractController
         ]);
     }
 
-    #[Route('/{slug}', name: 'information_sheet_show', methods: ['GET'])]
-    public function show(Request $request, #[MapEntity(mapping: ['slug' => 'slug'])] InformationSheet $sheet, InformationSheetRepository $repository): Response
+    #[Route('/{slug}', name: 'information_sheet_show', requirements: ['slug' => '(?!espace$)[a-z0-9-]+'], methods: ['GET'])]
+    public function show(Request $request, #[MapEntity(mapping: ['slug' => 'slug'])] InformationSheet $sheet, InformationSheetRepository $repository, EntityManagerInterface $entityManager): Response
     {
+        $user = $this->getUser();
+        if ($user instanceof User) {
+            $entityManager->persist((new InformationSheetRead())->setAgent($user)->setSheet($sheet));
+            $entityManager->flush();
+        }
         return $this->render($this->template($request, 'public/information_sheet/show'), [
             'sheet' => $sheet,
             'categories' => InformationSheet::CATEGORY_LABELS,

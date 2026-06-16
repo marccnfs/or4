@@ -1,0 +1,45 @@
+{% extends 'public.html.twig' %}
+
+{% block title %}Créer un compte agent · sjdb.space{% endblock %}
+
+{% block body %}
+    <div class="sjdb-home">
+        <div class="sjdb-bg"></div>
+        <main class="sjdb-card sjdb-card--auth" role="main" aria-label="Création de compte agent">
+            <header class="sjdb-header">
+                <img class="sjdb-logo" src="{{ asset('images/logo_sjdb_lite.png') }}" alt="Logo sjdb" width="160" height="160" loading="eager">
+                <div class="sjdb-brand">
+                    <div class="sjdb-domain">Compte agent</div>
+                    <div class="sjdb-tagline">Espace personnel fiches d'information</div>
+                </div>
+            </header>
+
+            <section class="sjdb-auth">
+                <div class="sjdb-auth-head">
+                    <h1 class="sjdb-auth-title">Créer mon accès</h1>
+                    <p class="sjdb-auth-subtitle">Votre compte donne accès à l'historique de lecture, aux dossiers de travail et à la conversation avec le modérateur.</p>
+                </div>
+
+                {% for message in app.flashes('error') %}<div class="sjdb-alert" role="alert">{{ message }}</div>{% endfor %}
+
+                {{ form_start(registrationForm, { attr: { class: 'sjdb-form' } }) }}
+                {% for field in registrationForm %}
+                    <div class="sjdb-field">
+                        {{ form_label(field, null, { label_attr: { class: 'sjdb-label' } }) }}
+                        {{ form_widget(field, { attr: { class: 'sjdb-input' } }) }}
+                        {{ form_errors(field) }}
+                    </div>
+                {% endfor %}
+                <div class="sjdb-actions">
+                    <button class="sjdb-btn sjdb-btn--full" type="submit">Créer mon compte <span class="sjdb-btn-arrow" aria-hidden="true">→</span></button>
+                </div>
+                {{ form_end(registrationForm) }}
+
+                <div class="sjdb-auth-foot">
+                    <a class="sjdb-pill" href="{{ path('app_login') }}">J'ai déjà un compte</a>
+                    <a class="sjdb-pill" href="{{ path('information_sheet_index') }}">Voir les fiches</a>
+                </div>
+            </section>
+        </main>
+    </div>
+{% endblock %}

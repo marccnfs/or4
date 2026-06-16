@@ -1,0 +1,56 @@
+{% extends 'public.html.twig' %}
+
+{% block title %}Mon espace fiches{% endblock %}
+
+{% block body %}
+    <div class="sjdb-home sheet-page">
+        <div class="sjdb-bg"></div>
+        <main class="sjdb-card sjdb-card--wide" role="main" aria-label="Espace personnel fiches">
+            <header class="sjdb-header">
+                <div class="sjdb-brand">
+                    <div class="sjdb-domain">Mon espace fiches</div>
+                    <div class="sjdb-tagline">Historique de lecture et dossiers de travail personnels</div>
+                </div>
+                <div class="sjdb-actions"><a class="sjdb-pill" href="{{ path('app_logout') }}">Déconnexion</a></div>
+            </header>
+
+            {% for label, messages in app.flashes %}{% for message in messages %}<div class="sjdb-alert sjdb-alert--{{ label }}" role="status">{{ message }}</div>{% endfor %}{% endfor %}
+
+            <section class="sjdb-content workspace-section">
+                <h1 class="sjdb-title">Vos dossiers de travail</h1>
+                <p class="sjdb-lead">Transformez une fiche lue en dossier personnel pour ajouter vos commentaires, questions, éléments et images.</p>
+                <div class="sheet-grid">
+                    {% for workspace in workspaces %}
+                        <article class="sheet-card">
+                            <div><span class="sjdb-pill">{{ workspace.sheet.categoryLabel }}</span><span class="sjdb-pill">{{ workspace.thematicSnapshot }}</span></div>
+                            <h2>{{ workspace.title }}</h2>
+                            <p>Fiche source : {{ workspace.sheet.title }}</p>
+                            <div class="sheet-card-footer">
+                                <time datetime="{{ (workspace.updatedAt ?? workspace.createdAt)|date('Y-m-d') }}">{{ (workspace.updatedAt ?? workspace.createdAt)|date('d/m/Y H:i') }}</time>
+                                <a class="sjdb-btn" href="{{ path('information_sheet_workspace_show', { id: workspace.id }) }}">Ouvrir <span class="sjdb-btn-arrow" aria-hidden="true">→</span></a>
+                            </div>
+                        </article>
+                    {% else %}
+                        <p class="sjdb-lead">Aucun dossier pour le moment. Ouvrez une fiche puis cliquez sur « Créer mon dossier ».</p>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <section class="sjdb-content workspace-section">
+                <h2>Historique des fiches lues</h2>
+                <div class="workspace-list">
+                    {% for read in reads %}
+                        <a class="workspace-row" href="{{ path('information_sheet_show', { slug: read.sheet.slug }) }}">
+                            <span>{{ read.sheet.title }}</span>
+                            <small>{{ read.readAt|date('d/m/Y H:i') }}</small>
+                        </a>
+                    {% else %}
+                        <p>Aucune lecture enregistrée.</p>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <footer class="sjdb-footer"><a class="sjdb-btn" href="{{ path('information_sheet_index') }}">Toutes les fiches</a></footer>
+        </main>
+    </div>
+{% endblock %}

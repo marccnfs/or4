@@ -12,6 +12,14 @@
                     <div class="sjdb-domain">Fiches d'information</div>
                     <div class="sjdb-tagline">Comprendre, agir, appliquer les bonnes pratiques et trouver des réponses</div>
                 </div>
+                <div class="sjdb-actions sheet-account-actions">
+                    {% if app.user %}
+                        <a class="sjdb-pill" href="{{ path('information_sheet_workspace_index') }}">Mon espace fiches</a>
+                    {% else %}
+                        <a class="sjdb-pill" href="{{ path('agent_register') }}">Créer un compte agent</a>
+                        <a class="sjdb-pill" href="{{ path('app_login') }}">Connexion</a>
+                    {% endif %}
+                </div>
             </header>
 
             <section class="sjdb-content">

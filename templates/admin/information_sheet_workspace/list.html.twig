@@ -1,0 +1,44 @@
+{% extends 'admin_base.html.twig' %}
+
+{% block title %}Dossiers de fiches{% endblock %}
+
+{% block body %}
+    <section class="admin-section">
+        <div class="admin-section-header">
+            <div>
+                <h1>Dossiers de travail des agents</h1>
+                <p>Suivez les dossiers issus des fiches d'information et répondez dans la conversation de chaque agent.</p>
+            </div>
+            <a class="admin-btn" href="{{ path('admin_information_sheet_list') }}">Fiches</a>
+        </div>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                <tr>
+                    <th>Dossier</th>
+                    <th>Agent</th>
+                    <th>Fiche</th>
+                    <th>Thématique</th>
+                    <th>Mise à jour</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for workspace in workspaces %}
+                    <tr>
+                        <td>{{ workspace.title }}</td>
+                        <td>{{ workspace.agent.publicName }}</td>
+                        <td>{{ workspace.sheet.title }}</td>
+                        <td>{{ workspace.thematicSnapshot }}</td>
+                        <td>{{ (workspace.updatedAt ?? workspace.createdAt)|date('d/m/Y H:i') }}</td>
+                        <td><a class="admin-btn admin-btn--small" href="{{ path('information_sheet_workspace_show', { id: workspace.id }) }}">Ouvrir / répondre</a></td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="6">Aucun dossier agent pour le moment.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+{% endblock %}

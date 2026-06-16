@@ -24,6 +24,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private array $roles = [];
 
+    #[ORM\Column(length: 120, nullable: true)]
+    private ?string $displayName = null;
+
     #[ORM\Column]
     private ?string $password = null;
 
@@ -48,6 +51,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->email ?? '';
     }
+
+    public function getDisplayName(): ?string
+    {
+        return $this->displayName;
+    }
+
+    public function setDisplayName(?string $displayName): self
+    {
+        $displayName = $displayName !== null ? trim($displayName) : null;
+        $this->displayName = $displayName !== '' ? $displayName : null;
+
+        return $this;
+    }
+
+    public function getPublicName(): string
+    {
+        return $this->displayName ?: ($this->email ?? 'Agent');
+    }
+
 
     public function getRoles(): array
     {

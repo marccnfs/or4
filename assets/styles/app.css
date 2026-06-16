@@ -1644,3 +1644,103 @@ footer {
         flex-direction: column;
     }
 }
+.sheet-account-actions,
+.sheet-workspace-actions {
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.sheet-workspace-actions form {
+    margin: 0;
+}
+
+.workspace-section {
+    margin-top: 2rem;
+}
+
+.workspace-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.8fr);
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.workspace-panel,
+.workspace-section {
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 1.25rem;
+    background: rgba(6, 16, 32, 0.42);
+    padding: 1.25rem;
+}
+
+.workspace-list,
+.workspace-messages,
+.workspace-attachments {
+    display: grid;
+    gap: 0.9rem;
+}
+
+.workspace-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.9rem 1rem;
+    border-radius: 0.9rem;
+    color: inherit;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.workspace-attachments {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.workspace-attachments a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.workspace-attachments img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 0.8rem;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.workspace-message {
+    padding: 1rem;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.workspace-message.is-admin {
+    background: rgba(88, 166, 255, 0.18);
+    border: 1px solid rgba(88, 166, 255, 0.32);
+}
+
+.workspace-message time {
+    display: block;
+    opacity: 0.72;
+    font-size: 0.86rem;
+    margin-top: 0.2rem;
+}
+
+.workspace-message-form {
+    margin-top: 1rem;
+}
+
+.sjdb-input-file {
+    width: 100%;
+    color: inherit;
+}
+
+@media (max-width: 900px) {
+    .workspace-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .workspace-row {
+        flex-direction: column;
+    }
+}
