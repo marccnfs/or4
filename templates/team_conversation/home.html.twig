@@ -1,0 +1,13 @@
+{% extends 'public.html.twig' %}
+{% block title %}Mes groupes{% endblock %}
+{% block body %}
+    <div class="sjdb-home"><div class="sjdb-bg"></div><main class="sjdb-card sjdb-card--wide">
+            <header class="sjdb-header"><div class="sjdb-brand"><div class="sjdb-domain">Mes conversations de groupe</div><div class="sjdb-tagline">Choisissez un groupe pour retrouver la discussion instantanée.</div></div></header>
+            <section class="sjdb-content team-list">
+                {% for membership in memberships %}
+                    <a class="team-card" href="{{ path('team_conversation_show', {id: membership.team.id}) }}"><strong>{{ membership.team.name }}</strong><span>{{ membership.team.escapeGame.name }} · rejoint le {{ membership.joinedAt|date('d/m/Y') }}</span></a>
+                {% else %}<p class="sjdb-lead">Aucun groupe pour le moment. Ouvrez le lien reçu par email pour rejoindre une conversation.</p>{% endfor %}
+            </section>
+            <footer class="sjdb-footer"><a class="sjdb-btn" href="{{ path('information_sheet_workspace_index') }}">Mon espace</a></footer>
+        </main></div>
+{% endblock %}

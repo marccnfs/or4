@@ -36,6 +36,19 @@
         <dt>Mis à jour le</dt>
         <dd>{{ escape.updatedAt|date('d/m/Y H:i') }}</dd>
     </dl>
+        <section class="sjdb-content">
+            <h2>Conversations de groupes</h2>
+            <div class="team-list">
+                {% for team in escape.teams %}
+                    <a class="team-card" href="{{ path('team_invitation_create', { id: team.id }) }}">
+                        <strong>{{ team.name }}</strong>
+                        <span>Inviter des membres par email / ouvrir la conversation</span>
+                    </a>
+                {% else %}
+                    <p>Aucune équipe inscrite pour cet escape.</p>
+                {% endfor %}
+            </div>
+        </section>
 
     <div class="sjdb-actions">
         <a class="sjdb-pill" href="{{ path('admin_escape_edit', { id: escape.id }) }}">Éditer</a>

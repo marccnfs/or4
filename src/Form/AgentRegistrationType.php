@@ -27,6 +27,7 @@ class AgentRegistrationType extends AbstractType
             ])
             ->add('email', EmailType::class, [
                 'label' => 'Email agent',
+                'disabled' => (bool) $options['email_locked'],
                 'attr' => ['placeholder' => 'prenom.nom@domaine.fr'],
             ])
             ->add('plainPassword', RepeatedType::class, [
@@ -44,6 +45,7 @@ class AgentRegistrationType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults(['data_class' => User::class]);
+        $resolver->setDefaults(['data_class' => User::class, 'email_locked' => false]);
+        $resolver->setAllowedTypes('email_locked', 'bool');
     }
 }

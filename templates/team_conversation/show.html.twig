@@ -1,0 +1,22 @@
+{% extends 'public.html.twig' %}
+{% block title %}Conversation · {{ team.name }}{% endblock %}
+{% block body %}
+    <div class="messenger-page"><main class="messenger-shell">
+            <header class="messenger-header"><div><a class="messenger-back" href="{{ path('team_conversation_home') }}">← Groupes</a><h1>{{ team.name }}</h1><p>{{ team.escapeGame.name }} · {{ members|length }} membre{{ members|length > 1 ? 's' : '' }}</p></div><div class="messenger-avatars">{% for member in members|slice(0, 4) %}<span title="{{ member.user.publicName }}">{{ member.user.publicName|first|upper }}</span>{% endfor %}</div></header>
+            {% for label, flashes in app.flashes %}{% for flash in flashes %}<div class="sjdb-alert sjdb-alert--{{ label }}">{{ flash }}</div>{% endfor %}{% endfor %}
+            <section class="messenger-thread" aria-label="Messages du groupe">
+                {% for message in messages %}
+                    <article class="chat-bubble {{ message.author.id == app.user.id ? 'is-me' : 'is-them' }}" {% if loop.last %}id="dernier-message"{% endif %}>
+                        <div class="chat-meta"><strong>{{ message.author.publicName }}</strong><time datetime="{{ message.createdAt|date('c') }}">{{ message.createdAt|date('H:i') }}</time></div>
+                        {% if message.imagePath %}<a href="{{ asset(message.imagePath) }}" target="_blank" rel="noopener"><img src="{{ asset(message.imagePath) }}" alt="{{ message.imageOriginalName }}" class="chat-image"></a>{% endif %}
+                        {% if message.content %}<p>{{ message.content|nl2br }}</p>{% endif %}
+                    </article>
+                {% else %}<p class="empty-thread">Démarrez la conversation du groupe.</p>{% endfor %}
+            </section>
+            {{ form_start(messageForm, { attr: { class: 'composer', enctype: 'multipart/form-data' } }) }}
+            <label class="photo-button" title="Joindre une photo">📷 {{ form_widget(messageForm.image, { attr: { class: 'sr-only' } }) }}</label>
+            {{ form_widget(messageForm.content, { attr: { class: 'composer-input' } }) }}
+            <button class="send-button" type="submit">Envoyer</button>
+            {{ form_end(messageForm) }}
+        </main></div>
+{% endblock %}

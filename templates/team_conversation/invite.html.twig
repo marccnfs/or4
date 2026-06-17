@@ -1,0 +1,9 @@
+{% extends 'public.html.twig' %}
+{% block title %}Inviter · {{ team.name }}{% endblock %}
+{% block body %}<div class="sjdb-home"><div class="sjdb-bg"></div><main class="sjdb-card">
+        <header class="sjdb-header"><div class="sjdb-brand"><div class="sjdb-domain">Inviter un membre</div><div class="sjdb-tagline">{{ team.name }} · {{ team.escapeGame.name }}</div></div></header>
+        {% for message in app.flashes('success') %}<div class="sjdb-alert sjdb-alert--success">{{ message }}</div>{% endfor %}
+        <section class="sjdb-content">{{ form_start(form, { attr: { class: 'sjdb-form' } }) }}<div class="sjdb-field">{{ form_label(form.email, null, { label_attr: { class: 'sjdb-label' } }) }}{{ form_widget(form.email, { attr: { class: 'sjdb-input' } }) }}{{ form_errors(form.email) }}</div><button class="sjdb-btn" type="submit">Envoyer l'invitation</button>{{ form_end(form) }}</section>
+        <section class="sjdb-content"><h2>Dernières invitations</h2>{% for invitation in invitations %}<p>{{ invitation.email }} · {{ invitation.acceptedAt ? 'acceptée' : 'envoyée' }}</p>{% else %}<p>Aucune invitation.</p>{% endfor %}</section>
+        <footer class="sjdb-footer"><a class="sjdb-btn" href="{{ path('admin_escape_show', { id: team.escapeGame.id }) }}">Retour escape</a></footer>
+    </main></div>{% endblock %}
