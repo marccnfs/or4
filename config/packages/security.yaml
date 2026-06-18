@@ -23,7 +23,7 @@ security:
               username_parameter: email
               password_parameter: password
               enable_csrf: true
-              default_target_path: /fiches/espace
+              default_target_path: /apres-connexion
               always_use_default_target_path: false
 
             logout:
@@ -35,7 +35,9 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
       - { path: ^/admin, roles: ROLE_ADMIN }
-      - { path: ^/fiches/espace, roles: ROLE_USER }
+      - { path: ^/fiches/espace, roles: ROLE_AGENT }
+      - { path: ^/groupes, roles: ROLE_USER }
+      - { path: ^/profil, roles: ROLE_USER }
         # - { path: ^/profile, roles: ROLE_USER }
 
 when@test:

@@ -140,7 +140,7 @@ class TeamConversationController extends AbstractController
         $user = $users->findOneBy(['email' => $invitation->getEmail()]) ?? new User();
         $isNewUser = $user->getId() === null;
         if ($isNewUser) {
-            $user->setEmail($invitation->getEmail())->setRoles(['ROLE_USER']);
+            $user->setEmail($invitation->getEmail())->setRoles(['ROLE_GUEST']);
         }
         $form = $this->createForm(AgentRegistrationType::class, $user, ['email_locked' => true]);
         $form->handleRequest($request);

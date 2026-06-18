@@ -21,6 +21,10 @@ class InformationSheetPublicController extends AbstractController
     #[Route('', name: 'information_sheet_index', methods: ['GET'])]
     public function index(Request $request, InformationSheetRepository $repository): Response
     {
+        if ($this->isGranted('ROLE_USER') && !$this->isGranted('ROLE_AGENT')) {
+            return $this->redirectToRoute('team_conversation_home');
+        }
+
         $category = $request->query->getString('category');
         $query = $request->query->getString('q');
 
@@ -36,6 +40,10 @@ class InformationSheetPublicController extends AbstractController
     #[Route('/{slug}', name: 'information_sheet_show', requirements: ['slug' => '(?!espace$)[a-z0-9-]+'], methods: ['GET'])]
     public function show(Request $request, #[MapEntity(mapping: ['slug' => 'slug'])] InformationSheet $sheet, InformationSheetRepository $repository, EntityManagerInterface $entityManager): Response
     {
+        if ($this->isGranted('ROLE_USER') && !$this->isGranted('ROLE_AGENT')) {
+            return $this->redirectToRoute('team_conversation_home');
+        }
+
         $user = $this->getUser();
         if ($user instanceof User) {
             $entityManager->persist((new InformationSheetRead())->setAgent($user)->setSheet($sheet));

@@ -20,11 +20,11 @@ class AgentRegistrationController extends AbstractController
     public function register(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher, UserRepository $userRepository): Response
     {
         if ($this->getUser() !== null) {
-            return $this->redirectToRoute('information_sheet_workspace_index');
+            return $this->redirectToRoute($this->isGranted('ROLE_AGENT') ? 'information_sheet_workspace_index' : 'team_conversation_home');
         }
 
         $agent = new User();
-        $agent->setRoles(['ROLE_USER']);
+        $agent->setRoles(['ROLE_AGENT']);
         $form = $this->createForm(AgentRegistrationType::class, $agent);
         $form->handleRequest($request);
 

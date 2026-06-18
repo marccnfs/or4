@@ -67,7 +67,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getPublicName(): string
     {
-        return $this->displayName ?: ($this->email ?? 'Agent');
+        return $this->displayName ?: ($this->email ?? 'Membre');
     }
 
 
@@ -75,15 +75,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $roles = $this->roles;
         $roles[] = 'ROLE_USER';
-
+        if (!in_array('ROLE_GUEST', $roles, true) && !in_array('ROLE_AGENT', $roles, true) && !in_array('ROLE_ADMIN', $roles, true)) {
+            $roles[] = 'ROLE_AGENT';
+        }
         return array_values(array_unique($roles));
     }
 
     public function setRoles(array $roles): self
     {
-        $this->roles = $roles;
+        $this->roles = array_values(array_unique($roles));
 
         return $this;
+    }
+
+    public function isGuest(): bool
+    {
+        return in_array('ROLE_GUEST', $this->roles, true) && !in_array('ROLE_AGENT', $this->roles, true) && !in_array('ROLE_ADMIN', $this->roles, true);
+    }
+
+    public function isAgent(): bool
+    {
+        return in_array('ROLE_AGENT', $this->roles, true) || in_array('ROLE_ADMIN', $this->roles, true);
     }
 
     public function getPassword(): ?string

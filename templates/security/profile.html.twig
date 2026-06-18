@@ -1,0 +1,15 @@
+{% extends 'public.html.twig' %}
+{% block title %}Mon profil · sjdb.space{% endblock %}
+{% block body %}
+    <div class="sjdb-home"><div class="sjdb-bg"></div><main class="sjdb-card sjdb-card--auth" role="main" aria-label="Profil utilisateur">
+            <header class="sjdb-header"><div class="sjdb-brand"><div class="sjdb-domain">Mon profil</div><div class="sjdb-tagline">Gérer mes informations de connexion</div></div></header>
+            <section class="sjdb-auth">
+                {{ form_start(profileForm, { attr: { class: 'sjdb-form' } }) }}
+                <div class="sjdb-field">{{ form_label(profileForm.displayName, null, { label_attr: { class: 'sjdb-label' } }) }}{{ form_widget(profileForm.displayName, { attr: { class: 'sjdb-input' } }) }}{{ form_errors(profileForm.displayName) }}</div>
+                <div class="sjdb-field">{{ form_label(profileForm.email, null, { label_attr: { class: 'sjdb-label' } }) }}{{ form_widget(profileForm.email, { attr: { class: 'sjdb-input' } }) }}{{ form_errors(profileForm.email) }}</div>
+                <button class="sjdb-btn sjdb-btn--full" type="submit">Enregistrer</button>
+                {{ form_end(profileForm) }}
+            </section>
+            <footer class="sjdb-footer"><a class="sjdb-pill" href="{{ path('team_conversation_home') }}">Mes conversations</a>{% if is_granted('ROLE_AGENT') %}<a class="sjdb-pill" href="{{ path('information_sheet_workspace_index') }}">Mon espace fiches</a>{% endif %}<a class="sjdb-pill" href="{{ path('app_logout') }}">Déconnexion</a></footer>
+        </main></div>
+{% endblock %}
