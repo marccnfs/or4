@@ -19,9 +19,9 @@ class TeamMembershipRepository extends ServiceEntityRepository
     /** @return TeamMembership[] */
     public function findForUser(User $user): array {
         return $this->createQueryBuilder('m')
-            ->addSelect('team', 'escape')
+            ->addSelect('team', 'escapeGame')
             ->join('m.team', 'team')
-            ->leftJoin('team.escapeGame', 'escape')
+            ->leftJoin('team.escapeGame', 'escapeGame')
             ->andWhere('m.user = :user')
             ->setParameter('user', $user)
             ->orderBy('m.joinedAt', 'DESC')
