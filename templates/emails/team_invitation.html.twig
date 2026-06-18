@@ -1,3 +1,9 @@
 <h1>Invitation à rejoindre {{ team.name }}</h1>
 <p>Vous avez été invité à rejoindre la conversation du groupe {{ team.name }} sur sjdb.space.</p>
-<p><a href="{{ url }}">Créer mon accès et rejoindre le groupe</a></p>
+{% if knownUser|default(false) %}
+    <p>Votre compte existe déjà : vous avez été ajouté au groupe. Connectez-vous pour accéder à la conversation.</p>
+    <p><a href="{{ url('app_login') }}">Me connecter</a></p>
+{% else %}
+    <p>Ce lien vous permettra de créer votre compte puis d'être ajouté automatiquement au groupe.</p>
+    <p><a href="{{ url }}">Créer mon accès et rejoindre le groupe</a></p>
+{% endif %}

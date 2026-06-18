@@ -11,7 +11,7 @@
                     <div class="sjdb-domain">Mon espace fiches</div>
                     <div class="sjdb-tagline">Historique de lecture et dossiers de travail personnels</div>
                 </div>
-                <div class="sjdb-actions"><a class="sjdb-pill" href="{{ path('app_logout') }}">Déconnexion</a></div>
+                <div class="sjdb-actions">{% if is_granted('ROLE_ADMIN') %}<a class="sjdb-pill" href="{{ path('team_conversation_create') }}">Créer un groupe de conversation</a>{% endif %}<a class="sjdb-pill" href="{{ path('team_conversation_home') }}">Mes conversations</a><a class="sjdb-pill" href="{{ path('app_logout') }}">Déconnexion</a></div>
             </header>
 
             {% for label, messages in app.flashes %}{% for message in messages %}<div class="sjdb-alert sjdb-alert--{{ label }}" role="status">{{ message }}</div>{% endfor %}{% endfor %}

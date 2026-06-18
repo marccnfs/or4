@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TeamRepository::class)]
 #[ORM\Table(name: 'team')]
@@ -22,20 +23,21 @@ class Team
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'teams')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?EscapeGame $escapeGame = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le nom du groupe est obligatoire.')]
     private string $name;
 
     #[ORM\Column(length: 100)]
-    private string $registrationCode;
+    private string $registrationCode = '';
 
     #[ORM\Column(length: 255)]
-    private string $qrToken;
+    private string $qrToken = '';
 
     #[ORM\Column(length: 50)]
-    private string $state;
+    private string $state = 'conversation';
 
     #[ORM\Column]
     private int $score = 0;

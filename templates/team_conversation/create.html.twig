@@ -1,0 +1,8 @@
+{% extends '../public.html.twig' %}
+{% block title %}Créer un groupe de conversation{% endblock %}
+{% block body %}<div class="sjdb-home"><div class="sjdb-bg"></div><main class="sjdb-card">
+        <header class="sjdb-header"><div class="sjdb-brand"><div class="sjdb-domain">Créer un groupe de conversation</div><div class="sjdb-tagline">Module indépendant des escape games</div></div></header>
+        {% for label, messages in app.flashes %}{% for message in messages %}<div class="sjdb-alert sjdb-alert--{{ label }}" role="status">{{ message }}</div>{% endfor %}{% endfor %}
+        <section class="sjdb-content">{{ form_start(form, { attr: { class: 'sjdb-form' } }) }}<div class="sjdb-field">{{ form_label(form.name, null, { label_attr: { class: 'sjdb-label' } }) }}{{ form_widget(form.name, { attr: { class: 'sjdb-input' } }) }}{{ form_errors(form.name) }}</div><button class="sjdb-btn" type="submit">Créer le groupe</button>{{ form_end(form) }}</section>
+        <footer class="sjdb-footer"><a class="sjdb-btn" href="{{ path('information_sheet_workspace_index') }}">Retour à mon espace</a></footer>
+    </main></div>{% endblock %}

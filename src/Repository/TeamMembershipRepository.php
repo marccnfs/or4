@@ -15,8 +15,20 @@ class TeamMembershipRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry) { parent::__construct($registry, TeamMembership::class); }
     public function isMember(Team $team, User $user): bool { return $this->findOneBy(['team' => $team, 'user' => $user]) !== null; }
+
     /** @return TeamMembership[] */
-    public function findForUser(User $user): array { return $this->createQueryBuilder('m')->addSelect('team', 'escape')->join('m.team', 'team')->join('team.escapeGame', 'escape')->andWhere('m.user = :user')->setParameter('user', $user)->orderBy('m.joinedAt', 'DESC')->getQuery()->getResult(); }
+    public function findForUser(User $user): array {
+        return $this->createQueryBuilder('m')
+            ->addSelect('team', 'escape')
+            ->join('m.team', 'team')
+            ->leftJoin('team.escapeGame', 'escape')
+            ->andWhere('m.user = :user')
+            ->setParameter('user', $user)
+            ->orderBy('m.joinedAt', 'DESC')
+            ->getQuery()->getResult();
+    }
+
+
     /** @return TeamMembership[] */
     public function findForTeam(Team $team): array { return $this->createQueryBuilder('m')->addSelect('user')->join('m.user', 'user')->andWhere('m.team = :team')->setParameter('team', $team)->orderBy('m.joinedAt', 'ASC')->getQuery()->getResult(); }
 }
