@@ -14,6 +14,11 @@
                     <a class="team-card" href="{{ path('team_conversation_show', {id: membership.team.id}) }}"><strong>{{ membership.team.name }}</strong><span>{% if membership.team.escapeGame %}{{ membership.team.escapeGame.name }} · {% else %}Conversation indépendante · {% endif %}rejoint le {{ membership.joinedAt|date('d/m/Y') }}</span></a>
                 {% else %}<p class="sjdb-lead">Aucun groupe pour le moment. Ouvrez le lien reçu par email pour rejoindre une conversation.</p>{% endfor %}
             </section>
-            <footer class="sjdb-footer"><a class="sjdb-pill" href="{{ path('app_profile') }}">Mon profil</a>{% if is_granted('ROLE_AGENT') %}<a class="sjdb-btn" href="{{ path('information_sheet_workspace_index') }}">Mon espace fiches</a>{% endif %}<a class="sjdb-pill" href="{{ path('app_logout') }}">Déconnexion</a></footer>
+            <footer class="sjdb-footer">
+                <a class="sjdb-pill" href="{{ path('app_profile') }}">Mon profil</a>
+                {% if is_granted('ROLE_AGENT') %}
+                <a class="sjdb-btn" href="{{ path('information_sheet_workspace_index') }}">Mon espace fiches</a>
+                {% endif %}
+                <a class="sjdb-pill" href="{{ path('app_logout') }}">Déconnexion</a></footer>
         </main></div>
 {% endblock %}

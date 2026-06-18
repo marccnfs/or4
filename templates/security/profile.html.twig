@@ -1,15 +1,71 @@
 {% extends 'public.html.twig' %}
 {% block title %}Mon profil · sjdb.space{% endblock %}
 {% block body %}
-    <div class="sjdb-home"><div class="sjdb-bg"></div><main class="sjdb-card sjdb-card--auth" role="main" aria-label="Profil utilisateur">
-            <header class="sjdb-header"><div class="sjdb-brand"><div class="sjdb-domain">Mon profil</div><div class="sjdb-tagline">Gérer mes informations de connexion</div></div></header>
-            <section class="sjdb-auth">
+    <div class="sjdb-home"><div class="sjdb-bg"></div><main class="sjdb-card sjdb-card--wide" role="main" aria-label="Profil utilisateur">
+            <header class="sjdb-header"><div class="sjdb-brand"><div class="sjdb-domain">Mon profil</div><div class="sjdb-tagline">Gérer mes informations de connexion{% if is_granted('ROLE_ADMIN') %} et administrer les groupes{% endif %}</div></div></header>
+            {% for label, flashes in app.flashes %}{% for flash in flashes %}<div class="sjdb-alert sjdb-alert--{{ label }}">{{ flash }}</div>{% endfor %}{% endfor %}
+
+            <nav class="admin-profile-menu" aria-label="Menu profil">
+                <a class="sjdb-pill" href="#mes-infos">Mes informations</a>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a class="sjdb-pill" href="#groupes-conversation">Groupes de conversation</a>
+                    <a class="sjdb-pill" href="#creation-agent">Créer un compte agent</a>
+                {% endif %}
+            </nav>
+
+            <section class="sjdb-auth" id="mes-infos">
+                <h2 class="sjdb-section-title">Mes informations</h2>
                 {{ form_start(profileForm, { attr: { class: 'sjdb-form' } }) }}
                 <div class="sjdb-field">{{ form_label(profileForm.displayName, null, { label_attr: { class: 'sjdb-label' } }) }}{{ form_widget(profileForm.displayName, { attr: { class: 'sjdb-input' } }) }}{{ form_errors(profileForm.displayName) }}</div>
                 <div class="sjdb-field">{{ form_label(profileForm.email, null, { label_attr: { class: 'sjdb-label' } }) }}{{ form_widget(profileForm.email, { attr: { class: 'sjdb-input' } }) }}{{ form_errors(profileForm.email) }}</div>
                 <button class="sjdb-btn sjdb-btn--full" type="submit">Enregistrer</button>
                 {{ form_end(profileForm) }}
             </section>
+
+            {% if is_granted('ROLE_ADMIN') %}
+                <section class="sjdb-content" id="groupes-conversation">
+                    <h2 class="sjdb-section-title">Groupes de conversation</h2>
+                    <p class="sjdb-muted">Liste des groupes, de leurs membres et actions de gestion.</p>
+                    {% for team in conversationTeams %}
+                        <article class="admin-group-card" id="admin-group-{{ team.id }}">
+                            <header class="admin-group-card__header"><div><strong>{{ team.name }}</strong><span>{{ membershipsByTeam[team.id]|length }} membre{{ membershipsByTeam[team.id]|length > 1 ? 's' : '' }}</span></div><a class="sjdb-pill" href="{{ path('team_invitation_create', {id: team.id}) }}">Inviter par email</a></header>
+                            <form class="admin-inline-form" method="post" action="{{ path('admin_profile_group_member_add', {id: team.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('add-member-' ~ team.id) }}">
+                                <input class="sjdb-input" type="email" name="email" placeholder="email@domaine.fr" required>
+                                <button class="sjdb-btn" type="submit">Ajouter</button>
+                            </form>
+                            <div class="sjdb-table-wrap"><table class="sjdb-table">
+                                    <thead><tr><th>Membre</th><th>Email</th><th>Statut</th><th>Rôle</th><th>Actions</th></tr></thead>
+                                    <tbody>
+                                    {% for membership in membershipsByTeam[team.id] %}
+                                        <tr>
+                                            <td>{{ membership.user.publicName }}</td>
+                                            <td>{{ membership.user.email }}</td>
+                                            <td>{{ membership.blocked ? 'Bloqué' : 'Actif' }}</td>
+                                            <td>{{ membership.role }}</td>
+                                            <td class="admin-actions-cell">
+                                                <form method="post" action="{{ path('admin_profile_group_member_action', {id: membership.id, action: membership.blocked ? 'unblock' : 'block'}) }}"><input type="hidden" name="_token" value="{{ csrf_token('member-action-' ~ membership.id) }}"><button class="sjdb-pill" type="submit">{{ membership.blocked ? 'Débloquer' : 'Bloquer' }}</button></form>
+                                                <form method="post" action="{{ path('admin_profile_group_member_action', {id: membership.id, action: 'remove'}) }}" onsubmit="return confirm('Supprimer ce membre du groupe ?');"><input type="hidden" name="_token" value="{{ csrf_token('member-action-' ~ membership.id) }}"><button class="sjdb-pill admin-danger" type="submit">Supprimer</button></form>
+                                            </td>
+                                        </tr>
+                                    {% else %}<tr><td colspan="5">Aucun membre.</td></tr>{% endfor %}
+                                    </tbody>
+                                </table></div>
+                        </article>
+                    {% else %}<p class="sjdb-lead">Aucun groupe de conversation pour le moment.</p>{% endfor %}
+                </section>
+
+                <section class="sjdb-auth" id="creation-agent">
+                    <h2 class="sjdb-section-title">Créer un compte agent</h2>
+                    <p class="sjdb-muted">Un mot de passe temporaire est généré et envoyé automatiquement par email.</p>
+                    {{ form_start(agentForm, { attr: { class: 'sjdb-form' } }) }}
+                    <div class="sjdb-field">{{ form_label(agentForm.displayName, null, { label_attr: { class: 'sjdb-label' } }) }}{{ form_widget(agentForm.displayName, { attr: { class: 'sjdb-input' } }) }}{{ form_errors(agentForm.displayName) }}</div>
+                    <div class="sjdb-field">{{ form_label(agentForm.email, null, { label_attr: { class: 'sjdb-label' } }) }}{{ form_widget(agentForm.email, { attr: { class: 'sjdb-input' } }) }}{{ form_errors(agentForm.email) }}</div>
+                    <button class="sjdb-btn sjdb-btn--full" type="submit">Créer et envoyer les accès</button>
+                    {{ form_end(agentForm) }}
+                </section>
+            {% endif %}
+
             <footer class="sjdb-footer"><a class="sjdb-pill" href="{{ path('team_conversation_home') }}">Mes conversations</a>{% if is_granted('ROLE_AGENT') %}<a class="sjdb-pill" href="{{ path('information_sheet_workspace_index') }}">Mon espace fiches</a>{% endif %}<a class="sjdb-pill" href="{{ path('app_logout') }}">Déconnexion</a></footer>
         </main></div>
 {% endblock %}

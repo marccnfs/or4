@@ -74,7 +74,7 @@ class TeamConversationController extends AbstractController
     public function show(Request $request, Team $team, TeamMembershipRepository $memberships, TeamMessageRepository $messages, EntityManagerInterface $em, SluggerInterface $slugger): Response
     {
         $user = $this->getAppUser();
-        if (!$this->isGranted('ROLE_ADMIN') && !$memberships->isMember($team, $user)) {
+        if (!$this->isGranted('ROLE_ADMIN') && !$memberships->isActiveMember($team, $user)) {
             throw $this->createAccessDeniedException('Invitation requise pour accéder à ce groupe.');
         }
 

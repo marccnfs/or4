@@ -30,6 +30,9 @@ class TeamMembership
     #[ORM\Column]
     private \DateTimeImmutable $joinedAt;
 
+    #[ORM\Column(options: ['default' => false])]
+    private bool $blocked = false;
+
     public function __construct()
     {
         $this->joinedAt = new \DateTimeImmutable();
@@ -44,4 +47,6 @@ class TeamMembership
     public function setRole(string $role): self { $this->role = $role; return $this; }
     public function getJoinedAt(): \DateTimeImmutable { return $this->joinedAt; }
     public function setJoinedAt(\DateTimeImmutable $joinedAt): self { $this->joinedAt = $joinedAt; return $this; }
+    public function isBlocked(): bool { return $this->blocked; }
+    public function setBlocked(bool $blocked): self { $this->blocked = $blocked; return $this; }
 }
