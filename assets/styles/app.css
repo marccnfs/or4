@@ -169,7 +169,7 @@ fill: white;
     padding: 12px 16px;
     border-radius: 14px;
     border: 1px solid rgba(255, 255, 255, 0.22);
-    background: linear-gradient(180deg, rgba(91, 143, 255, 0.28), rgba(180, 84, 255, 0.18));
+    background: linear-gradient(180deg, rgb(91 143 255 / 88%), rgb(180 84 255 / 82%));
     color: rgba(255, 255, 255, 0.95);
     text-decoration: none;
     font-weight: 700;
@@ -201,12 +201,13 @@ fill: white;
 }
 
 .sjdb-pill {
-    font-size: 12px;
+    font-size: 14px;
     padding: 6px 10px;
     border-radius: 999px;
     border: 1px solid var(--soft);
-    background: rgba(0, 0, 0, 0.14);
-    color: rgba(255, 255, 255, 0.76);
+    background: rgb(19 58 91 / 63%);
+    color: rgb(255 255 255 / 91%);
+    text-decoration: none;
 }
 .sjdb-table-wrap {
     margin-top: 16px;
@@ -1669,7 +1670,7 @@ footer {
 .workspace-section {
     border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 1.25rem;
-    background: rgba(6, 16, 32, 0.42);
+    background: rgb(59 96 154 / 42%);
     padding: 1.25rem;
 }
 
@@ -1763,7 +1764,15 @@ footer {
     background: rgb(255, 255, 255);
     border-inline: 1px solid var(--soft);
 }
-.messenger-header { display: flex; justify-content: space-between; gap: 16px; padding: 18px clamp(16px, 3vw, 28px); border-bottom: 1px solid var(--soft); background: rgba(255,255,255,.06); backdrop-filter: blur(14px); }
+.messenger-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px clamp(16px, 3vw, 28px);
+    border-bottom: 1px solid var(--soft);
+    background: rgb(84 134 196 / 71%);
+    backdrop-filter: blur(14px);
+}
 .messenger-header h1 { margin: 4px 0; font-size: clamp(22px, 4vw, 34px); }
 .messenger-header p { margin: 0; color: var(--muted); }
 .messenger-back { color: rgba(255,255,255,.76); text-decoration: none; font-weight: 700; }
@@ -1777,7 +1786,14 @@ footer {
     border-bottom-right-radius: 6px;
 }
 .chat-bubble.is-them { align-self: flex-start; border-bottom-left-radius: 6px; }
-.chat-meta { display: flex; gap: 10px; align-items: baseline; color: rgba(255,255,255,.78); font-size: 12px; margin-bottom: 5px; }
+.chat-meta {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+    color: rgb(80 86 132);
+    font-size: 12px;
+    margin-bottom: 5px;
+}
 .chat-meta time { color: var(--muted); }
 .chat-bubble p { margin: 0; line-height: 1.45; white-space: normal; }
 .chat-image { display: block; max-width: 100%; max-height: 360px; border-radius: 15px; margin-bottom: 8px; object-fit: cover; }

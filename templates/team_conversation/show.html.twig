@@ -6,11 +6,15 @@
                 <div>
                     <a class="messenger-back" href="{{ path('team_conversation_home') }}">← Groupes</a>
                     <h1>{{ team.name }}</h1>
-                    <p>{{ team.escapeGame ? team.escapeGame.name : 'Conversation indépendante' }} · {{ members|length }} membre{{ members|length > 1 ? 's' : '' }}</p>
+                    <p>{{ team.escapeGame ? team.escapeGame.name : 'Conversation ' }} · {{ members|length }} membre{{ members|length > 1 ? 's' : '' }}</p>
                 </div>
-                <div class="messenger-avatars">{% for member in members|slice(0, 4) %}<span title="{{ member.user.publicName }}">{{ member.user.publicName|first|upper }}</span>{% endfor %}
+                <div class="messenger-avatars">
+                    {% for member in members|slice(0, 4) %}
+                        <span title="{{ member.user.publicName }}">{{ member.user.publicName|first|upper }}</span>
+                    {% endfor %}
                 </div>
             </header>
+
             {% for label, flashes in app.flashes %}{% for flash in flashes %}<div class="sjdb-alert sjdb-alert--{{ label }}">{{ flash }}</div>{% endfor %}{% endfor %}
             <section class="messenger-thread" aria-label="Messages du groupe">
                 {% for message in messages %}
