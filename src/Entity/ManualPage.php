@@ -63,16 +63,16 @@ class ManualPage
     #[ORM\Column(length: 30)]
     private string $status = self::STATUS_DRAFT;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeInterface $reviewedAt = null;
 
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeInterface $updatedAt = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeInterface $publishedAt = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]

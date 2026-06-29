@@ -40,7 +40,7 @@ class ManualSection
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeInterface $updatedAt = null;
 
     /**
