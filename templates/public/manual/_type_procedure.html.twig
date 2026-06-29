@@ -1,0 +1,11 @@
+{% set content_blocks = page.contentMarkdown|split('\n\n') %}
+<ol class="manual-steps" aria-label="Étapes de la procédure">
+    {% for block in content_blocks %}
+        {% set step = block|trim %}
+        {% if step is not empty %}
+            <li class="manual-step">
+                <div class="sheet-markdown manual-step-content">{{ step|markdown_to_html }}</div>
+            </li>
+        {% endif %}
+    {% endfor %}
+</ol>

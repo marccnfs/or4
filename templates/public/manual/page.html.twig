@@ -1,20 +1,40 @@
 {% extends 'public.html.twig' %}
 {% block title %}{{ page.title }} · Manuel SI{% endblock %}
 {% block body %}
-    {% set content_lines = page.contentMarkdown|split('\n') %}
-    <div class="sjdb-home manual-page"><div class="sjdb-bg"></div><main class="sjdb-card sjdb-card--wide" role="main">
-            <header class="sjdb-header"><div class="sjdb-brand"><div class="sjdb-domain">{{ page.title }}</div><div class="sjdb-tagline"><a href="{{ path('manual_public_section', { sectionSlug: section.slug }) }}">{{ section.title }}</a>{% if page.publishedAt %} · publié le {{ page.publishedAt|date('d/m/Y') }}{% endif %}</div></div>{{ include('public/manual/_page_type_badge.html.twig') }}</header>
-            <div class="manual-layout">{{ include('public/manual/_sidebar.html.twig') }}<article class="sjdb-content manual-main manual-detail manual-detail--{{ page.type|replace({'_': '-', ' ': '-'}) }}">
-                    {% if page.summary %}<p class="manual-lead">{{ page.summary }}</p>{% endif %}
-                    {% if page.type == 'procedure' %}<ol class="manual-steps">{% for line in content_lines %}{% if line|trim is not empty %}<li>{{ line|trim|markdown_to_html }}</li>{% endif %}{% endfor %}</ol>
-                    {% elseif page.type == 'memo' %}<div class="manual-memo">{{ page.contentMarkdown|markdown_to_html }}</div>
-                    {% elseif page.type == 'checklist' %}<ul class="manual-checklist">{% for line in content_lines %}{% if line|trim is not empty %}<li><span aria-hidden="true">□</span><div>{{ line|trim|replace({'- [ ] ': '', '- [x] ': '', '- ': ''})|markdown_to_html }}</div></li>{% endif %}{% endfor %}</ul>
-                    {% elseif page.type == 'referentiel' %}<div class="manual-structured">{{ page.contentMarkdown|markdown_to_html }}</div>
-                    {% elseif page.type == 'naming-rule' %}<div class="manual-naming"><strong>Règles de nommage</strong>{{ page.contentMarkdown|markdown_to_html }}</div>
-                    {% elseif page.type == 'equipment-sheet' %}<div class="manual-equipment">{{ page.contentMarkdown|markdown_to_html }}</div>
-                    {% else %}<div class="sheet-markdown manual-markdown">{{ page.contentMarkdown|markdown_to_html }}</div>{% endif %}
-                    {% if page.tags %}<div class="sjdb-actions manual-tags">{% for tag in page.tags %}<span class="sjdb-pill">#{{ tag }}</span>{% endfor %}</div>{% endif %}
-                </article></div>
-            <footer class="sjdb-footer"><a class="sjdb-btn" href="{{ path('manual_public_section', { sectionSlug: section.slug }) }}">Retour à la rubrique</a></footer>
-        </main></div>
+    {% set type_partials = {
+        'page': 'public/manual/_type_page.html.twig',
+        'procedure': 'public/manual/_type_procedure.html.twig',
+        'memo': 'public/manual/_type_memo.html.twig',
+        'checklist': 'public/manual/_type_checklist.html.twig',
+        'referentiel': 'public/manual/_type_referentiel.html.twig',
+        'naming-rule': 'public/manual/_type_naming_rule.html.twig',
+        'equipment-sheet': 'public/manual/_type_equipment_sheet.html.twig'
+    } %}
+    {% set page_type = page.type|default('page') %}
+    <div class="sjdb-home manual-page">
+        <div class="sjdb-bg"></div>
+        <main class="sjdb-card sjdb-card--wide" role="main">
+            <header class="sjdb-header">
+                <div class="sjdb-brand">
+                    <div class="sjdb-domain">{{ page.title }}</div>
+                    <div class="sjdb-tagline"><a
+                                href="{{ path('manual_public_section', { sectionSlug: section.slug }) }}">{{ section.title }}</a>{% if page.publishedAt %} · publié le {{ page.publishedAt|date('d/m/Y') }}{% endif %}
+                    </div>
+                </div>{{ include('public/manual/_page_type_badge.html.twig') }}</header>
+            <div class="manual-layout">{{ include('public/manual/_sidebar.html.twig') }}
+                <article
+                        class="sjdb-content manual-main manual-detail manual-detail--{{ page_type|replace({'_': '-', ' ': '-'}) }}">
+                    {% if page.summary and page_type not in ['memo', 'equipment-sheet'] %}<p
+                            class="manual-lead">{{ page.summary }}</p>{% endif %}
+                    {% include type_partials[page_type]|default(type_partials.page) with { page: page } only %}
+                    {% if page.tags %}
+                        <div class="sjdb-actions manual-tags">{% for tag in page.tags %}<span class="sjdb-pill">
+                        #{{ tag }}</span>{% endfor %}</div>{% endif %}
+                </article>
+            </div>
+            <footer class="sjdb-footer"><a class="sjdb-btn"
+                                           href="{{ path('manual_public_section', { sectionSlug: section.slug }) }}">Retour
+                    à la rubrique</a></footer>
+        </main>
+    </div>
 {% endblock %}

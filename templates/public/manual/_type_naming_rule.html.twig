@@ -1,0 +1,14 @@
+{% set raw_blocks = page.contentMarkdown|split('\n\n') %}
+<div class="manual-naming">
+    {% for block in raw_blocks %}
+        {% set normalized = block|trim|lower %}
+        {% set is_rule = normalized starts with '## règle' or normalized starts with '# règle' or normalized starts with 'règle' or normalized starts with 'regle' %}
+        {% set is_good = normalized starts with '## exemple correct' or normalized starts with '# exemple correct' or normalized starts with 'exemple correct' %}
+        {% set is_bad = normalized starts with '## exemple à éviter' or normalized starts with '# exemple à éviter' or normalized starts with '## exemple a eviter' or normalized starts with '# exemple a eviter' or normalized starts with 'exemple à éviter' or normalized starts with 'exemple a eviter' %}
+        {% if block|trim is not empty %}
+            <section class="sheet-markdown manual-naming-block{% if is_rule %} manual-naming-block--rule{% elseif is_good %} manual-naming-block--good{% elseif is_bad %} manual-naming-block--bad{% endif %}">
+                {{ block|markdown_to_html }}
+            </section>
+        {% endif %}
+    {% endfor %}
+</div>

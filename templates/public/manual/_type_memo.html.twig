@@ -1,0 +1,9 @@
+{% if page.summary %}
+    <aside class="manual-summary-box" aria-label="Résumé du mémo">
+        <strong>À retenir</strong>
+        <p>{{ page.summary }}</p>
+    </aside>
+{% endif %}
+<div class="sheet-markdown manual-memo">
+    {{ page.contentMarkdown|markdown_to_html }}
+</div>
