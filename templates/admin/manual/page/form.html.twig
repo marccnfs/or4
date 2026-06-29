@@ -1,0 +1,32 @@
+{% extends 'public.html.twig' %}
+{% block title %}{{ isEdit ? 'Modifier' : 'Créer' }} une page{% endblock %}
+{% block body %}
+    <div class="sjdb-home">
+        <div class="sjdb-bg"></div>
+        <main class="sjdb-card sjdb-card--wide" role="main">
+            <header class="sjdb-header">
+                <div class="sjdb-brand">
+                    <div class="sjdb-domain">Manuel SI</div>
+                    <div class="sjdb-tagline">{{ isEdit ? 'Modifier' : 'Créer' }} une page</div>
+                </div>
+            </header>
+            <section class="sjdb-content">
+                {% if isEdit %}
+                    <p class="sjdb-lead">Créée le {{ page.createdAt|date('d/m/Y H:i') }} · Modifiée
+                        le {{ page.updatedAt ? page.updatedAt|date('d/m/Y H:i') : '—' }} · Publiée
+                        le {{ page.publishedAt ? page.publishedAt|date('d/m/Y H:i') : '—' }}</p>
+                {% endif %}
+                {{ form_start(form, {attr: {class: 'admin-form'}}) }}
+                {{ form_widget(form) }}
+                <button class="sjdb-btn" type="submit">{{ isEdit ? 'Enregistrer' : 'Créer' }}<span
+                            class="sjdb-btn-arrow">→</span>
+                </button>
+                {{ form_end(form) }}
+            </section>
+            <footer class="sjdb-footer">
+                <a class="sjdb-btn" href="{{ path('admin_manual_page_list') }}">Retour aux pages<span
+                            class="sjdb-btn-arrow">→</span></a>
+            </footer>
+        </main>
+    </div>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends 'public.html.twig' %}
+{% block title %}Rubriques Manuel SI{% endblock %}
+{% block body %}
+    <div class="sjdb-home"><div class="sjdb-bg"></div><main class="sjdb-card sjdb-card--wide" role="main">
+        <header class="sjdb-header"><div class="sjdb-brand"><div class="sjdb-domain">Manuel SI</div><div class="sjdb-tagline">Rubriques</div></div></header>
+        <section class="sjdb-content"><div class="sheet-toolbar"><a class="sjdb-btn" href="{{ path('admin_manual_section_new') }}">Créer une rubrique <span class="sjdb-btn-arrow">→</span></a><a class="sjdb-pill" href="{{ path('admin_manual_index') }}">Tableau Manuel SI</a></div>
+            {% if sections is empty %}<p class="sjdb-lead">Aucune rubrique.</p>{% else %}<div class="sjdb-table-wrap"><table class="sjdb-table"><thead><tr><th>Titre</th><th>Slug</th><th>Position</th><th>Publication</th><th>Créée</th><th>Modifiée</th><th>Actions</th></tr></thead><tbody>{% for section in sections %}<tr><td>{{ section.title }}</td><td>{{ section.slug }}</td><td>{{ section.position }}</td><td>{{ section.published ? 'Publiée' : 'Brouillon' }}</td><td>{{ section.createdAt|date('d/m/Y H:i') }}</td><td>{{ section.updatedAt ? section.updatedAt|date('d/m/Y H:i') : '—' }}</td><td><a class="sjdb-pill" href="{{ path('admin_manual_section_edit', {id: section.id}) }}">Éditer</a></td></tr>{% endfor %}</tbody></table></div>{% endif %}</section>
+        <footer class="sjdb-footer"><a class="sjdb-btn" href="{{ path('index_admin') }}">Retour board<span class="sjdb-btn-arrow">→</span></a></footer>
+    </main></div>{% endblock %}

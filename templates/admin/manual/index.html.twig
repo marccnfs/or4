@@ -1,0 +1,22 @@
+{% extends 'public.html.twig' %}
+
+{% block title %}Administration Manuel SI{% endblock %}
+
+{% block body %}
+    <div class="sjdb-home"><div class="sjdb-bg"></div><main class="sjdb-card sjdb-card--wide" role="main" aria-label="Back-office Manuel SI">
+            <header class="sjdb-header"><img class="sjdb-logo" src="{{ asset('images/logo_sjdb_lite.png') }}" alt="Logo sjdb.space" width="160" height="160"><div class="sjdb-brand"><div class="sjdb-domain">Manuel SI</div><div class="sjdb-tagline">Administration des rubriques, pages et versions</div></div></header>
+            <section class="sjdb-content">
+                <h1 class="sjdb-title">Tableau de bord Manuel SI</h1>
+                <ul class="sjdb-bullets">
+                    <li>{{ sectionsCount }} rubrique{{ sectionsCount > 1 ? 's' : '' }}</li>
+                    <li>{{ pagesCount }} page{{ pagesCount > 1 ? 's' : '' }} · {{ draftCount }} brouillon{{ draftCount > 1 ? 's' : '' }} · {{ publishedCount }} publiée{{ publishedCount > 1 ? 's' : '' }} · {{ archivedCount }} archivée{{ archivedCount > 1 ? 's' : '' }}</li>
+                </ul>
+                <div class="sjdb-actions">
+                    <a class="sjdb-btn" href="{{ path('admin_manual_section_list') }}">Gérer les rubriques <span class="sjdb-btn-arrow" aria-hidden="true">→</span></a>
+                    <a class="sjdb-btn" href="{{ path('admin_manual_page_list') }}">Gérer les pages <span class="sjdb-btn-arrow" aria-hidden="true">→</span></a>
+                    <a class="sjdb-pill" href="{{ path('manual_public_index') }}" target="_blank" rel="noopener">Voir le public</a>
+                </div>
+            </section>
+            <footer class="sjdb-footer"><a class="sjdb-btn" href="{{ path('index_admin') }}">Retour board<span class="sjdb-btn-arrow" aria-hidden="true">→</span></a></footer>
+        </main></div>
+{% endblock %}

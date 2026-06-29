@@ -1,0 +1,54 @@
+{% extends 'public.html.twig' %}
+{% block title %}Pages Manuel SI{% endblock %}
+{% block body %}
+    <div class="sjdb-home">
+        <div class="sjdb-bg"></div>
+        <main class="sjdb-card sjdb-card--wide" role="main">
+            <header class="sjdb-header">
+                <div class="sjdb-brand">
+                    <div class="sjdb-domain">Manuel SI</div>
+                    <div class="sjdb-tagline">Pages</div>
+                </div>
+            </header>
+            <section class="sjdb-content">
+                <div class="sheet-toolbar"><a class="sjdb-btn" href="{{ path('admin_manual_page_new') }}">Créer une page
+                        <span class="sjdb-btn-arrow">→</span></a><a class="sjdb-pill"
+                                                                    href="{{ path('admin_manual_index') }}">Tableau
+                        Manuel SI</a></div>{% if pages is empty %}<p class="sjdb-lead">Aucune page.</p>{% else %}
+            <div class="sjdb-table-wrap">
+                <table class="sjdb-table">
+                    <thead>
+                    <tr>
+                        <th>Titre</th>
+                        <th>Rubrique</th>
+                        <th>Type</th>
+                        <th>Statut</th>
+                        <th>Position</th>
+                        <th>Créée</th>
+                        <th>Modifiée</th>
+                        <th>Publiée</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>{% for page in pages %}
+                        <tr>
+                        <td>{{ page.title }}</td>
+                        <td>{{ page.section.title }}</td>
+                        <td>{{ page.type }}</td>
+                        <td>{{ page.status }}</td>
+                        <td>{{ page.position }}</td>
+                        <td>{{ page.createdAt|date('d/m/Y H:i') }}</td>
+                        <td>{{ page.updatedAt ? page.updatedAt|date('d/m/Y H:i') : '—' }}</td>
+                        <td>{{ page.publishedAt ? page.publishedAt|date('d/m/Y H:i') : '—' }}</td>
+                        <td>
+                            <div class="sjdb-actions"><a class="sjdb-pill"
+                                                         href="{{ path('admin_manual_page_show', {id: page.id}) }}">Voir</a><a
+                                        class="sjdb-pill" href="{{ path('admin_manual_page_edit', {id: page.id}) }}">Éditer</a>
+                            </div>
+                        </td></tr>{% endfor %}</tbody>
+                </table></div>{% endif %}</section>
+            <footer class="sjdb-footer"><a class="sjdb-btn" href="{{ path('index_admin') }}">Retour board<span
+                            class="sjdb-btn-arrow">→</span></a></footer>
+        </main>
+    </div>
+{% endblock %}

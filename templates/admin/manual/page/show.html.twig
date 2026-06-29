@@ -1,0 +1,38 @@
+{% extends 'public.html.twig' %}
+{% block title %}{{ page.title }}{% endblock %}
+{% block body %}
+    <div class="sjdb-home">
+        <div class="sjdb-bg"></div>
+        <main class="sjdb-card sjdb-card--wide" role="main">
+            <header class="sjdb-header">
+                <div class="sjdb-brand">
+                    <div class="sjdb-domain">{{ page.title }}</div>
+                    <div class="sjdb-tagline">{{ page.section.title }} · {{ page.type }} · {{ page.status }}</div>
+                </div>
+            </header>
+            <section class="sjdb-content">
+                <div class="sjdb-actions">
+                    <a class="sjdb-btn" href="{{ path('admin_manual_page_edit', {id: page.id}) }}">Modifier <span class="sjdb-btn-arrow">→</span></a>
+                    <a class="sjdb-pill" href="{{ path('admin_manual_page_list') }}">Liste des pages</a>
+                    {% if page.status == 'published' %}
+                        <a class="sjdb-pill" href="{{ path('manual_public_page', {sectionSlug: page.section.slug, pageSlug: page.slug}) }}" target="_blank" rel="noopener">Public</a>
+                    {% endif %}
+                </div>
+                <p class="sjdb-lead">Slug : {{ page.slug }} · Position : {{ page.position }}</p>
+                <p>Créée le {{ page.createdAt|date('d/m/Y H:i') }} · Modifiée
+                    le {{ page.updatedAt ? page.updatedAt|date('d/m/Y H:i') : '—' }} · Publiée
+                    le {{ page.publishedAt ? page.publishedAt|date('d/m/Y H:i') : '—' }}</p>{% if page.summary %}
+                <p>{{ page.summary }}</p>{% endif %}
+                <pre>{{ page.contentMarkdown }}</pre>
+                <h2>Versions</h2>{% if page.versions is empty %}<p>Aucune version.</p>{% else %}
+            <ul class="sjdb-bullets">{% for version in page.versions %}
+                <li>v{{ version.versionNumber }} · {{ version.createdAt|date('d/m/Y H:i') }}
+                · {{ version.changeSummary ?: '—' }}</li>
+                {% endfor %}
+            </ul>
+                {% endif %}
+            </section>
+            <footer class="sjdb-footer"><a class="sjdb-btn" href="{{ path('index_admin') }}">Retour board<span class="sjdb-btn-arrow">→</span></a></footer>
+        </main>
+    </div>
+{% endblock %}
