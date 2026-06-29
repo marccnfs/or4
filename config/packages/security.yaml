@@ -8,6 +8,11 @@ security:
         entity:
           class: App\Entity\User
           property: email
+
+    role_hierarchy:
+      ROLE_ADMIN: [ ROLE_USER, ROLE_AGENT ]
+      ROLE_SUPER_ADMIN: [ ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH ]
+
     firewalls:
       dev:
         pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -49,10 +54,14 @@ security:
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
+
+
+
     access_control:
       - { path: ^/api/login_check, roles: PUBLIC_ACCESS }
       - { path: ^/api, roles: ROLE_USER }
       - { path: ^/admin, roles: ROLE_ADMIN }
+      - { path: ^/manuel-si, roles: ROLE_AGENT }
       - { path: ^/fiches/espace, roles: ROLE_AGENT }
       - { path: ^/groupes, roles: ROLE_USER }
       - { path: ^/profil, roles: ROLE_USER }

@@ -1,0 +1,10 @@
+{% extends 'public.html.twig' %}
+{% block title %}{{ section.title }} · Manuel SI{% endblock %}
+{% block body %}
+    <div class="sjdb-home manual-page"><div class="sjdb-bg"></div><main class="sjdb-card sjdb-card--wide" role="main">
+            <header class="sjdb-header"><div class="sjdb-brand"><div class="sjdb-domain">{{ section.title }}</div><div class="sjdb-tagline">Manuel SI · rubrique publiée</div></div></header>
+            <div class="manual-layout">{{ include('public/manual/_sidebar.html.twig') }}<section class="sjdb-content manual-main"><h1 class="sjdb-title">{{ section.icon ? section.icon ~ ' ' : '' }}{{ section.title }}</h1>{% if section.description %}<p class="manual-lead">{{ section.description }}</p>{% endif %}
+                    <div class="manual-list">{% for page in pages %}<article class="manual-list-item"><div>{{ include('public/manual/_page_type_badge.html.twig') }}<h2><a href="{{ path('manual_public_page', { sectionSlug: section.slug, pageSlug: page.slug }) }}">{{ page.title }}</a></h2>{% if page.summary %}<p>{{ page.summary }}</p>{% endif %}</div><a class="sjdb-btn" href="{{ path('manual_public_page', { sectionSlug: section.slug, pageSlug: page.slug }) }}">Lire</a></article>{% else %}<p class="manual-lead">Aucune page publiée dans cette rubrique.</p>{% endfor %}</div></section></div>
+            <footer class="sjdb-footer"><a class="sjdb-btn" href="{{ path('manual_public_index') }}">Toutes les rubriques</a></footer>
+        </main></div>
+{% endblock %}

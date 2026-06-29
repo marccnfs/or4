@@ -1,0 +1,11 @@
+{% extends 'public.html.twig' %}
+{% block title %}Manuel SI{% endblock %}
+{% block body %}
+    <div class="sjdb-home manual-page"><div class="sjdb-bg"></div><main class="sjdb-card sjdb-card--wide" role="main">
+            <header class="sjdb-header"><img class="sjdb-logo" src="{{ asset('images/logo_sjdb_lite.png') }}" alt="Logo sjdb.space"><div class="sjdb-brand"><div class="sjdb-domain">Manuel SI</div><div class="sjdb-tagline">Documentation opérationnelle réservée aux agents</div></div></header>
+            <section class="sjdb-content"><h1 class="sjdb-title">Bienvenue dans le Manuel SI</h1><p class="manual-lead">Retrouvez les procédures, mémos, référentiels et fiches utiles au quotidien.</p>
+                <form class="sheet-search manual-home-search" method="get" action="{{ path('manual_public_search') }}"><input type="search" name="q" placeholder="Rechercher une règle, une procédure, un équipement…"><button class="sjdb-btn" type="submit">Rechercher</button></form>
+                <div class="manual-grid">{% for section in sections %}<article class="manual-card"><div class="manual-card-icon">{{ section.icon ?: '▣' }}</div><h2>{{ section.title }}</h2>{% if section.description %}<p>{{ section.description }}</p>{% endif %}<a class="sjdb-btn" href="{{ path('manual_public_section', { sectionSlug: section.slug }) }}">Consulter <span class="sjdb-btn-arrow">→</span></a></article>{% else %}<p class="manual-lead">Aucune rubrique publiée pour le moment.</p>{% endfor %}</div></section>
+            <footer class="sjdb-footer"><a class="sjdb-btn" href="{{ path('index_public') }}">Retour accueil</a></footer>
+        </main></div>
+{% endblock %}

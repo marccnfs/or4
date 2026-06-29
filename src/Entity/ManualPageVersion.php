@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ManualPageVersionRepository::class)]
 #[ORM\UniqueConstraint(name: 'uniq_manual_page_version_number', columns: ['page_id', 'version_number'])]
-#[ORM\Index(columns: ['created_at'], name: 'idx_manual_page_version_created_at')]
+#[ORM\Index(name: 'idx_manual_page_version_created_at', columns: ['created_at'])]
 class ManualPageVersion
 {
     #[ORM\Id]

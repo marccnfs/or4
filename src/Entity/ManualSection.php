@@ -11,7 +11,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ManualSectionRepository::class)]
-#[ORM\Index(columns: ['position'], name: 'idx_manual_section_position')]
+#[ORM\Index(name: 'idx_manual_section_position', columns: ['position'])]
 class ManualSection
 {
     #[ORM\Id]
@@ -46,7 +46,7 @@ class ManualSection
     /**
      * @var Collection<int, ManualPage>
      */
-    #[ORM\OneToMany(mappedBy: 'section', targetEntity: ManualPage::class, orphanRemoval: false)]
+    #[ORM\OneToMany(targetEntity: ManualPage::class, mappedBy: 'section', orphanRemoval: false)]
     #[ORM\OrderBy(['position' => 'ASC', 'title' => 'ASC'])]
     private Collection $pages;
 

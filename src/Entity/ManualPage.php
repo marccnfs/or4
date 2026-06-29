@@ -12,9 +12,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ManualPageRepository::class)]
 #[ORM\UniqueConstraint(name: 'uniq_manual_page_section_slug', columns: ['section_id', 'slug'])]
-#[ORM\Index(columns: ['position'], name: 'idx_manual_page_position')]
-#[ORM\Index(columns: ['status'], name: 'idx_manual_page_status')]
-#[ORM\Index(columns: ['type'], name: 'idx_manual_page_type')]
+#[ORM\Index(name: 'idx_manual_page_position', columns: ['position'])]
+#[ORM\Index(name: 'idx_manual_page_status', columns: ['status'])]
+#[ORM\Index(name: 'idx_manual_page_type', columns: ['type'])]
 class ManualPage
 {
     public const TYPE_PAGE = 'page';
@@ -84,7 +84,7 @@ class ManualPage
     private ?User $updatedBy = null;
 
     /** @var Collection<int, ManualPageVersion> */
-    #[ORM\OneToMany(mappedBy: 'page', targetEntity: ManualPageVersion::class, orphanRemoval: false)]
+    #[ORM\OneToMany(targetEntity: ManualPageVersion::class, mappedBy: 'page', orphanRemoval: false)]
     #[ORM\OrderBy(['versionNumber' => 'DESC'])]
     private Collection $versions;
 

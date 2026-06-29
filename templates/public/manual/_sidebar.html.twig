@@ -1,0 +1,12 @@
+<aside class="manual-sidebar" aria-label="Navigation du manuel SI">
+    <form class="manual-search" method="get" action="{{ path('manual_public_search') }}">
+        <input type="search" name="q" value="{{ query|default('') }}" placeholder="Rechercher dans le manuel">
+        <button class="sjdb-btn" type="submit">OK</button>
+    </form>
+    <nav class="manual-nav">
+        <a class="sjdb-pill" href="{{ path('manual_public_index') }}">Accueil du manuel</a>
+        {% for item in sections %}
+            <a class="sjdb-pill {% if section is defined and section.id == item.id %}is-active{% endif %}" href="{{ path('manual_public_section', { sectionSlug: item.slug }) }}">{% if item.icon %}<span aria-hidden="true">{{ item.icon }}</span>{% endif %}{{ item.title }}</a>
+        {% endfor %}
+    </nav>
+</aside>
