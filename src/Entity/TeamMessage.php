@@ -4,39 +4,55 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\TeamMessageRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[ApiResource(
+    operations: [new Get(), new GetCollection()],
+    normalizationContext: ['groups' => ['team_message:read']],
+    security: "is_granted('ROLE_USER')",
+)]
 #[ORM\Entity(repositoryClass: TeamMessageRepository::class)]
-#[ORM\Index(columns: ['created_at'], name: 'idx_team_message_created_at')]
+#[ORM\Index(name: 'idx_team_message_created_at', columns: ['created_at'])]
 class TeamMessage
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['team_message:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Groups(['team_message:read'])]
     private ?Team $team = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Groups(['team_message:read'])]
     private ?User $author = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Assert\Length(max: 4000)]
+    #[Groups(['team_message:read'])]
     private ?string $content = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['team_message:read'])]
     private ?string $imagePath = null;
 
     #[ORM\Column(length: 180, nullable: true)]
+    #[Groups(['team_message:read'])]
     private ?string $imageOriginalName = null;
 
     #[ORM\Column]
+    #[Groups(['team_message:read'])]
     private \DateTimeImmutable $createdAt;
 
     public function __construct() { $this->createdAt = new \DateTimeImmutable(); }

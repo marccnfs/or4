@@ -4,9 +4,18 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\TeamMembershipRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
+#[ApiResource(
+    operations: [new Get(), new GetCollection()],
+    normalizationContext: ['groups' => ['team_membership:read']],
+    security: "is_granted('ROLE_USER')",
+)]
 #[ORM\Entity(repositoryClass: TeamMembershipRepository::class)]
 #[ORM\UniqueConstraint(name: 'uniq_team_member', columns: ['team_id', 'user_id'])]
 class TeamMembership
@@ -14,23 +23,29 @@ class TeamMembership
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['team_membership:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Groups(['team_membership:read'])]
     private ?Team $team = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Groups(['team_membership:read'])]
     private ?User $user = null;
 
     #[ORM\Column(length: 30)]
+    #[Groups(['team_membership:read'])]
     private string $role = 'member';
 
     #[ORM\Column]
+    #[Groups(['team_membership:read'])]
     private \DateTimeImmutable $joinedAt;
 
     #[ORM\Column(options: ['default' => false])]
+    #[Groups(['team_membership:read'])]
     private bool $blocked = false;
 
     public function __construct()
