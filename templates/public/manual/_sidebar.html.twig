@@ -1,12 +1,30 @@
 <aside class="manual-sidebar" aria-label="Navigation du manuel SI">
     <form class="manual-search" method="get" action="{{ path('manual_public_search') }}">
-        <input type="search" name="q" value="{{ query|default('') }}" placeholder="Rechercher dans le manuel">
+        <label class="sr-only" for="manual-sidebar-search">Rechercher dans le manuel</label>
+        <input id="manual-sidebar-search" type="search" name="q" value="{{ query|default('') }}"
+               placeholder="Rechercher dans le manuel">
         <button class="sjdb-btn" type="submit">OK</button>
     </form>
-    <nav class="manual-nav">
-        <a class="sjdb-pill" href="{{ path('manual_public_index') }}">Accueil du manuel</a>
+    <nav class="manual-nav" aria-label="Rubriques du manuel">
+        <a class="sjdb-pill manual-nav-home" href="{{ path('manual_public_index') }}">Accueil du manuel</a>
         {% for item in sections %}
-            <a class="sjdb-pill {% if section is defined and section.id == item.id %}is-active{% endif %}" href="{{ path('manual_public_section', { sectionSlug: item.slug }) }}">{% if item.icon %}<span aria-hidden="true">{{ item.icon }}</span>{% endif %}{{ item.title }}</a>
+            {% set isActiveSection = section is defined and section.id == item.id %}
+            <section class="manual-nav-section{% if isActiveSection %} is-active{% endif %}">
+                <a class="sjdb-pill manual-nav-section-link{% if isActiveSection %} is-active{% endif %}"
+                   href="{{ path('manual_public_section', { sectionSlug: item.slug }) }}">
+                    {% if item.icon %}<span aria-hidden="true">{{ item.icon }}</span>{% endif %}{{ item.title }}
+                </a>
+                {% if isActiveSection and sectionPages[item.id] is defined and sectionPages[item.id] is not empty %}
+                    <div class="manual-nav-pages" aria-label="Pages de la rubrique {{ item.title }}">
+                        {% for navPage in sectionPages[item.id] %}
+                            <a class="manual-nav-page{% if page is defined and page.id == navPage.id %} is-active{% endif %}"
+                               href="{{ path('manual_public_page', { sectionSlug: item.slug, pageSlug: navPage.slug }) }}">
+                                <span>{{ navPage.title }}</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </section>
         {% endfor %}
     </nav>
 </aside>

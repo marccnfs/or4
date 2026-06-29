@@ -17,10 +17,11 @@ use Symfony\Component\Routing\Attribute\Route;
 class ManualPublicController extends AbstractController
 {
     #[Route('', name: 'manual_public_index', methods: ['GET'])]
-    public function index(ManualSectionRepository $sectionRepository): Response
+    public function index(ManualSectionRepository $sectionRepository, ManualPageRepository $pageRepository): Response
     {
         return $this->render('public/manual/index.html.twig', [
-            'sections' => $this->findPublishedSections($sectionRepository),
+            'sections' => $sections = $this->findPublishedSections($sectionRepository),
+            'sectionPages' => $this->findPublishedPagesBySection($pageRepository, $sections),
         ]);
     }
 
@@ -31,8 +32,10 @@ class ManualPublicController extends AbstractController
 
         return $this->render('public/manual/search.html.twig', [
             'query' => $query,
-            'pages' => $query === '' ? [] : $this->searchPublishedPages($pageRepository, $query),
-            'sections' => $this->findPublishedSections($sectionRepository),
+            'pages' => $pages = ($query === '' ? [] : $this->searchPublishedPages($pageRepository, $query)),
+            'snippets' => $this->buildSearchSnippets($pages, $query),
+            'sections' => $sections = $this->findPublishedSections($sectionRepository),
+            'sectionPages' => $this->findPublishedPagesBySection($pageRepository, $sections),
         ]);
     }
 
@@ -47,7 +50,8 @@ class ManualPublicController extends AbstractController
         return $this->render('public/manual/section.html.twig', [
             'section' => $section,
             'pages' => $this->findPublishedPagesForSection($pageRepository, $section),
-            'sections' => $this->findPublishedSections($sectionRepository),
+            'sections' => $sections = $this->findPublishedSections($sectionRepository),
+            'sectionPages' => $this->findPublishedPagesBySection($pageRepository, $sections),
         ]);
     }
 
@@ -68,7 +72,8 @@ class ManualPublicController extends AbstractController
             'section' => $section,
             'page' => $page,
             'pages' => $this->findPublishedPagesForSection($pageRepository, $section),
-            'sections' => $this->findPublishedSections($sectionRepository),
+            'sections' => $sections = $this->findPublishedSections($sectionRepository),
+            'sectionPages' => $this->findPublishedPagesBySection($pageRepository, $sections),
         ]);
     }
 
@@ -109,6 +114,48 @@ class ManualPublicController extends AbstractController
             ->getResult();
     }
 
+    /**
+     * @param ManualSection[] $sections
+     *
+     * @return array<int, ManualPage[]>
+     */
+    private function findPublishedPagesBySection(ManualPageRepository $repository, array $sections): array
+    {
+        if ($sections === []) {
+            return [];
+        }
+
+        $pages = $repository->createQueryBuilder('page')
+            ->addSelect('section')
+            ->join('page.section', 'section')
+            ->andWhere('page.section IN (:sections)')
+            ->andWhere('page.status = :status')
+            ->andWhere('section.isPublished = :published')
+            ->setParameter('sections', $sections)
+            ->setParameter('status', ManualPage::STATUS_PUBLISHED)
+            ->setParameter('published', true)
+            ->orderBy('section.position', 'ASC')
+            ->addOrderBy('page.position', 'ASC')
+            ->addOrderBy('page.title', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        $pagesBySection = [];
+        foreach ($sections as $section) {
+            $pagesBySection[(int) $section->getId()] = [];
+        }
+
+        foreach ($pages as $page) {
+            $section = $page->getSection();
+            if ($section instanceof ManualSection) {
+                $pagesBySection[(int) $section->getId()][] = $page;
+            }
+        }
+
+        return $pagesBySection;
+    }
+
+
     private function findPublishedPageBySlug(ManualPageRepository $repository, ManualSection $section, string $slug): ?ManualPage
     {
         return $repository->createQueryBuilder('page')
@@ -144,6 +191,55 @@ class ManualPublicController extends AbstractController
 
         return $qb->getQuery()->getResult();
     }
+
+    /**
+     * @param ManualPage[] $pages
+     *
+     * @return array<int, string>
+     */
+    private function buildSearchSnippets(array $pages, string $query): array
+    {
+        $tokens = $this->tokenizeQuery($query);
+        $snippets = [];
+
+        foreach ($pages as $page) {
+            $content = trim(preg_replace('/[`*_#>\[\]()-]+/', ' ', $page->getContentMarkdown()) ?? '');
+            $content = trim(preg_replace('/\s+/u', ' ', $content) ?? $content);
+            $snippets[(int) $page->getId()] = $this->extractSnippet($content, $tokens);
+        }
+
+        return $snippets;
+    }
+
+    /** @param string[] $tokens */
+    private function extractSnippet(string $content, array $tokens): string
+    {
+        if ($content === '') {
+            return '';
+        }
+
+        $position = 0;
+        $lowerContent = mb_strtolower($content);
+        foreach ($tokens as $token) {
+            $found = mb_strpos($lowerContent, $token);
+            if ($found !== false) {
+                $position = max(0, $found - 70);
+                break;
+            }
+        }
+
+        $snippet = mb_substr($content, $position, 220);
+        if ($position > 0) {
+            $snippet = '…' . ltrim($snippet);
+        }
+
+        if (mb_strlen($content) > $position + 220) {
+            $snippet = rtrim($snippet) . '…';
+        }
+
+        return $snippet;
+    }
+
 
     /** @return string[] */
     private function tokenizeQuery(string $query): array

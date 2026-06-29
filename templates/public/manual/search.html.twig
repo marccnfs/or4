@@ -1,11 +1,57 @@
 {% extends 'public.html.twig' %}
 {% block title %}Recherche · Manuel SI{% endblock %}
 {% block body %}
-    <div class="sjdb-home manual-page"><div class="sjdb-bg"></div><main class="sjdb-card sjdb-card--wide" role="main">
-            <header class="sjdb-header"><div class="sjdb-brand"><div class="sjdb-domain">Recherche dans le Manuel SI</div><div class="sjdb-tagline">Pages publiées uniquement</div></div></header>
-            <div class="manual-layout">{{ include('public/manual/_sidebar.html.twig') }}<section class="sjdb-content manual-main"><h1 class="sjdb-title">Résultats{% if query %} pour « {{ query }} »{% endif %}</h1>
-                    <form class="sheet-search" method="get" action="{{ path('manual_public_search') }}"><input type="search" name="q" value="{{ query }}" placeholder="Mot-clé, procédure, équipement…"><button class="sjdb-btn" type="submit">Rechercher</button></form>
-                    <div class="manual-list">{% for page in pages %}{% set currentSection = page.section %}<article class="manual-list-item"><div>{{ include('public/manual/_page_type_badge.html.twig') }}<h2><a href="{{ path('manual_public_page', { sectionSlug: currentSection.slug, pageSlug: page.slug }) }}">{{ page.title }}</a></h2><p>{{ currentSection.title }}{% if page.summary %} · {{ page.summary }}{% endif %}</p></div><a class="sjdb-btn" href="{{ path('manual_public_page', { sectionSlug: currentSection.slug, pageSlug: page.slug }) }}">Ouvrir</a></article>{% else %}<p class="manual-lead">{% if query %}Aucun résultat publié ne correspond à cette recherche.{% else %}Saisissez un terme pour lancer la recherche.{% endif %}</p>{% endfor %}</div></section></div>
-            <footer class="sjdb-footer"><a class="sjdb-btn" href="{{ path('manual_public_index') }}">Accueil du manuel</a></footer>
-        </main></div>
+    {% set type_labels = {
+        'page': 'Document',
+        'procedure': 'Procédure',
+        'memo': 'Mémo',
+        'checklist': 'Checklist',
+        'referentiel': 'Référentiel',
+        'naming-rule': 'Règle de nommage',
+        'equipment-sheet': 'Fiche équipement'
+    } %}
+    <div class="sjdb-home manual-page">
+        <div class="sjdb-bg"></div>
+        <main class="sjdb-card sjdb-card--wide" role="main">
+            <header class="sjdb-header">
+                <div class="sjdb-brand">
+                    <div class="sjdb-domain">Recherche dans le Manuel SI</div>
+                    <div class="sjdb-tagline">Pages et rubriques publiées uniquement</div>
+                </div>
+            </header>
+            <div class="manual-layout">{{ include('public/manual/_sidebar.html.twig') }}
+                <section class="sjdb-content manual-main"><h1 class="sjdb-title">
+                        Résultats{% if query %} pour « {{ query }} »{% endif %}</h1>
+                    <form class="sheet-search manual-search-main" method="get"
+                          action="{{ path('manual_public_search') }}"><input type="search" name="q" value="{{ query }}"
+                                                                             placeholder="Mot-clé, procédure, équipement…">
+                        <button class="sjdb-btn" type="submit">Rechercher</button>
+                    </form>
+                    <div class="manual-list manual-results">{% for page in pages %}{% set currentSection = page.section %}
+                            <article class="manual-list-item manual-result">
+                            <div class="manual-result-body">{{ include('public/manual/_page_type_badge.html.twig') }}
+                                <h2>
+                                    <a href="{{ path('manual_public_page', { sectionSlug: currentSection.slug, pageSlug: page.slug }) }}">{{ page.title }}</a>
+                                </h2>
+                                <p class="manual-result-meta"><strong>Rubrique :</strong> {{ currentSection.title }}
+                                    <span aria-hidden="true">·</span> <strong>Type
+                                        :</strong> {{ type_labels[page.type]|default(page.type|capitalize) }}
+                                </p>{% if page.summary %}<p
+                                        class="manual-result-summary">{{ page.summary }}</p>{% endif %}{% if snippets[page.id]|default('') %}
+                                    <p class="manual-result-excerpt"><strong>Extrait :</strong> {{ snippets[page.id] }}
+                                    </p>{% endif %}</div>
+                            <a class="sjdb-btn"
+                               href="{{ path('manual_public_page', { sectionSlug: currentSection.slug, pageSlug: page.slug }) }}">Ouvrir</a>
+                            </article>{% else %}
+                            <div class="manual-empty">
+                            <h2>{% if query %}Aucun résultat trouvé{% else %}Recherche prête{% endif %}</h2>
+                            <p>{% if query %}Aucune page publiée dans une rubrique publiée ne correspond à « {{ query }} ». Essayez un mot-clé plus court, un nom d’équipement ou une rubrique.{% else %}Saisissez un terme pour rechercher dans les titres, résumés, contenus et tags publiés du Manuel SI.{% endif %}</p>
+                            </div>{% endfor %}</div>
+                </section>
+            </div>
+
+            <footer class="sjdb-footer"><a class="sjdb-btn" href="{{ path('manual_public_index') }}">Accueil du
+                    manuel</a></footer>
+        </main>
+    </div>
 {% endblock %}
