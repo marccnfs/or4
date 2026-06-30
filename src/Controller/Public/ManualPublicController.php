@@ -7,6 +7,7 @@ namespace App\Controller\Public;
 use App\Entity\ManualPage;
 use App\Entity\ManualSection;
 use App\Repository\ManualPageRepository;
+use App\Repository\ManualReferenceTableRepository;
 use App\Repository\ManualSectionRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -56,7 +57,12 @@ class ManualPublicController extends AbstractController
     }
 
     #[Route('/{sectionSlug}/{pageSlug}', name: 'manual_public_page', requirements: ['sectionSlug' => '[a-z0-9\-]+', 'pageSlug' => '[a-z0-9\-]+'], methods: ['GET'])]
-    public function page(string $sectionSlug, string $pageSlug, ManualSectionRepository $sectionRepository, ManualPageRepository $pageRepository): Response
+    public function page(
+        string $sectionSlug,
+        string $pageSlug,
+        ManualSectionRepository $sectionRepository,
+        ManualPageRepository $pageRepository,
+        ManualReferenceTableRepository $referenceTableRepository): Response
     {
         $section = $this->findPublishedSectionBySlug($sectionRepository, $sectionSlug);
         if (!$section instanceof ManualSection) {
@@ -71,6 +77,7 @@ class ManualPublicController extends AbstractController
         return $this->render('public/manual/page.html.twig', [
             'section' => $section,
             'page' => $page,
+            'referenceTable' => in_array($page->getType(), [ManualPage::TYPE_REFERENTIEL, ManualPage::TYPE_NAMING_RULE], true) ? $referenceTableRepository->findPublishedForPage($page) : null,
             'pages' => $this->findPublishedPagesForSection($pageRepository, $section),
             'sections' => $sections = $this->findPublishedSections($sectionRepository),
             'sectionPages' => $this->findPublishedPagesBySection($pageRepository, $sections),

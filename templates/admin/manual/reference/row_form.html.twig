@@ -1,0 +1,21 @@
+{% extends 'public.html.twig' %}
+{% block title %}{{ isEdit ? 'Modifier' : 'Ajouter' }} une ligne{% endblock %}
+{% block body %}
+    <div class="sjdb-home">
+    <div class="sjdb-bg"></div>
+    <main class="sjdb-card sjdb-card--wide">
+        <header class="sjdb-header">
+            <div class="sjdb-brand">
+                <div class="sjdb-domain">{{ table.title }}</div>
+                <div class="sjdb-tagline">{{ isEdit ? 'Modifier' : 'Ajouter' }} une ligne</div>
+            </div>
+        </header>
+        <section class="sjdb-content"><p>Colonnes attendues : {% for column in table.columnsDefinition %}
+                    <code>{{ column.key|default('') }}</code>{% if not loop.last %}, {% endif %}{% endfor %}
+            </p>{{ form_start(form, {attr: {class: 'admin-form'}}) }}{{ form_widget(form) }}
+            <button class="sjdb-btn" type="submit">Enregistrer <span class="sjdb-btn-arrow">→</span>
+            </button>{{ form_end(form) }}</section>
+        <footer class="sjdb-footer"><a class="sjdb-btn"
+                                       href="{{ path('admin_manual_reference_show', {id: table.id}) }}">Retour</a>
+        </footer>
+    </main></div>{% endblock %}

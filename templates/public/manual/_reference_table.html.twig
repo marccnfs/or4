@@ -1,0 +1,12 @@
+{% if referenceTable %}
+    <section class="manual-reference-block" aria-labelledby="manual-reference-title">
+        <h2 id="manual-reference-title">{{ referenceTable.title }}</h2>
+        {% if referenceTable.description %}<p class="manual-lead">{{ referenceTable.description }}</p>{% endif %}
+        <div class="manual-table-scroll">
+            <table class="manual-reference-table">
+                <thead><tr>{% for column in referenceTable.columnsDefinition %}<th>{{ column.label|default(column.key|default('')) }}</th>{% endfor %}</tr></thead>
+                <tbody>{% for row in referenceTable.rows|filter(row => row.active) %}<tr>{% for column in referenceTable.columnsDefinition %}{% set key = column.key|default('') %}<td>{{ attribute(row.data, key)|default('') }}</td>{% endfor %}</tr>{% else %}<tr><td colspan="{{ referenceTable.columnsDefinition|length|default(1) }}">Aucune ligne publiée.</td></tr>{% endfor %}</tbody>
+            </table>
+        </div>
+    </section>
+{% endif %}

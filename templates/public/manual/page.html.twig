@@ -27,6 +27,9 @@
                     {% if page.summary and page_type not in ['memo', 'equipment-sheet'] %}<p
                             class="manual-lead">{{ page.summary }}</p>{% endif %}
                     {% include type_partials[page_type]|default(type_partials.page) with { page: page } only %}
+                    {% if page_type in ['referentiel', 'naming-rule'] %}
+                        {% include 'public/manual/_reference_table.html.twig' with { referenceTable: referenceTable } only %}
+                    {% endif %}
                     {% if page.tags %}
                         <div class="sjdb-actions manual-tags">{% for tag in page.tags %}<span class="sjdb-pill">
                         #{{ tag }}</span>{% endfor %}</div>{% endif %}

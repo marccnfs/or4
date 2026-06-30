@@ -1,0 +1,48 @@
+{% extends 'public.html.twig' %}
+{% block title %}{{ table.title }}{% endblock %}
+{% block body %}
+    <div class="sjdb-home">
+    <div class="sjdb-bg"></div>
+    <main class="sjdb-card sjdb-card--wide">
+        <header class="sjdb-header">
+            <div class="sjdb-brand">
+                <div class="sjdb-domain">{{ table.title }}</div>
+                <div class="sjdb-tagline">{{ table.status }}
+                    · {{ table.page ? 'lié à ' ~ table.page.title : 'autonome' }}</div>
+            </div>
+        </header>
+        <section class="sjdb-content"><p>{{ table.description }}</p>
+            <div class="sjdb-actions"><a class="sjdb-btn"
+                                         href="{{ path('admin_manual_reference_edit', {id: table.id}) }}">Modifier</a><a
+                        class="sjdb-btn" href="{{ path('admin_manual_reference_row_new', {id: table.id}) }}">Ajouter une
+                    ligne <span class="sjdb-btn-arrow">→</span></a></div>
+            <h2>Colonnes</h2>
+            <pre>{{ table.columnsDefinition|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
+            <h2>Lignes</h2>
+            <div class="manual-table-scroll">
+                <table class="manual-reference-table">
+                    <thead>
+                    <tr>
+                        <th>Position</th>
+                        <th>Active</th>
+                        <th>Données</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>{% for row in table.rows %}
+                        <tr>
+                        <td>{{ row.position }}</td>
+                        <td>{{ row.active ? 'Oui' : 'Non' }}</td>
+                        <td><code>{{ row.data|json_encode(constant('JSON_UNESCAPED_UNICODE')) }}</code></td>
+                        <td><a class="sjdb-pill"
+                               href="{{ path('admin_manual_reference_row_edit', {id: table.id, rowId: row.id}) }}">Modifier</a>
+                        </td></tr>{% else %}
+                        <tr>
+                            <td colspan="4">Aucune ligne.</td>
+                        </tr>{% endfor %}</tbody>
+                </table>
+            </div>
+        </section>
+        <footer class="sjdb-footer"><a class="sjdb-btn" href="{{ path('admin_manual_reference_list') }}">Retour</a>
+        </footer>
+    </main></div>{% endblock %}

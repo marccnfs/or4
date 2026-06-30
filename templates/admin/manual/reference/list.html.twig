@@ -1,0 +1,46 @@
+{% extends 'public.html.twig' %}
+{% block title %}Référentiels Manuel SI{% endblock %}
+{% block body %}
+    <div class="sjdb-home">
+    <div class="sjdb-bg"></div>
+    <main class="sjdb-card sjdb-card--wide">
+        <header class="sjdb-header">
+            <div class="sjdb-brand">
+                <div class="sjdb-domain">Référentiels Manuel SI</div>
+                <div class="sjdb-tagline">Tableaux de référence structurés</div>
+            </div>
+        </header>
+        <section class="sjdb-content">
+            <div class="sjdb-actions"><a class="sjdb-btn" href="{{ path('admin_manual_reference_new') }}">Nouveau
+                    référentiel <span class="sjdb-btn-arrow">→</span></a></div>
+            <div class="manual-table-scroll">
+                <table class="manual-reference-table">
+                    <thead>
+                    <tr>
+                        <th>Titre</th>
+                        <th>Statut</th>
+                        <th>Page</th>
+                        <th>Position</th>
+                        <th>Lignes</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>{% for table in tables %}
+                        <tr>
+                        <td>{{ table.title }}</td>
+                        <td>{{ table.status }}</td>
+                        <td>{{ table.page ? table.page.title : '—' }}</td>
+                        <td>{{ table.position }}</td>
+                        <td>{{ table.rows|length }}</td>
+                        <td><a class="sjdb-pill"
+                               href="{{ path('admin_manual_reference_show', {id: table.id}) }}">Ouvrir</a></td>
+                        </tr>{% else %}
+                        <tr>
+                            <td colspan="6">Aucun référentiel.</td>
+                        </tr>{% endfor %}</tbody>
+                </table>
+            </div>
+        </section>
+        <footer class="sjdb-footer"><a class="sjdb-btn" href="{{ path('admin_manual_index') }}">Retour Manuel SI</a>
+        </footer>
+    </main></div>{% endblock %}
